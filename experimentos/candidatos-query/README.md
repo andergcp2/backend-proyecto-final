@@ -5,10 +5,10 @@ El microservicio candidatos-query permite consultar y listar información de can
 
 ## API 
 
-|                     | Método | Ruta                   | Params | Headers | Body |   
-|---------------------|--------|------------------------|--------|---------|------|
-| Consultar Candidato | GET    | /candidates-query/{id} | id: identificador de lal candidato | Authorization: Bearer token |  |    
-| Health Check        | GET    | /candidates-query/ping |        |         |      |  
+|                     | Método | Ruta                         | Params | Headers | Body |   
+|---------------------|--------|------------------------------|--------|---------|------|
+| Consultar Candidato | GET    | /candidates-query/{id}/tests | id: identificador del candidato | Authorization: Bearer token |  |  
+| Health Check        | GET    | /candidates-query/ping       |        |         |      |  
 
 
 ## Pruebas 
