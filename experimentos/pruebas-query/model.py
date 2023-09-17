@@ -6,7 +6,7 @@ db = SQLAlchemy()
 class Prueba(db.Model):
     __tablename__ = "prueba"
     id = db.Column(db.Integer, primary_key=True)
-    #userId = db.Column(db.Integer)
+    categoryId = db.Column(db.Integer)
     name = db.Column(db.String(50))
     createdAt = db.Column(db.DateTime)
 
