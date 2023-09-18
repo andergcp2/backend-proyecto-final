@@ -23,6 +23,9 @@ def getPrueba(endpoint, headers):
 def getPreguntasPrueba(endpoint, data, headers):
     return get(endpoint, data, headers)
 
+def updatePrueba(endpoint, data, headers):
+    return update(endpoint, data, headers)
+
 def get(endpoint, headers):
     try:
         resp = requests.get(endpoint, headers = headers)
@@ -32,7 +35,7 @@ def get(endpoint, headers):
     except Exception as ex:
         return {'msg': 'connection endpoint failed {} -> {}'.format(endpoint, ex), 'status_code': 500}
 
-def create(endpoint, data, headers):
+def update(endpoint, data, headers):
     try:
         resp = requests.post(endpoint, data=json.dumps(data), headers = headers)
         if (resp.status_code==201):
@@ -136,4 +139,13 @@ class PruebaDone(Resource):
             "candidatoId": candidatoId,
             "result": result
         }
+
+        # y se actualiza el resultado de la prueba para el candidato
+        endpointP = format(current_app.config['CANDIDATOS_QUERY'])
+        resp = updatePrueba(endpointP, data, headers)
+        # print("prueba: ", endpointP, resp)
+        status_code = resp['status_code']
+        if(status_code != 201):
+            return resp['msg'], status_code
+
         return data, 201
