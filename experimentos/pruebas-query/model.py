@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 
@@ -8,7 +9,7 @@ class Prueba(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     categoryId = db.Column(db.Integer)
     name = db.Column(db.String(50))
-    createdAt = db.Column(db.DateTime)
+    createdAt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 @property
 def createdAt(self):

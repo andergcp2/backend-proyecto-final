@@ -30,6 +30,6 @@ cors = CORS(app)
 
 api = Api(app)
 api.add_resource(HealthCheck,'/pruebas-query/ping' )
-api.add_resource(GetTestsCandidate, '/pruebas-query/<string:id>')
+api.add_resource(GetTest, '/pruebas-query/<string:id>')
 
 #jwt = JWTManager(app)

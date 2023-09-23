@@ -18,11 +18,11 @@ class TestCandidatosQuery(TestCase):
         #self.username = self.data_factory.word()
         #self.token_validation_resp = {'msg': {"id": self.id, "username": self.username}, 'status_code': 200}
 
-        candidate = Candidate(firstname=self.data_factory.name(), lastname=self.data_factory.word())
+        candidate = Candidate(firstname=self.data_factory.first_name(), lastname=self.data_factory.last_name())
         db.session.add(candidate)
         db.session.commit()
         self.id_candidate = db.session.query(Candidate).filter(Candidate.firstname==candidate.firstname, Candidate.lastname==candidate.lastname).first().id
-        #print(self.id_candidate, "=>", candidate)
+        #print(self.id_candidate, "=>", candidate.firstname, candidate.lastname, candidate.createdAt)
 
         self.endpoint_health = '/candidates-query/ping'
         self.endpoint_get_400 = '/candidates-query/id'
