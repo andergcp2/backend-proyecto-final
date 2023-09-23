@@ -4,15 +4,13 @@ from flask_restful import Resource
 from model import db, Prueba, PruebaSchema
 from datetime import datetime
 
-prueba_schema = PruebaSchema()
-
-
+test_schema = PruebaSchema()
 
 class HealthCheck(Resource):
     def get(self):
         return "ok"
 
-class GetPrueba(Resource):
+class GetTest(Resource):
 
     def get(self, id):
         # resp = validate_token(request.headers)
@@ -25,9 +23,9 @@ class GetPrueba(Resource):
             except ValueError:
                 return "id is not a number: {}".format(id), 400
 
-        prueba = Prueba.query.filter(Prueba.id == id).first()
-        if prueba is None:
+        test = Prueba.query.filter(Prueba.id == id).first()
+        if test is None:
             return "prueba does not exist", 404
 
-        return {"id": prueba.id, "name": prueba.name, "createdAt": candidate.createdAt.isoformat()}, 200
+        return test_schema.dump(test)
 
