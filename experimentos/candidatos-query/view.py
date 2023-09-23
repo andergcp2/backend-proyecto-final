@@ -1,7 +1,7 @@
 import requests
 from flask import request, current_app
 from flask_restful import Resource
-from model import db, Candidate, CandidateTest, CandidateSchema, TestCandidateSchema
+from model import db, Candidate, TestCandidate, CandidateSchema, TestCandidateSchema
 from datetime import datetime
 
 candidate_schema = CandidateSchema()
@@ -25,13 +25,16 @@ class GetCandidate(Resource):
             except ValueError:
                 return "id is not a number: {}".format(id), 400
 
+        #print("GetCandidate-id: ", id)
         candidate = Candidate.query.filter(Candidate.id == id).first()
         if candidate is None:
             return "candidate does not exist", 404
 
-        return {"id": candidate.id, "firstname": candidate.firstname, "lastname": candidate.lastname, "createdAt": candidate.createdAt.isoformat()}, 200
+        #return {"id": candidate.id, "firstname": candidate.firstname, "lastname": candidate.lastname, "createdAt": candidate.createdAt.isoformat()}, 200
+        return candidate_schema.dump(candidate)
 
-class GetTestCandidate(Resource):
+
+class GetTestsCandidate(Resource):
 
     def get(self, id):
         if id is not None: 
@@ -40,9 +43,10 @@ class GetTestCandidate(Resource):
             except ValueError:
                 return "id is not a number: {}".format(id), 400
 
+        #print("GetTestsCandidate-id: ", id)
         candidate = Candidate.query.filter(Candidate.id == id).first()
         if candidate is None:
             return "candidate does not exist", 404
 
-        pruebas = db.session.query(TestCandidate).select_from(TestCandidate).filter(TestCandidate.id_candidate==id_usuario).filter(TestCandidate.presented==False).all()
-        return [carrera_schema.dump(test) for test in pruebas]
+        pruebas = db.session.query(TestCandidate).select_from(TestCandidate).filter(TestCandidate.id_candidate==id).filter(TestCandidate.presented==False).all()
+        return [candidate_test_schema.dump(test) for test in pruebas]
