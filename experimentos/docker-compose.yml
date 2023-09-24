@@ -2,8 +2,13 @@ version: '3.8'
 
 services:
   jobs-cache:
-    image: "redis:alpine"
+    #image: "redis:alpine"
+    image: 'bitnami/redis:latest'
+    ports:
+      - 6379:6379
     container_name: "jobs-redis"
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
     networks:
       -  jobs-net
 
@@ -86,12 +91,14 @@ services:
       - jobs-db
 
   pruebas-orquestador:
-    image: pruebas-orquestador:1.0.0
+    image: pruebas-orquestador:1.0.2
     container_name: "pruebas-orquestador-ms"
     ports:
       - 36964:3696
     environment:
       - USERS_PATH=users
+      - ELASTICACHE_HOST = jobs-cache
+      - ELASTICACHE_PORT= 6379
       - CANDIDATOS_QUERY_PATH = candidatos-query
       - PRUEBAS_QUERY_PATH = pruebas-query
       - PREGUNTAS_QUERY_PATH = preguntas-query

@@ -1,6 +1,7 @@
-import json, requests
+import json, requests, redis
 from flask import request, Response, current_app
 from flask_restful import Resource
+#from redis_client import RedisClient
 
 def getPruebasCandidato(endpoint, headers):
     return get(endpoint, headers)
@@ -9,29 +10,30 @@ def get(endpoint, headers):
     try:
         resp = requests.get(endpoint, headers = headers)
         return resp
-        # if (resp.status_code==200):
-        #     return {'msg': resp.json(), 'status_code': resp.status_code}
-        # return {'msg': resp.content, 'status_code': resp.status_code} 
     except Exception as ex:
         return {'msg': 'connection endpoint failed {} -> {}'.format(endpoint, ex), 'status_code': 500}
-        # return (resp.text, resp.status_code, resp.headers.items())
-        # return (ex, 500)
+        # return (resp.json, resp.status_code, resp.headers.items())
 
 def update(endpoint, data, headers):
     try:
         resp = requests.post(endpoint, data=json.dumps(data), headers = headers)
         return resp
-        # if (resp.status_code==201):
-        #     return {'msg': resp.json(), 'status_code': resp.status_code} 
-        # return {'msg': resp.text, 'status_code': resp.status_code} 
     except Exception as ex:
         return {'msg': 'connection endpoint failed {} -> {}'.format(endpoint, ex), 'status_code': 500}
-    
+        #return (resp.json, resp.status_code, resp.headers.items())
+
 class HealthCheck(Resource):
     def get(self):
         return "ok"
 
 class PruebaInit(Resource):
+    def __init__(self) -> None:
+        pool = redis.ConnectionPool(host=current_app.config['ELASTICACHE_HOST'], port=current_app.config['ELASTICACHE_PORT'], db=0)
+        self.redis = redis.Redis(connection_pool=pool)
+        #self.publisher = pubsub_v1.PublisherClient()
+        #self.topic_path = self.publisher.topic_path(current_app.config['PROJECT'], current_app.config['TOPIC'])
+        # self.redis_cli = redis.Redis(host="10.182.0.3", port=6379, decode_responses=True, encoding="utf-8", )
+        super().__init__()
 
     def post(self, candidatoId, pruebaId):
         headers = {"Content-Type":"application/json", "Authorization": request.headers['Authorization']}
@@ -64,7 +66,13 @@ class PruebaInit(Resource):
         if(resp.status_code != 200):
             return Response(resp.json(), resp.status_code, resp.headers.items())
 
-        print ("####################################")
+        print("\n--------------------------")
+        #RedisClient.redis_ping()
+        self.redis.set('mykey', 'redis-abc-jobs')
+        print(self.redis.get('mykey'))
+        print("--------------------------\n")
+
+        # return json.dumps({'test':'ok'}), 200
 
         # en este punto se almacenan el subconjunto de preguntas y respuestas de la prueba 
         # que está presentando el candidato utilizando como llave los ids candidatoId-pruebaId
@@ -79,7 +87,7 @@ class PruebaInit(Resource):
         }
 
         #return json.dumps(data), 201
-        return data, 201
+        return data, 200
 
 
 class PruebaNext(Resource):
