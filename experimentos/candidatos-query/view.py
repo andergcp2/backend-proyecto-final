@@ -23,12 +23,14 @@ class GetCandidate(Resource):
             try:
                 int(id)
             except ValueError:
-                return "id is not a number: {}".format(id), 400
+                data = {'error': 'id is not a number: {}'.format(id)}
+                return json.dumps(data), 400
 
         #print("GetCandidate-id: ", id)
         candidate = Candidate.query.filter(Candidate.id == id).first()
         if candidate is None:
-            return "candidate does not exist", 404
+            data = {'error': 'candidate does not exist: {}'.format(id)}
+            return json.dumps(data), 404
 
         #return {"id": candidate.id, "firstname": candidate.firstname, "lastname": candidate.lastname, "createdAt": candidate.createdAt.isoformat()}, 200
         return candidate_schema.dump(candidate)

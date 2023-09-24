@@ -9,19 +9,30 @@ app = Flask(__name__)
 
 app.config['PROPAGATE_EXCEPTIONS'] = True
 
-#app.config['USERS']  = str(os.environ.get("USERS_PATH")) +'/users/me'
-app.config['CANDIDATOS_QUERY']  = str(os.environ.get("CANDIDATOS_QUERY_PATH"))
-app.config['PRUEBAS_QUERY'] = str(os.environ.get("PRUEBAS_QUERY_PATH"))
-app.config['PREGUNTAS_QUERY'] = str(os.environ.get("PREGUNTAS_QUERY_PATH"))
+if 'USERS_PATH' in os.environ:
+    #app.config['USERS']  = str(os.environ.get("USERS_PATH")) +'/users/me'
+    app.config['CANDIDATOS_QUERY'] = str(os.environ.get("CANDIDATOS_QUERY_PATH"))
+    app.config['CANDIDATOS_PORT'] = str(os.environ.get("CANDIDATOS_QUERY_PORT"))
+    app.config['PRUEBAS_QUERY'] = str(os.environ.get("PRUEBAS_QUERY_PATH"))
+    app.config['PRUEBAS_PORT'] = str(os.environ.get("PRUEBAS_QUERY_PORT"))
+    app.config['PREGUNTAS_QUERY'] = str(os.environ.get("PREGUNTAS_QUERY_PATH"))
+    app.config['PREGUNTAS_PORT'] = str(os.environ.get("PREGUNTAS_QUERY_PORT"))
+else:
+    app.config['CANDIDATOS_QUERY'] = 'http://localhost:36961/candidates-query'
+    app.config['PRUEBAS_QUERY'] = 'http://localhost:36962/pruebas-query'
+    app.config['PREGUNTAS_QUERY'] = 'http://localhost:36963/preguntas-query'
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pruebas.db'
+    app.config['TESTING'] = True
+    print("test: ", app.config['SQLALCHEMY_DATABASE_URI'])
 
 app_context = app.app_context()
 app_context.push()
 
 cors = CORS(app)
-
 api = Api(app)
 
-api.add_resource(HealthCheck, '/pruebas/orquestador/ping')  
-api.add_resource(PruebaInit, '/pruebas/orquestador/<string:id>/<string:id>')
-api.add_resource(PruebaNext, '/pruebas/orquestador/<string:id>/<string:id>')
-api.add_resource(PruebaDone, '/pruebas/orquestador/<string:id>/<string:id>')
+api.add_resource(PruebaInit, '/pruebas-orquestador/<string:candidatoId>/<string:pruebaId>')
+api.add_resource(PruebaNext, '/pruebas-orquestador/<string:candidatoId>/<string:pruebaId>')
+api.add_resource(PruebaDone, '/pruebas-orquestador/<string:candidatoId>/<string:pruebaId>')
+api.add_resource(HealthCheck, '/pruebas-orquestador/ping')  

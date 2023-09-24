@@ -23,7 +23,7 @@ services:
 
   candidatos-query:
     #build: .
-    image: candidatos-query:1.0.3
+    image: candidatos-query:1.0.4
     container_name: "candidatos-query-ms"
     # command: python manage.py run -h 0.0.0.0
     # command: gunicorn --bind 0.0.0.0:5000 manage:app
@@ -87,16 +87,17 @@ services:
 
   pruebas-orquestador:
     image: pruebas-orquestador:1.0.0
-    container_name: "preguntas-query-ms"
+    container_name: "pruebas-orquestador-ms"
     ports:
-      - 36963:3696
+      - 36964:3696
     environment:
       - USERS_PATH=users
-      - DB_USER=usrabc
-      - DB_PASSWORD=pwdjobs
-      - DB_HOST=jobs-db
-      - DB_PORT=5432
-      - DB_NAME=abcjobs
+      - CANDIDATOS_QUERY_PATH = candidatos-query
+      - PRUEBAS_QUERY_PATH = pruebas-query
+      - PREGUNTAS_QUERY_PATH = preguntas-query
+      - CANDIDATOS_QUERY_PORT = 36961
+      - PRUEBAS_QUERY_PORT = 36962
+      - PREGUNTAS_QUERY_PORT = 36963
     networks:
       -  jobs-net
     depends_on:
