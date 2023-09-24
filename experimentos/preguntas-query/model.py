@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 
@@ -11,6 +12,7 @@ class Pregunta(db.Model):
 
 class Respuesta(db.Model):
     __tablename__ = "respuesta"
+    id = db.Column(db.Integer, primary_key=True)
     preguntaId = db.Column(db.Integer, db.ForeignKey('pregunta.id'))
     description = db.Column(db.String(240))
     correct = db.Column(db.Boolean, default=False)
@@ -18,11 +20,11 @@ class Respuesta(db.Model):
 class PreguntaSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Pregunta
-        # include_relationships = True
         load_instance = True
 
 class RespuestaSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Respuesta
         include_relationships = True
+        include_fk = True
         load_instance = True

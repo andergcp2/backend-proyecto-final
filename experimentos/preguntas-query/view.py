@@ -5,24 +5,41 @@ from model import db, Pregunta, Respuesta, PreguntaSchema, RespuestaSchema
 from datetime import datetime
 
 pregunta_schema = PreguntaSchema()
-respuesta_schema = PreguntaSchema()
+respuesta_schema = RespuestaSchema()
 
 class HealthCheck(Resource):
     def get(self):
         return "ok"
 
-class GetPreguntas(Resource):
+class GetPregunta(Resource):
 
     def get(self, id):
-        # resp = validate_token(request.headers)
-        # if(resp['status_code'] != 200):
-        #     return resp['msg'], resp['status_code']
-
         if id is not None: 
             try:
                 int(id)
             except ValueError:
                 return "id is not a number: {}".format(id), 400
 
-        preguntas = db.session.query(Pregunta).select_from(Pregunta).join(Respuesta.preguntaId).filter(Pregunta.pruebaId==id).all()
-        return [respuesta_schema.dump(q) for q in preguntas]
+        #print("GetPregunta-id: ", id)
+        pregunta = Pregunta.query.filter(Pregunta.id == id).first()
+        if pregunta is None:
+            return "pregunta does not exist", 404
+        return pregunta_schema.dump(pregunta)
+
+
+class GetRespuestasPregunta(Resource):
+
+    def get(self, id):
+        if id is not None: 
+            try:
+                int(id)
+            except ValueError:
+                return "id is not a number: {}".format(id), 400
+
+        #print("GetRespuestasPregunta-id: ", id)
+        pregunta = Pregunta.query.filter(Pregunta.id == id).first()
+        if pregunta is None:
+            return "pregunta does not exist", 404
+
+        respuestas = db.session.query(Respuesta).select_from(Respuesta).filter(Respuesta.preguntaId==id).all()
+        return [respuesta_schema.dump(answer) for answer in respuestas]
