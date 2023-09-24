@@ -16,7 +16,8 @@ if 'USERS_PATH' in os.environ:
     app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://"+ str(os.environ.get("DB_USER")) +":"+ str(os.environ.get("DB_PASSWORD")) +"@"+ str(os.environ.get("DB_HOST")) +":"+ str(os.environ.get("DB_PORT")) +"/"+ str(os.environ.get("DB_NAME"))
     print("prod: ", app.config['SQLALCHEMY_DATABASE_URI'], app.config['USERS'])
 else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pruebas-query.db'
+    #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pruebas-query.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://usrabc:pwdjobs@localhost:5432/abcjobs"
     app.config['TESTING'] = True
     print("test: ", app.config['SQLALCHEMY_DATABASE_URI'])
 
