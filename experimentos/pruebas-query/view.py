@@ -1,4 +1,4 @@
-import requests
+import json, requests
 from flask import request, current_app
 from flask_restful import Resource
 from model import db, Prueba, PruebaSchema
@@ -21,11 +21,13 @@ class GetTest(Resource):
             try:
                 int(id)
             except ValueError:
-                return "id is not a number: {}".format(id), 400
+                data = {'error': 'id {} is not a number'.format(id)}
+                return json.dumps(data), 400
 
         test = Prueba.query.filter(Prueba.id == id).first()
         if test is None:
-            return "prueba does not exist", 404
+            data = {'error': 'prueba {} does not exist'.format(id)}
+            return json.dumps(data), 404
 
         return test_schema.dump(test)
 
