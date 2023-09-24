@@ -25,6 +25,7 @@ class TestCandidatosQuery(TestCase):
         #print(self.id_candidate, "=>", candidate.firstname, candidate.lastname, candidate.createdAt)
 
         self.endpoint_health = '/candidates-query/ping'
+        self.endpoint_get = '/candidates-query'
         self.endpoint_get_400 = '/candidates-query/id'
         self.endpoint_get_404 = '/candidates-query/{}'.format(str(self.id_candidate * 100))
         self.endpoint_get_200 = '/candidates-query/{}'.format(str(self.id_candidate))
@@ -80,6 +81,11 @@ class TestCandidatosQuery(TestCase):
         self.assertEqual(self.id_candidate, resp_get[0]["id_candidate"])
         self.assertEqual(self.id_candidate, resp_get[1]["id_candidate"])        
         self.assertEqual(self.id_candidate, resp_get[2]["id_candidate"])
+        self.assertEqual(req_get.status_code, 200)
+
+    def test_get_preguntas_200(self):
+        req_get = self.client.get(self.endpoint_get, headers=self.headers_token)
+        resp_get = json.loads(req_get.get_data())
         self.assertEqual(req_get.status_code, 200)
 
 '''

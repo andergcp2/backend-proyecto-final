@@ -29,3 +29,9 @@ class GetTest(Resource):
 
         return test_schema.dump(test)
 
+
+class GetTests(Resource):
+
+    def get(self):
+        tests = db.session.query(Prueba).select_from(Prueba).all()
+        return [test_schema.dump(t) for t in tests]

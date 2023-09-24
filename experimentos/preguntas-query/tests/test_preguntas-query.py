@@ -22,6 +22,7 @@ class TestPreguntasQuery(TestCase):
         #print(self.id_pregunta, "=>", pregunta.pruebaId, pregunta.description)
 
         self.endpoint_health = '/preguntas-query/ping'
+        self.endpoint_get = '/preguntas-query'
         self.endpoint_get_400 = '/preguntas-query/id'
         self.endpoint_get_404 = '/preguntas-query/{}'.format(str(self.id_pregunta * 100))
         self.endpoint_get_200 = '/preguntas-query/{}'.format(str(self.id_pregunta))
@@ -57,8 +58,6 @@ class TestPreguntasQuery(TestCase):
         req_get = self.client.get(self.endpoint_get_respuestas_404, headers=self.headers_token)
         self.assertEqual(req_get.status_code, 404)
 
-    '''
-    '''
     def test_get_respuestas_pregunta_200(self):
         db.session.add(Respuesta(preguntaId=self.id_pregunta, description=self.data_factory.sentence()))
         db.session.add(Respuesta(preguntaId=self.id_pregunta, description=self.data_factory.sentence()))
@@ -79,3 +78,10 @@ class TestPreguntasQuery(TestCase):
         self.assertEqual(self.id_pregunta, resp_get[2]["preguntaId"])
         self.assertEqual(self.id_pregunta, resp_get[3]["preguntaId"])
         self.assertEqual(req_get.status_code, 200)
+
+    def test_get_preguntas_200(self):
+        req_get = self.client.get(self.endpoint_get, headers=self.headers_token)
+        resp_get = json.loads(req_get.get_data())
+        self.assertEqual(req_get.status_code, 200)
+    '''
+    '''

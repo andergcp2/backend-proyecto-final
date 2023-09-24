@@ -26,6 +26,11 @@ class GetPregunta(Resource):
             return "pregunta does not exist", 404
         return pregunta_schema.dump(pregunta)
 
+class GetPreguntas(Resource):
+
+    def get(self):
+        preguntas = db.session.query(Pregunta).select_from(Pregunta).all()
+        return [pregunta_schema.dump(p) for p in preguntas]
 
 class GetRespuestasPregunta(Resource):
 

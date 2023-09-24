@@ -34,6 +34,13 @@ class GetCandidate(Resource):
         return candidate_schema.dump(candidate)
 
 
+class GetCandidates(Resource):
+
+    def get(self):
+        candidates = db.session.query(Candidate).select_from(Candidate).all()
+        return [candidate_schema.dump(c) for c in candidates]
+
+
 class GetTestsCandidate(Resource):
 
     def get(self, id):
