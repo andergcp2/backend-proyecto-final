@@ -20,8 +20,6 @@ class RedisClient:
         return None
 
     def set_redis_value(self, key, value):
-        if self.redis.exists(key):
-            response = self.redis.set(key, value)
-            return response
-        return None
+        response = self.redis.set(key, value)
+        return response
 
