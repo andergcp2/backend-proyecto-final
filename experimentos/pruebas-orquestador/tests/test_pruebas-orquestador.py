@@ -30,19 +30,18 @@ class TestPruebasOrquestador(TestCase):
         req_health = self.client.get(self.endpoint_health, headers={'Content-Type': 'application/json'})
         self.assertEqual(req_health.status_code, 200)
 
-    def test_init_prueba_404(self):
-        req_get = self.client.post(self.endpoint_init_404, headers=self.headers_token)
-        #resp_get = json.loads(req_get.get_data())
-        self.assertEqual(req_get.status_code, 404)
-
     def test_init_prueba_200(self):
         req_get = self.client.post(self.endpoint_init_200, headers=self.headers_token)
         #resp_get = json.loads(req_get.get_data())
         #print(resp_get["id"], resp_get["name"], resp_get["categoryId"], resp_get["createdAt"])
         #self.assertEqual(self.id_prueba, resp_get["id"])
         self.assertEqual(req_get.status_code, 200)
-
     '''
+    def test_init_prueba_404(self):
+        req_get = self.client.post(self.endpoint_init_404, headers=self.headers_token)
+        #resp_get = json.loads(req_get.get_data())
+        self.assertEqual(req_get.status_code, 404)
+
     def test_init_prueba_400(self):
         req_get = self.client.post(self.endpoint_init_400, headers=self.headers_token)
         self.assertEqual(req_get.status_code, 400)

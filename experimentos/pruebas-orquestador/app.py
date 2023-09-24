@@ -17,10 +17,16 @@ if 'USERS_PATH' in os.environ:
     app.config['PRUEBAS_PORT'] = str(os.environ.get("PRUEBAS_QUERY_PORT"))
     app.config['PREGUNTAS_QUERY'] = str(os.environ.get("PREGUNTAS_QUERY_PATH"))
     app.config['PREGUNTAS_PORT'] = str(os.environ.get("PREGUNTAS_QUERY_PORT"))
+
+    app.config['ELASTICACHE_HOST']  = str(os.environ.get("ELASTICACHE_HOST"))
+    app.config['ELASTICACHE_PORT']  = str(os.environ.get("ELASTICACHE_PORT"))
 else:
     app.config['CANDIDATOS_QUERY'] = 'http://localhost:36961/candidates-query'
     app.config['PRUEBAS_QUERY'] = 'http://localhost:36962/pruebas-query'
     app.config['PREGUNTAS_QUERY'] = 'http://localhost:36963/preguntas-query'
+
+    app.config['ELASTICACHE_HOST']  = 'localhost'
+    app.config['ELASTICACHE_PORT']  = 6379
 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pruebas.db'
     app.config['TESTING'] = True
