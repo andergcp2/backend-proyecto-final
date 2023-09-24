@@ -1,0 +1,110 @@
+version: '3.8'
+
+services:
+  jobs-cache:
+    image: "redis:alpine"
+    container_name: "jobs-redis"
+    networks:
+      -  jobs-net
+
+  jobs-db:
+    image: postgres:13-alpine
+    container_name: "jobs-pg"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=usrabc
+      - POSTGRES_PASSWORD=pwdjobs
+      - POSTGRES_DB=abcjobs
+    networks:
+      -  jobs-net
+
+  candidatos-query:
+    #build: .
+    image: candidatos-query:1.0.3
+    container_name: "candidatos-query-ms"
+    # command: python manage.py run -h 0.0.0.0
+    # command: gunicorn --bind 0.0.0.0:5000 manage:app
+    ports:
+      - 36961:3696
+    environment:
+      - USERS_PATH=users
+      - DB_USER=usrabc
+      - DB_PASSWORD=pwdjobs
+      - DB_HOST=jobs-db
+      - DB_PORT=5432
+      - DB_NAME=abcjobs
+      # user_name: mango
+      # write_result: show
+    networks:
+      -  jobs-net
+    # volumes:
+    #   # - ./data_file/:/app/data_file
+    #   - ./:/app/
+    # env_file:
+    #   - ./.env.dev
+    depends_on:
+      - jobs-db
+    # mem_limit: 1G
+    # mem_reservation: 512M
+    # cpus: 1.0
+
+  pruebas-query:
+    image: pruebas-query:1.0.1
+    container_name: "pruebas-query-ms"
+    ports:
+      - 36962:3696
+    environment:
+      - USERS_PATH=users
+      - DB_USER=usrabc
+      - DB_PASSWORD=pwdjobs
+      - DB_HOST=jobs-db
+      - DB_PORT=5432
+      - DB_NAME=abcjobs
+    networks:
+      -  jobs-net
+    depends_on:
+      - jobs-db
+
+  preguntas-query:
+    image: preguntas-query:1.0.1
+    container_name: "preguntas-query-ms"
+    ports:
+      - 36963:3696
+    environment:
+      - USERS_PATH=users
+      - DB_USER=usrabc
+      - DB_PASSWORD=pwdjobs
+      - DB_HOST=jobs-db
+      - DB_PORT=5432
+      - DB_NAME=abcjobs
+    networks:
+      -  jobs-net
+    depends_on:
+      - jobs-db
+
+  pruebas-orquestador:
+    image: pruebas-orquestador:1.0.0
+    container_name: "preguntas-query-ms"
+    ports:
+      - 36963:3696
+    environment:
+      - USERS_PATH=users
+      - DB_USER=usrabc
+      - DB_PASSWORD=pwdjobs
+      - DB_HOST=jobs-db
+      - DB_PORT=5432
+      - DB_NAME=abcjobs
+    networks:
+      -  jobs-net
+    depends_on:
+      - jobs-cache
+
+volumes:
+  postgres_data:
+
+networks:
+  jobs-net:
+    driver: bridge

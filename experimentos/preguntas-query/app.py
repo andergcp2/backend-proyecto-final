@@ -4,7 +4,7 @@ from flask_cors import CORS
 from flask_restful import Api
 
 from model import db
-from view import HealthCheck, GetPregunta, GetRespuestasPregunta
+from view import HealthCheck, GetPreguntas, GetPregunta, GetRespuestasPregunta
 
 app = Flask(__name__)
 
@@ -29,8 +29,8 @@ db.create_all()
 cors = CORS(app)
 
 api = Api(app)
-api.add_resource(HealthCheck,'/preguntas-query/ping' )
+api.add_resource(GetPreguntas, '/preguntas-query')
 api.add_resource(GetPregunta, '/preguntas-query/<string:id>')
 api.add_resource(GetRespuestasPregunta, '/preguntas-query/<string:id>/respuestas')
-
+api.add_resource(HealthCheck,'/preguntas-query/ping' )
 #jwt = JWTManager(app)

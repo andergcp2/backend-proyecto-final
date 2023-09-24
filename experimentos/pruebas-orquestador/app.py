@@ -21,7 +21,7 @@ cors = CORS(app)
 
 api = Api(app)
 
-api.add_resource(HealthCheck, '/public/pruebas/orquestador/ping') # 
-api.add_resource(PruebaInit, '/public/pruebas/orquestador/<string:id>/<string:id>')
-api.add_resource(PruebaNext, '/public/pruebas/orquestador/<string:id>/<string:id>')
-api.add_resource(PruebaDone, '/public/pruebas/orquestador/<string:id>/<string:id>')
+api.add_resource(HealthCheck, '/pruebas/orquestador/ping')  
+api.add_resource(PruebaInit, '/pruebas/orquestador/<string:id>/<string:id>')
+api.add_resource(PruebaNext, '/pruebas/orquestador/<string:id>/<string:id>')
+api.add_resource(PruebaDone, '/pruebas/orquestador/<string:id>/<string:id>')

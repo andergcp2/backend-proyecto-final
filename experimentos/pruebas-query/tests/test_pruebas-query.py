@@ -18,9 +18,10 @@ class TestPruebasQuery(TestCase):
         db.session.add(prueba)
         db.session.commit()
         self.id_prueba = db.session.query(Prueba).filter(Prueba.name==prueba.name, Prueba.categoryId==prueba.categoryId).first().id
-        print(self.id_prueba, "=>", prueba.name, prueba.categoryId, prueba.createdAt)
+        #print(self.id_prueba, "=>", prueba.name, prueba.categoryId, prueba.createdAt)
 
         self.endpoint_health = '/pruebas-query/ping'
+        self.endpoint_get = '/pruebas-query'
         self.endpoint_get_400 = '/pruebas-query/id'
         self.endpoint_get_404 = '/pruebas-query/{}'.format(str(self.id_prueba * 100))
         self.endpoint_get_200 = '/pruebas-query/{}'.format(str(self.id_prueba))
@@ -40,8 +41,12 @@ class TestPruebasQuery(TestCase):
     def test_get_prueba_200(self):
         req_get = self.client.get(self.endpoint_get_200, headers=self.headers_token)
         resp_get = json.loads(req_get.get_data())
-        print(resp_get["id"], resp_get["name"], resp_get["categoryId"], resp_get["createdAt"])
+        #print(resp_get["id"], resp_get["name"], resp_get["categoryId"], resp_get["createdAt"])
 
         self.assertEqual(self.id_prueba, resp_get["id"])
         self.assertEqual(req_get.status_code, 200)
 
+    def test_get_pruebas_200(self):
+        req_get = self.client.get(self.endpoint_get, headers=self.headers_token)
+        resp_get = json.loads(req_get.get_data())
+        self.assertEqual(req_get.status_code, 200)
