@@ -20,10 +20,10 @@ class TestPruebasOrquestador(TestCase):
         # self.id_prueba = db.session.query(Prueba).filter(Prueba.name==prueba.name, Prueba.categoryId==prueba.categoryId).first().id
         #print(self.id_prueba, "=>", prueba.name, prueba.categoryId, prueba.createdAt)
 
-        self.endpoint_health = '/pruebas-orquestador/ping'
-        self.endpoint_init_400 = '/pruebas-orquestador/candidatoId/pruebaId'
-        self.endpoint_init_404 = '/pruebas-orquestador/3600/9000'
-        self.endpoint_init_200 = '/pruebas-orquestador/36/90'
+        self.endpoint_health = '/pruebas/ping'
+        self.endpoint_init_400 = '/pruebas/init/candidatoId/pruebaId'
+        self.endpoint_init_404 = '/pruebas/init/3600/9000'
+        self.endpoint_init_200 = '/pruebas/init/36/90'
         #self.endpoint_init_200 = '/pruebas-orquestador/{}/{}'.format(str(self.id_prueba), str(self.id_prueba))
 
     def test_health_check(self):
@@ -32,17 +32,18 @@ class TestPruebasOrquestador(TestCase):
 
     def test_init_prueba_404(self):
         req_get = self.client.post(self.endpoint_init_404, headers=self.headers_token)
+        #resp_get = json.loads(req_get.get_data())
         self.assertEqual(req_get.status_code, 404)
-    '''        
-    def test_init_prueba_400(self):
-        req_get = self.client.post(self.endpoint_init_400, headers=self.headers_token)
-        self.assertEqual(req_get.status_code, 400)
 
     def test_init_prueba_200(self):
         req_get = self.client.post(self.endpoint_init_200, headers=self.headers_token)
-        resp_get = json.loads(req_get.get_data())
+        #resp_get = json.loads(req_get.get_data())
         #print(resp_get["id"], resp_get["name"], resp_get["categoryId"], resp_get["createdAt"])
-
-        self.assertEqual(self.id_prueba, resp_get["id"])
+        #self.assertEqual(self.id_prueba, resp_get["id"])
         self.assertEqual(req_get.status_code, 200)
-    '''    
+
+    '''
+    def test_init_prueba_400(self):
+        req_get = self.client.post(self.endpoint_init_400, headers=self.headers_token)
+        self.assertEqual(req_get.status_code, 400)
+    '''

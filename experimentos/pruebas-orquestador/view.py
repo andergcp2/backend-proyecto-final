@@ -1,22 +1,9 @@
-import json
-import requests
-from flask import request, current_app
+import json, requests
+from flask import request, Response, current_app
 from flask_restful import Resource
 
 def getPruebasCandidato(endpoint, headers):
     return get(endpoint, headers)
-
-def getCandidato(endpoint, headers):
-    return get(endpoint, headers)
-
-def getPrueba(endpoint, headers):
-    return get(endpoint, headers)
-
-def getPreguntasPrueba(endpoint, data, headers):
-    return get(endpoint, data, headers)
-
-def updatePrueba(endpoint, data, headers):
-    return update(endpoint, data, headers)
 
 def get(endpoint, headers):
     try:
@@ -56,33 +43,28 @@ class PruebaInit(Resource):
 
         # 404 - El candidato que va iniciar la prueba no existe
         endpointC = format(current_app.config['CANDIDATOS_QUERY']) +"/{}".format(candidatoId)
-        resp = getCandidato(endpointC, headers)
+        resp = get(endpointC, headers)
         print ("candidato: ", endpointC, resp)
-        
-        #status_code = resp['status_code']
-        if(resp.status_code != 200):
-            print(resp.json())
-            print('########################')
-            return resp
-            #return resp['msg'], status_code
-            #return 'msg-test', status_code
 
-        print('test no existe *****************************')
+        # if(resp.status_code != 200):
+        #     return Response(resp.json(), resp.status_code, resp.headers.items())
 
         # 404 - La prueba que se quiere iniciar no existe
         endpointT = format(current_app.config['PRUEBAS_QUERY']) +"/{}".format(pruebaId)
-        resp = getPrueba(endpointT, headers)
-        #print ("prueba: ", endpointT, resp)
-        status_code = resp['status_code']
-        if(status_code != 200):
-            return resp['msg'], status_code
+        resp = get(endpointT, headers)
+        print ("prueba: ", endpointT, resp)
+
+        # if(resp.status_code != 200):
+        #     return Response(resp.json(), resp.status_code, resp.headers.items())
 
         endpointQ = format(current_app.config['PREGUNTAS_QUERY']) +"/{}".format(pruebaId)
-        resp = getPreguntasPrueba(endpointQ, headers)
-        #print ("preguntas: ", endpointQ, resp)
-        status_code = resp['status_code']
-        if(status_code != 200):
-            return resp['msg'], status_code
+        resp = get(endpointQ, headers)
+        print ("preguntas: ", endpointQ, resp)
+        
+        if(resp.status_code != 200):
+            return Response(resp.json(), resp.status_code, resp.headers.items())
+
+        print ("####################################")
 
         # en este punto se almacenan el subconjunto de preguntas y respuestas de la prueba 
         # que está presentando el candidato utilizando como llave los ids candidatoId-pruebaId
