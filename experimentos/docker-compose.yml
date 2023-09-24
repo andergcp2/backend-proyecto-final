@@ -23,7 +23,7 @@ services:
 
   candidatos-query:
     #build: .
-    image: candidatos-query:1.0.4
+    image: candidatos-query:1.0.7
     container_name: "candidatos-query-ms"
     # command: python manage.py run -h 0.0.0.0
     # command: gunicorn --bind 0.0.0.0:5000 manage:app
@@ -52,7 +52,7 @@ services:
     # cpus: 1.0
 
   pruebas-query:
-    image: pruebas-query:1.0.1
+    image: pruebas-query:1.0.2
     container_name: "pruebas-query-ms"
     ports:
       - 36962:3696
@@ -69,7 +69,7 @@ services:
       - jobs-db
 
   preguntas-query:
-    image: preguntas-query:1.0.1
+    image: preguntas-query:1.0.2
     container_name: "preguntas-query-ms"
     ports:
       - 36963:3696

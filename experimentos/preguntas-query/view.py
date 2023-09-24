@@ -1,4 +1,4 @@
-import requests
+import json, requests
 from flask import request, current_app
 from flask_restful import Resource
 from model import db, Pregunta, Respuesta, PreguntaSchema, RespuestaSchema
@@ -18,7 +18,8 @@ class GetPregunta(Resource):
             try:
                 int(id)
             except ValueError:
-                return "id is not a number: {}".format(id), 400
+                data = {'error': 'id {} is not a number'.format(id)}
+                return json.dumps(data), 400
 
         #print("GetPregunta-id: ", id)
         pregunta = Pregunta.query.filter(Pregunta.id == id).first()
@@ -39,12 +40,14 @@ class GetRespuestasPregunta(Resource):
             try:
                 int(id)
             except ValueError:
-                return "id is not a number: {}".format(id), 400
+                data = {'error': 'id {} is not a number'.format(id)}
+                return json.dumps(data), 400
 
         #print("GetRespuestasPregunta-id: ", id)
         pregunta = Pregunta.query.filter(Pregunta.id == id).first()
         if pregunta is None:
-            return "pregunta does not exist", 404
+            data = {'error': 'pregunta {} does not exist'.format(id)}
+            return json.dumps(data), 404
 
         respuestas = db.session.query(Respuesta).select_from(Respuesta).filter(Respuesta.preguntaId==id).all()
         return [respuesta_schema.dump(answer) for answer in respuestas]
