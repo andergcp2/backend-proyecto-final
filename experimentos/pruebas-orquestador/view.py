@@ -46,49 +46,57 @@ class PruebaInit(Resource):
         # 404 - El candidato que va iniciar la prueba no existe
         endpointC = format(current_app.config['CANDIDATOS_QUERY']) +"/{}".format(candidatoId)
         resp = get(endpointC, headers)
-        print ("candidato: ", endpointC, resp)
+        #print ("candidato: ", endpointC, resp.json())
 
-        # if(resp.status_code != 200):
-        #     return Response(resp.json(), resp.status_code, resp.headers.items())
+        if(resp.status_code != 200):
+            return Response(resp.json(), resp.status_code, resp.headers.items())
 
         # 404 - La prueba que se quiere iniciar no existe
         endpointT = format(current_app.config['PRUEBAS_QUERY']) +"/{}".format(pruebaId)
         resp = get(endpointT, headers)
-        print ("prueba: ", endpointT, resp)
+        #print ("prueba: ", endpointT, resp.json())
 
-        # if(resp.status_code != 200):
-        #     return Response(resp.json(), resp.status_code, resp.headers.items())
+        if(resp.status_code != 200):
+            return Response(resp.json(), resp.status_code, resp.headers.items())
 
-        endpointQ = format(current_app.config['PREGUNTAS_QUERY']) +"/{}".format(pruebaId)
+        endpointQ = format(current_app.config['PREGUNTAS_QUERY']) +"/prueba/{}".format(pruebaId)
         resp = get(endpointQ, headers)
-        print ("preguntas: ", endpointQ, resp)
+        # print ("preguntas: ", endpointQ, resp.json())
         
         if(resp.status_code != 200):
             return Response(resp.json(), resp.status_code, resp.headers.items())
 
-        print("\n--------------------------")
-        #RedisClient.redis_ping()
-        self.redis.set('mykey', 'redis-abc-jobs')
-        print(self.redis.get('mykey'))
-        print("--------------------------\n")
+        idcache = pruebaId+"-"+candidatoId
+        questionsTest = []
+        questions = json.loads(resp.json())
+        for x in range(0, 50, 5):
+            y=x
+            answers = []
+            question = questions[x]['question']
+            #print("")
+            #print(x, question)
+            answers.append(questions[y]['answer'])
+            y+=1
+            answers.append(questions[y]['answer'])
+            y+=1
+            answers.append(questions[y]['answer'])
+            y+=1
+            answers.append(questions[y]['answer'])
+            y+=1
+            answers.append(questions[y]['answer'])
+            #print(x, y, answers)
 
-        # return json.dumps({'test':'ok'}), 200
+            data = {'question': question, 'answers': answers}
+            self.redis.rpush(idcache, json.dumps(data))
 
-        # en este punto se almacenan el subconjunto de preguntas y respuestas de la prueba 
-        # que está presentando el candidato utilizando como llave los ids candidatoId-pruebaId
-        # ...
-        # se extrae la primera pregunta y sus respuestas para iniciar la prueba
-
+        pregunta = json.loads(self.redis.lpop(idcache))
         data = {
             "pruebaId": pruebaId,
             "candidatoId": candidatoId,
-            "question": resp['question'],
-            "answers": resp['answers']
+            "question": pregunta['question'],
+            "answers": pregunta['answers']
         }
-
-        #return json.dumps(data), 201
-        return data, 200
-
+        return json.dumps(data), 200
 
 class PruebaNext(Resource):
 
