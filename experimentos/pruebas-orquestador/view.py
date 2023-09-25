@@ -67,8 +67,11 @@ class PruebaInit(Resource):
             return Response(resp.json(), resp.status_code, resp.headers.items())
 
         idcache = pruebaId+"-"+candidatoId
+        #self.redis.delete(idcache)
+
         questionsTest = []
         questions = json.loads(resp.json())
+        # se cargan 10 preguntas por default
         for x in range(0, 50, 5):
             y=x
             answers = []
@@ -105,17 +108,15 @@ class PruebaNext(Resource):
         if candidatoId is None or pruebaId is None: 
             return "parameter(s) missing", 400
 
-        # en este punto se consulta de cache la siguiente pregunta y sus respectivas respuestas 
-        # de la prueba que está presentando el candidato utilizando los ids candidatoId-pruebaId
-        # ...
-
+        idcache = pruebaId+"-"+candidatoId
+        pregunta = json.loads(self.redis.lpop(idcache))
         data = {
             "pruebaId": pruebaId,
             "candidatoId": candidatoId,
-            "question": resp['question'],
-            "answers": resp['answers']
+            "question": pregunta['question'],
+            "answers": pregunta['answers']
         }
-        return data, 201
+        return json.dumps(data), 200
 
 
 class PruebaDone(Resource):

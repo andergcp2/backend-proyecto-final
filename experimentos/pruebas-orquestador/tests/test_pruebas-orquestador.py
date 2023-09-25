@@ -24,6 +24,7 @@ class TestPruebasOrquestador(TestCase):
         self.endpoint_init_400 = '/pruebas/init/candidatoId/pruebaId'
         self.endpoint_init_404 = '/pruebas/init/3600/9000'
         self.endpoint_init_200 = '/pruebas/init/1/37'
+        self.endpoint_next_200 = '/pruebas/init/1/37'
         #self.endpoint_init_200 = '/pruebas/init/9/45'
         #self.endpoint_init_200 = '/pruebas-orquestador/{}/{}'.format(str(self.id_prueba), str(self.id_prueba))
 
@@ -32,12 +33,70 @@ class TestPruebasOrquestador(TestCase):
         self.assertEqual(req_health.status_code, 200)
 
     def test_init_prueba_200(self):
-        print("")
         req_get = self.client.post(self.endpoint_init_200, headers=self.headers_token)
         resp_get = json.loads(req_get.get_data())
-        # print(resp_get['question'])
-        # print(resp_get['answers'])
-        #self.assertEqual(self.id_prueba, resp_get["id"])
+        print("")
+        print(resp_get)
+        self.assertEqual(req_get.status_code, 200)
+
+        req_get = self.client.post(self.endpoint_next_200, headers=self.headers_token)
+        resp_get = json.loads(req_get.get_data())
+        print("")
+        print(resp_get)
+        self.assertEqual(req_get.status_code, 200)
+
+        req_get = self.client.post(self.endpoint_next_200, headers=self.headers_token)
+        resp_get = json.loads(req_get.get_data())
+        print("")
+        print(resp_get)
+        self.assertEqual(req_get.status_code, 200)
+
+        req_get = self.client.post(self.endpoint_next_200, headers=self.headers_token)
+        resp_get = json.loads(req_get.get_data())
+        print("")
+        print(resp_get)
+        self.assertEqual(req_get.status_code, 200)
+
+        req_get = self.client.post(self.endpoint_next_200, headers=self.headers_token)
+        resp_get = json.loads(req_get.get_data())
+        print("")
+        print(resp_get)
+        self.assertEqual(req_get.status_code, 200)
+
+        req_get = self.client.post(self.endpoint_next_200, headers=self.headers_token)
+        resp_get = json.loads(req_get.get_data())
+        print("")
+        print(resp_get)
+        self.assertEqual(req_get.status_code, 200)
+
+        req_get = self.client.post(self.endpoint_next_200, headers=self.headers_token)
+        resp_get = json.loads(req_get.get_data())
+        print("")
+        print(resp_get)
+        self.assertEqual(req_get.status_code, 200)
+
+        req_get = self.client.post(self.endpoint_next_200, headers=self.headers_token)
+        resp_get = json.loads(req_get.get_data())
+        print("")
+        print(resp_get)
+        self.assertEqual(req_get.status_code, 200)
+
+        req_get = self.client.post(self.endpoint_next_200, headers=self.headers_token)
+        resp_get = json.loads(req_get.get_data())
+        print("")
+        print(resp_get)
+        self.assertEqual(req_get.status_code, 200)
+
+        req_get = self.client.post(self.endpoint_next_200, headers=self.headers_token)
+        resp_get = json.loads(req_get.get_data())
+        print("")
+        print(resp_get)
+        self.assertEqual(req_get.status_code, 200)
+
+        req_get = self.client.post(self.endpoint_next_200, headers=self.headers_token)
+        resp_get = json.loads(req_get.get_data())
+        print("")
+        print(resp_get)
         self.assertEqual(req_get.status_code, 200)
     '''
     def test_init_prueba_404(self):
