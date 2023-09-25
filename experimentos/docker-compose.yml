@@ -91,7 +91,7 @@ services:
       - jobs-db
 
   pruebas-orquestador:
-    image: pruebas-orquestador:1.0.2
+    image: pruebas-orquestador:1.0.3
     container_name: "pruebas-orquestador-ms"
     ports:
       - 36964:3696
