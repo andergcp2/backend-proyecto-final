@@ -74,7 +74,7 @@ services:
       - jobs-db
 
   preguntas-query:
-    image: preguntas-query:1.0.2
+    image: preguntas-query:1.0.3
     container_name: "preguntas-query-ms"
     ports:
       - 36963:3696

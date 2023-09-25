@@ -51,3 +51,18 @@ class GetRespuestasPregunta(Resource):
 
         respuestas = db.session.query(Respuesta).select_from(Respuesta).filter(Respuesta.preguntaId==id).all()
         return [respuesta_schema.dump(answer) for answer in respuestas]
+
+class GetPreguntasRespuestasPrueba(Resource):
+
+    def get(self, testId):
+        if testId is not None: 
+            try:
+                int(testId)
+            except ValueError:
+                data = {'error': 'id {} is not a number'.format(testId)}
+                return json.dumps(data), 400
+
+        preguntas = db.session.query(Pregunta, Respuesta).filter(Pregunta.id==Respuesta.preguntaId).filter(Pregunta.pruebaId==testId).all()
+        questions_answers = [{'question': pregunta_schema.dump(p[0]), 'answer': respuesta_schema.dump(p[1])} for p in preguntas]
+        return json.dumps(questions_answers)
+        # return [pregunta_schema.dump(p) for p in preguntas]
