@@ -1,0 +1,24 @@
+{
+  "executionRoleArn": "arn:aws:iam::895128774973:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "portMappings": [
+        {
+          "hostPort": 3696,
+          "protocol": "tcp",
+          "containerPort": 3696
+        }
+      ],
+
+      "image": "<IMAGE1_NAME>",
+      "essential": true,
+      "name": "container-pruebas-orquestador"
+    }
+  ],
+
+  "requiresCompatibilities": ["FARGATE"],
+  "networkMode": "awsvpc",
+  "cpu": "512",
+  "memory": "1024",
+  "family": "task-pruebas-orquestador"
+}
