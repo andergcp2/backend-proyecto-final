@@ -78,6 +78,11 @@ services:
     container_name: "preguntas-query-ms"
     ports:
       - 36963:3696
+      # - 36963-36964:3696      
+    # deploy:
+    #   mode: replicated
+    #   replicas: 2
+    #   endpoint_mode: vip
     environment:
       - USERS_PATH=users
       - DB_USER=usrabc
@@ -91,20 +96,33 @@ services:
       - jobs-db
 
   pruebas-orquestador:
-    image: pruebas-orquestador:1.0.3
+    image: pruebas-orquestador:1.0.14
     container_name: "pruebas-orquestador-ms"
     ports:
-      - 36964:3696
+      - "36964:3696"    
+      # - "36966-36969:3696"
+    # deploy:
+    #   mode: replicated
+    #   replicas: 3
+    #   endpoint_mode: vip
+      # resources:
+      #   limits:
+      #     cpus: '0.50'
+      #     memory: 50M
+      #     pids: 1
+      #   reservations:
+      #     cpus: '0.25'
+      #     memory: 20M
     environment:
       - USERS_PATH=users
+      - CANQ_PATH = candidatos-query
+      - CANQ_PORT = 36961
+      - PRUQ_PATH = pruebas-query
+      - PRUQ_PORT = 36962
+      - PREQ_PATH = preguntas-query
+      - PREQ_PORT = 36963
       - ELASTICACHE_HOST = jobs-cache
       - ELASTICACHE_PORT= 6379
-      - CANDIDATOS_QUERY_PATH = candidatos-query
-      - PRUEBAS_QUERY_PATH = pruebas-query
-      - PREGUNTAS_QUERY_PATH = preguntas-query
-      - CANDIDATOS_QUERY_PORT = 36961
-      - PRUEBAS_QUERY_PORT = 36962
-      - PREGUNTAS_QUERY_PORT = 36963
     networks:
       -  jobs-net
     depends_on:

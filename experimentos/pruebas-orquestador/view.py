@@ -11,6 +11,7 @@ def get(endpoint, headers):
         resp = requests.get(endpoint, headers = headers)
         return resp
     except Exception as ex:
+        print("exception: ", endpoint, ex)
         return {'msg': 'connection endpoint failed {} -> {}'.format(endpoint, ex), 'status_code': 500}
         # return (resp.json, resp.status_code, resp.headers.items())
 
@@ -37,7 +38,7 @@ class PruebaInit(Resource):
 
     def post(self, candidatoId, pruebaId):
         headers = {"Content-Type":"application/json", "Authorization": request.headers['Authorization']}
-        #print(current_app.config['CANDIDATOS_QUERY'])
+        print(current_app.config['CANDIDATOS_QUERY'])
 
         # 400 - En el caso que alguno de los campos no esté presente en la solicitud
         if candidatoId is None or pruebaId is None: 
@@ -45,8 +46,10 @@ class PruebaInit(Resource):
 
         # 404 - El candidato que va iniciar la prueba no existe
         endpointC = format(current_app.config['CANDIDATOS_QUERY']) +"/{}".format(candidatoId)
+        #endpointC = "http://localhost:36961/candidates-query/{}".format(candidatoId)
+        print ("candidato: ", endpointC)
         resp = get(endpointC, headers)
-        #print ("candidato: ", endpointC, resp.json())
+        print ("candidato: ", endpointC, resp.json())
 
         if(resp.status_code != 200):
             return Response(resp.json(), resp.status_code, resp.headers.items())
@@ -102,6 +105,13 @@ class PruebaInit(Resource):
         return json.dumps(data), 200
 
 class PruebaNext(Resource):
+    def __init__(self) -> None:
+        pool = redis.ConnectionPool(host=current_app.config['ELASTICACHE_HOST'], port=current_app.config['ELASTICACHE_PORT'], db=0)
+        self.redis = redis.Redis(connection_pool=pool)
+        #self.publisher = pubsub_v1.PublisherClient()
+        #self.topic_path = self.publisher.topic_path(current_app.config['PROJECT'], current_app.config['TOPIC'])
+        # self.redis_cli = redis.Redis(host="10.182.0.3", port=6379, decode_responses=True, encoding="utf-8", )
+        super().__init__()
 
     def post(self, candidatoId, pruebaId):
         # 400 - En el caso que alguno de los campos no esté presente en la solicitud
