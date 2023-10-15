@@ -24,7 +24,7 @@ jobs:
       - name: Install environment
         working-directory: ./experimentos/pruebas-query
         run: |
-          pip install pipenv
+          pip install pipenv==2022.10.4
           pipenv sync --system --dev
           export VIRTUAL_ENV="$(pipenv --venv)" PATH="$(pipenv --venv)/bin:$PATH"
       - name: Run unit tests
