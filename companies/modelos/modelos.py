@@ -15,13 +15,13 @@ class Company(db.Model):
     telefono = db.Column(db.String(30))
     #paisId = db.Column(db.Integer)
     #ciudadId = db.Column(db.Integer)
-    direccion = db.Column(db.IntegString(255))
+    direccion = db.Column(db.String(255))
     #userId = db.Column(db.Integer)
     #plannedStartDate = db.Column(db.DateTime)
     #plannedEndDate = db.Column(db.DateTime)
     #createdAt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-class PostSchema(SQLAlchemyAutoSchema):
+class CompanySchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Company
         load_instance = True
