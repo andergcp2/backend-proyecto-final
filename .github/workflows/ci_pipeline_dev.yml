@@ -249,10 +249,10 @@ jobs:
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-  candidatos-query-deploy:
+  companies-deploy:
     name: actualizar servicio en AWS ECS
     runs-on: ubuntu-latest
-    needs: candidatos-query-image
+    needs: companies-image
     steps:
       - name: Configurar Credenciales de AWS
         uses: aws-actions/configure-aws-credentials@v1
