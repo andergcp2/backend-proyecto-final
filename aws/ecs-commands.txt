@@ -1,0 +1,31 @@
+ECS infraestructure commands: 
+
+- create cluster
+aws ecs create-cluster --cluster-name cluster-abcjobs-qa
+
+- create task-microservice.json file in aws folder  
+
+- execute task 
+cd aws
+aws ecs register-task-definition --cli-input-json file://task-candidatos-query.json
+aws ecs register-task-definition --cli-input-json file://task-pruebas-query.json
+aws ecs register-task-definition --cli-input-json file://task-preguntas-query.json
+
+aws ecs list-task-definitions
+# aws ecs deregister-task-definition --task-definition task-test-ms:4
+
+- create service
+
+aws ecs create-service --cluster cluster-abcjobs-qa --service-name candidatos-query-service --task-definition task-candidatos-query --desired-count 1 --launch-type "FARGATE" --network-configuration "awsvpcConfiguration={subnets=[subnet-07686950f6453601d, subnet-01fd8a67d859ff66c, subnet-091197f26ea0ef4bb],securityGroups=[sg-0e14490a46b493a82],assignPublicIp=ENABLED}"
+aws ecs create-service --cluster cluster-abcjobs-qa --service-name pruebas-query-service --task-definition task-pruebas-query --desired-count 1 --launch-type "FARGATE" --network-configuration "awsvpcConfiguration={subnets=[subnet-07686950f6453601d, subnet-01fd8a67d859ff66c, subnet-091197f26ea0ef4bb],securityGroups=[sg-0e14490a46b493a82],assignPublicIp=ENABLED}"
+aws ecs create-service --cluster cluster-abcjobs-qa --service-name preguntas-query-service --task-definition task-preguntas-query --desired-count 1 --launch-type "FARGATE" --network-configuration "awsvpcConfiguration={subnets=[subnet-07686950f6453601d, subnet-01fd8a67d859ff66c, subnet-091197f26ea0ef4bb],securityGroups=[sg-0e14490a46b493a82],assignPublicIp=ENABLED}"
+
+aws ecs list-services --cluster cluster-abcjobs-qa
+
+# aws ecs delete-service --cluster cluster-abcjobs-qa --service test-ms-service --force
+aws ecs delete-service --cluster cluster-abcjobs-qa --service candidatos-qry-service --force
+
+- Describir el servicio en ejecución
+
+aws ecs describe-services --cluster cluster-abcjobs-qa --services fargate-service
+

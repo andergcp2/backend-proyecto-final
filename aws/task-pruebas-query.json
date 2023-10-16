@@ -1,12 +1,12 @@
 {
-    "family": "task-test-ms",
+    "family": "task-pruebas-query",
     "networkMode": "awsvpc",
     "taskRoleArn": "arn:aws:iam::101526122836:role/ecsTaskExecutionRole",
     "executionRoleArn": "arn:aws:iam::101526122836:role/ecsTaskExecutionRole",
     "containerDefinitions": [
       {
-        "name": "task-test-container",
-        "image": "101526122836.dkr.ecr.us-east-1.amazonaws.com/test-ms:latest",
+        "name": "pruebas-query-container",
+        "image": "101526122836.dkr.ecr.us-east-1.amazonaws.com/pruebas-query:latest",
         "portMappings": [
             {
                 "containerPort": 80,
