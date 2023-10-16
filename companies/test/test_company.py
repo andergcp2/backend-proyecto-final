@@ -26,3 +26,52 @@ class TestCompany(TestCase):
         json.loads(req_health.get_data())
         self.assertEqual(req_health.status_code, 200)
 
+    def test_create_company_400_request_empty(self):
+        new_company = {}
+        resp_create = self.client.post(self.endpoint_create, headers={'Content-Type': 'application/json'}, data=json.dumps(new_company))
+        self.assertEqual(resp_create.get_data(), b'"Campos obligatorios sin diligenciar"\n')
+        self.assertEqual(resp_create.status_code, 400)
+
+    def test_create_company_201_creation_success(self):
+        new_company = {
+            "tipoIde": "CC",
+            "numeroIde": "123456",
+            "razonsocial": "CompanyCO",
+            "sector": "Financiero",
+            "correo": "mail@companyco.co",
+            "telefono": "1234567890",
+            "direccion": "Av 123",
+            "pais": "Colombia",
+            "ciudad": "Bogota",
+            "representante": self.data_factory.name(),
+            "tpidrepresentante": "Cedula",
+            "numidrepresentante": "123456"
+        }
+        resp_create = self.client.post(self.endpoint_create, headers={'Content-Type': 'application/json'}, data=json.dumps(new_company))
+        print(resp_create.get_data())
+        self.assertEqual(resp_create.status_code, 201)
+
+    def test_create_company_400_invalid_request(self):
+        new_company = {
+            "tipoIde": "CC",
+            "numeroIde": "123456",
+            "razonsocial": "CompanyCO",
+            "sector": "Financiero",
+            "correo": "mail@companyco.co",
+            "telefono": "1234567890",
+            "direccion": "Av 123",
+            "pais": "Colombia",
+            "ciudad": "Bogota",
+            "representante": self.data_factory.name(),
+            "tpidrepresentante": "CC",
+            "numidrepresentante": "123456"
+        }
+        resp_create = self.client.post(self.endpoint_create, headers={'Content-Type': 'application/json'}, data=json.dumps(new_company))
+        self.assertEqual(resp_create.get_data(), b'"Campos no cumplen requisitos minimos"\n')
+        self.assertEqual(resp_create.status_code, 400)
+
+
+    def test_get_all_companies_200(self):
+        resp_get = self.client.get(self.endpoint_create, headers={'Content-Type': 'application/json'})
+        print(resp_get.get_data())
+        self.assertEqual(resp_get.status_code, 200)
