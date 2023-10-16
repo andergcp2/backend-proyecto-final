@@ -14,7 +14,7 @@ aws ecs register-task-definition --cli-input-json file://task-companies.json
 
 aws ecs list-task-definitions
 
-# aws ecs deregister-task-definition --task-definition task-test-ms:4
+# aws ecs deregister-task-definition --task-definition task-companies
 
 - create service
 
@@ -30,7 +30,7 @@ aws ecs create-service --cluster cluster-abcjobs-qa --service-name companies-ser
 
 aws ecs list-services --cluster cluster-abcjobs-qa
 
-# aws ecs delete-service --cluster cluster-abcjobs-qa --service test-ms-service --force
+# 
 aws ecs delete-service --cluster cluster-abcjobs-qa --service candidatos-query-service --force
 
 - Describir el servicio en ejecución
