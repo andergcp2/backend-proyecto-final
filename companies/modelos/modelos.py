@@ -13,13 +13,16 @@ class Company(db.Model):
     sector = db.Column(db.String(30))
     correo = db.Column(db.String(100))
     telefono = db.Column(db.String(30))
-    #paisId = db.Column(db.Integer)
-    #ciudadId = db.Column(db.Integer)
+    pais = db.Column(db.String(200))
+    ciudad = db.Column(db.String(200))
     direccion = db.Column(db.String(255))
+    representante = db.Column(db.String(100))
+    tpidrepresentante = db.Column(db.String(20))
+    numidrepresentante = db.Column(db.String(50))
     #userId = db.Column(db.Integer)
     #plannedStartDate = db.Column(db.DateTime)
     #plannedEndDate = db.Column(db.DateTime)
-    #createdAt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    createdAt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 class CompanySchema(SQLAlchemyAutoSchema):
     class Meta:

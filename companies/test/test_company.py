@@ -25,3 +25,4 @@ class TestCompany(TestCase):
         req_health = self.client.get(self.endpoint_health, headers={'Content-Type': 'application/json'})
         json.loads(req_health.get_data())
         self.assertEqual(req_health.status_code, 200)
+
