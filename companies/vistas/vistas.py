@@ -1,19 +1,13 @@
 import requests
-from flask import request, current_app
+from flask import request
 from flask_restful import Resource
 from datetime import datetime
+from .errors import customError
+from .utils import lengthValidation
 
 from modelos import db, Company, CompanySchema
 
 company_schema = CompanySchema()
-
-#Funciones Comunes
-def validacionString(campo, lonmin, lonmax):
-    if (len(campo)>=lonmin) and (len(campo)<=lonmax):
-        resultado = True
-    else:
-        resultado = False
-    return resultado
 
 class VistaPing(Resource):
     def get(self):
@@ -27,38 +21,54 @@ class VistaCompany(Resource):
     
     def post(self):
         data = request.get_json()
-        if "tipoIde" not in data or "numeroIde" not in data or "razonsocial" not in data or "sector" not in data or "correo" not in data or "telefono" not in data or "direccion" not in data or "pais" not in data or "ciudad" not in data or "representante" not in data or "tpidrepresentante" not in data or "numidrepresentante" not in data:
-            return "Campos obligatorios sin diligenciar", 400
-        if validacionString(request.json['tipoIde'],1,20) and validacionString(request.json['numeroIde'],3,30) and validacionString(request.json['razonsocial'],3,50) and validacionString(request.json['sector'],3,30) and validacionString(request.json['correo'],3,30) and validacionString(request.json['telefono'],3,30) and validacionString(request.json['direccion'],3,50) and validacionString(request.json['pais'],3,50) and validacionString(request.json['ciudad'],3,50) and validacionString(request.json['representante'],3,50) and validacionString(request.json['tpidrepresentante'],3,50) and validacionString(request.json['numidrepresentante'],3,50):
-            tipoIde = request.json['tipoIde']
-            numeroIde = request.json['numeroIde']  
-            razonsocial = request.json['razonsocial']
-            sector = request.json['sector']
-            correo = request.json['correo']
-            telefono = request.json['telefono']
-            direccion = request.json['direccion']
-            pais = request.json['pais']
-            ciudad = request.json['ciudad']
-            representante = request.json['representante']
-            tpidrepresentante = request.json['tpidrepresentante']
-            numidrepresentante = request.json['numidrepresentante']
-            #pendiente validaciones no crear empresa repetida
+        required_fields = ["idType", "idNumber", "companyName", "industry", "email", "phone", "address", "country", "city", "reprName", "reprIdType", "reprIdNumber"]
+        if not all(field in data for field in required_fields):
+            return customError(400, "CO01", f'Hay campos sin diligenciar. Campos requeridos: {required_fields}')
+        
+        field_lengths = {
+            "idType": (2, 4),
+            "companyName": (3, 50),
+            "industry": (3, 30),
+            "email": (3, 30),
+            "address": (3, 50),
+            "country": (3, 50),
+            "city": (3, 50),
+            "reprName": (3, 50),
+            "reprIdType": (2, 4),
+        }
+        
+        for field, (min_len, max_len) in field_lengths.items():
+            if not lengthValidation(data.get(field, ""), min_len, max_len):
+                return customError(400, "CO02", f"El campo '{field}' no cumple con la longitud requerida: {min_len}-{max_len}")
+        
+        idType = data['idType']
+        idNumber = data['idNumber']  
+        companyName = data['companyName']
+        industry = data['industry']
+        email = data['email']
+        phone = data['phone']
+        address = data['address']
+        country = data['country']
+        city = data['city']
+        reprName = data['reprName']
+        reprIdType = data['reprIdType']
+        reprIdNumber = data['reprIdNumber']
+        #pendiente validaciones no crear empresa repetida
        
-            nuevo_company = Company(tipoIde=tipoIde,
-                                    numeroIde=numeroIde,
-                                    razonsocial=razonsocial,
-                                    sector=sector,
-                                    correo=correo,
-                                    telefono=telefono,
-                                    direccion=direccion,
-                                    pais=pais,
-                                    ciudad=ciudad,
-                                    representante=representante,
-                                    tpidrepresentante=tpidrepresentante,
-                                    numidrepresentante=numidrepresentante
-                                    )
-            db.session.add(nuevo_company)
-            db.session.commit()
-            return company_schema.dump(nuevo_company), 201
-        else:
-            return "Campos no cumplen requisitos minimos", 400
+        new_company = Company(
+                                idType=idType,
+                                idNumber=idNumber,
+                                companyName=companyName,
+                                industry=industry,
+                                email=email,
+                                phone=phone,
+                                address=address,
+                                country=country,
+                                city=city,
+                                reprName=reprName,
+                                reprIdType=reprIdType,
+                                reprIdNumber=reprIdNumber
+                                )
+        db.session.add(new_company)
+        db.session.commit()
+        return company_schema.dump(new_company), 201
