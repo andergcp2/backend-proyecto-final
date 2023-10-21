@@ -29,23 +29,24 @@ class TestCompany(TestCase):
     def test_create_company_400_request_empty(self):
         new_company = {}
         resp_create = self.client.post(self.endpoint_create, headers={'Content-Type': 'application/json'}, data=json.dumps(new_company))
-        self.assertEqual(resp_create.get_data(), b'"Campos obligatorios sin diligenciar"\n')
+        error_code = json.loads(resp_create.get_data()).get('errorCode') 
+        self.assertEqual(error_code, 'CO01')
         self.assertEqual(resp_create.status_code, 400)
 
     def test_create_company_201_creation_success(self):
         new_company = {
-            "tipoIde": "CC",
-            "numeroIde": "123456",
-            "razonsocial": "CompanyCO",
-            "sector": "Financiero",
-            "correo": "mail@companyco.co",
-            "telefono": "1234567890",
-            "direccion": "Av 123",
-            "pais": "Colombia",
-            "ciudad": "Bogota",
-            "representante": self.data_factory.name(),
-            "tpidrepresentante": "Cedula",
-            "numidrepresentante": "123456"
+            "idType": "NIT",
+            "idNumber": 123456,
+            "companyName": "CompanyCO",
+            "industry": "Financiero",
+            "email": "mail@companyco.co",
+            "phone": 1234567890,
+            "address": "Av 123",
+            "country": "Colombia",
+            "city": "Bogota",
+            "reprName": self.data_factory.name(),
+            "reprIdType": "CC",
+            "reprIdNumber": 123456
         }
         resp_create = self.client.post(self.endpoint_create, headers={'Content-Type': 'application/json'}, data=json.dumps(new_company))
         print(resp_create.get_data())
@@ -53,21 +54,22 @@ class TestCompany(TestCase):
 
     def test_create_company_400_invalid_request(self):
         new_company = {
-            "tipoIde": "CC",
-            "numeroIde": "123456",
-            "razonsocial": "CompanyCO",
-            "sector": "Financiero",
-            "correo": "mail@companyco.co",
-            "telefono": "1234567890",
-            "direccion": "Av 123",
-            "pais": "Colombia",
-            "ciudad": "Bogota",
-            "representante": self.data_factory.name(),
-            "tpidrepresentante": "CC",
-            "numidrepresentante": "123456"
+            "idType": "C",
+            "idNumber": "123456",
+            "companyName": "CompanyCO",
+            "industry": "Financiero",
+            "email": "mail@companyco.co",
+            "phone": "1234567890",
+            "address": "Av 123",
+            "country": "Colombia",
+            "city": "Bo",
+            "reprName": self.data_factory.name(),
+            "reprIdType": "C",
+            "reprIdNumber": "123456"
         }
         resp_create = self.client.post(self.endpoint_create, headers={'Content-Type': 'application/json'}, data=json.dumps(new_company))
-        self.assertEqual(resp_create.get_data(), b'"Campos no cumplen requisitos minimos"\n')
+        error_code = json.loads(resp_create.get_data()).get('errorCode') 
+        self.assertEqual(error_code, 'CO02')
         self.assertEqual(resp_create.status_code, 400)
 
 
