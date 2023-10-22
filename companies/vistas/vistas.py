@@ -28,12 +28,12 @@ class VistaCompany(Resource):
         field_lengths = {
             "idType": (2, 4),
             "companyName": (3, 50),
-            "industry": (3, 30),
-            "email": (3, 30),
-            "address": (3, 50),
+            "industry": (3, 50),
+            "email": (3, 100),
+            "address": (3, 100),
             "country": (3, 50),
             "city": (3, 50),
-            "reprName": (3, 50),
+            "reprName": (3, 100),
             "reprIdType": (2, 4),
         }
         
