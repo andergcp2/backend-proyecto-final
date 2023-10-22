@@ -1,0 +1,20 @@
+{
+  "serviceName": "candidatos-query-service",
+  "taskDefinition": "task-candidatos-query",
+  "loadBalancers": [
+      {
+          "targetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:101526122836:targetgroup/candidatos-query-tg/4796b921afdc5c68",
+          "containerName": "candidatos-query-container",
+          "containerPort": 80
+      }
+  ],
+  "networkConfiguration": {
+      "awsvpcConfiguration": {
+          "assignPublicIp": "ENABLED",
+          "securityGroups": ["sg-0c8857307e3f9ac70"],
+          "subnets": ["subnet-07686950f6453601d", "subnet-01fd8a67d859ff66c"] 
+      }
+  },
+  "desiredCount": 2,
+  "launchType": "FARGATE"
+}

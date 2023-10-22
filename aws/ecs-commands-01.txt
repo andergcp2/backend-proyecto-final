@@ -1,0 +1,78 @@
+* create task + target group + rule + service
+
+aws ecs list-task-definitions
+# aws ecs deregister-task-definition --task-definition task-companies
+
+candidatos-query
+================
+
+aws ecs register-task-definition --cli-input-json file://aws/tasks/task-candidatos-query.json
+
+aws elbv2 create-target-group --protocol HTTP --port 80 --vpc-id vpc-038b519bea7fafb30 --target-type ip --name candidatos-query-tg  --health-check-path /candidatos-query/ping
+    arn:aws:elasticloadbalancing:us-east-1:101526122836:targetgroup/candidatos-query-tg/4796b921afdc5c68
+
++ create listener
+
+aws elbv2 create-listener --load-balancer-arn arn:aws:elasticloadbalancing:us-east-1:101526122836:loadbalancer/app/abcjobs-qa-lb/fd86a86408ffe63b  --protocol HTTP --port 80 --region us-east-1 --default-actions Type=forward,TargetGroupArn=arn:aws:elasticloadbalancing:us-east-1:101526122836:targetgroup/candidatos-query-tg/4796b921afdc5c68
+    arn:aws:elasticloadbalancing:us-east-1:101526122836:listener/app/abcjobs-qa-lb/fd86a86408ffe63b/a73e50ffb9eaa159
+
+aws elbv2 create-rule --listener-arn arn:aws:elasticloadbalancing:us-east-1:101526122836:listener/app/abcjobs-qa-lb/fd86a86408ffe63b/a73e50ffb9eaa159 --priority 10 --conditions Field=path-pattern,Values='/candidatos-query/*'  --actions Type=forward,TargetGroupArn=arn:aws:elasticloadbalancing:us-east-1:101526122836:targetgroup/candidatos-query-tg/4796b921afdc5c68
+aws elbv2 describe-rules --listener-arn arn:aws:elasticloadbalancing:us-east-1:101526122836:listener/app/abcjobs-qa-lb/fd86a86408ffe63b/a73e50ffb9eaa159  --query 'Rules[].{Priority:Priority,Path:Conditions[0].Values[0]}'
+
+#aws ecs create-service --cluster cluster-abcjobs-qa --service-name candidatos-query-service --task-definition task-candidatos-query --desired-count 1 --launch-type "FARGATE" --network-configuration "awsvpcConfiguration={subnets=[subnet-07686950f6453601d, subnet-01fd8a67d859ff66c],securityGroups=[sg-0c8857307e3f9ac70],assignPublicIp=ENABLED}"
+
+aws ecs create-service --cluster cluster-abcjobs-qa --cli-input-json file://aws/services/service-candidatos-query.json
+
+
+pruebas-query
+=============
+
+aws ecs register-task-definition --cli-input-json file://aws/tasks/task-pruebas-query.json
+
+aws elbv2 create-target-group --protocol HTTP --port 80 --vpc-id vpc-038b519bea7fafb30 --target-type ip --name pruebas-query-tg   --health-check-path /pruebas-query/ping
+    arn:aws:elasticloadbalancing:us-east-1:101526122836:targetgroup/pruebas-query-tg/2262a9d4611556cd
+
+aws elbv2 create-rule --listener-arn arn:aws:elasticloadbalancing:us-east-1:101526122836:listener/app/abcjobs-qa-lb/fd86a86408ffe63b/a73e50ffb9eaa159 --priority 11 --conditions Field=path-pattern,Values='/pruebas-query/*'  --actions Type=forward,TargetGroupArn=arn:aws:elasticloadbalancing:us-east-1:101526122836:targetgroup/pruebas-query-tg/2262a9d4611556cd
+aws elbv2 describe-rules --listener-arn arn:aws:elasticloadbalancing:us-east-1:101526122836:listener/app/abcjobs-qa-lb/fd86a86408ffe63b/a73e50ffb9eaa159  --query 'Rules[].{Priority:Priority,Path:Conditions[0].Values[0]}'
+
+#aws ecs create-service --cluster cluster-abcjobs-qa --service-name pruebas-query-service --task-definition task-pruebas-query --desired-count 1 --launch-type "FARGATE" --network-configuration "awsvpcConfiguration={subnets=[subnet-07686950f6453601d, subnet-01fd8a67d859ff66c],securityGroups=[sg-0c8857307e3f9ac70],assignPublicIp=ENABLED}"
+
+aws ecs create-service --cluster cluster-abcjobs-qa --cli-input-json file://aws/services/service-pruebas-query.json
+
+
+preguntas-query
+===============
+
+aws ecs register-task-definition --cli-input-json file://aws/tasks/task-preguntas-query.json
+
+aws elbv2 create-target-group --protocol HTTP --port 80 --vpc-id vpc-038b519bea7fafb30 --target-type ip --name preguntas-query-tg --health-check-path /preguntas-query/ping
+    arn:aws:elasticloadbalancing:us-east-1:101526122836:targetgroup/preguntas-query-tg/2f2f2d4c86253f9c
+
+aws elbv2 create-rule --listener-arn arn:aws:elasticloadbalancing:us-east-1:101526122836:listener/app/abcjobs-qa-lb/fd86a86408ffe63b/a73e50ffb9eaa159 --priority 12 --conditions Field=path-pattern,Values='/preguntas-query/*'  --actions Type=forward,TargetGroupArn=arn:aws:elasticloadbalancing:us-east-1:101526122836:targetgroup/preguntas-query-tg/2f2f2d4c86253f9c
+aws elbv2 describe-rules --listener-arn arn:aws:elasticloadbalancing:us-east-1:101526122836:listener/app/abcjobs-qa-lb/fd86a86408ffe63b/a73e50ffb9eaa159 --query 'Rules[].{Priority:Priority,Path:Conditions[0].Values[0]}'
+
+#aws ecs create-service --cluster cluster-abcjobs-qa --service-name preguntas-query-service --task-definition task-preguntas-query --desired-count 1 --launch-type "FARGATE" --network-configuration "awsvpcConfiguration={subnets=[subnet-07686950f6453601d, subnet-01fd8a67d859ff66c],securityGroups=[sg-0c8857307e3f9ac70],assignPublicIp=ENABLED}"
+
+aws ecs create-service --cluster cluster-abcjobs-qa --cli-input-json file://aws/services/service-preguntas-query.json
+
+
+companies
+=========
+
+aws ecs register-task-definition --cli-input-json file://aws/tasks/task-companies.json
+
+#aws ecs create-service --cluster cluster-abcjobs-qa --service-name companies-service --task-definition task-companies --desired-count 1 --launch-type "FARGATE" --network-configuration "awsvpcConfiguration={subnets=[subnet-07686950f6453601d, subnet-01fd8a67d859ff66c],securityGroups=[sg-0c8857307e3f9ac70],assignPublicIp=ENABLED}"
+
+
+
+
+===============================================================================================
+
+- listar services
+aws ecs list-services --cluster cluster-abcjobs-qa
+
+- Describir el servicio en ejecución
+aws ecs describe-services --cluster cluster-abcjobs-qa --services companies-service
+
+- eliminar service
+#aws ecs delete-service --cluster cluster-abcjobs-qa --service preguntas-query-service --force

@@ -1,0 +1,33 @@
++ Create a ECS cluster, without EC2 instances but Fargate
++ Register task definition, simple http container service
++ Create a target group for container tasks
+* Create a ALB for internet facing web application
++ Create a listener and associate it with the target group
++ Create a service with the associated target group
+- Clean up everything
+
+
++ create cluster
+aws ecs create-cluster --cluster-name cluster-abcjobs-qa
+
++ create aplication load balancer
+aws elbv2 create-load-balancer --name abcjobs-qa-lb --scheme internal --subnets subnet-07686950f6453601d subnet-01fd8a67d859ff66c --security-groups sg-0c8857307e3f9ac70 --type application --ip-address-type ipv4 
+    arn:aws:elasticloadbalancing:us-east-1:101526122836:loadbalancer/app/abcjobs-qa-lb/fd86a86408ffe63b
+
+aws elbv2 describe-load-balancers
+
++ create network load balancer
+aws elbv2 create-load-balancer --name abcjobs-qa-net-lb --scheme internal --subnets subnet-07686950f6453601d subnet-01fd8a67d859ff66c --security-groups sg-0c8857307e3f9ac70 --type network --ip-address-type ipv4 
+    arn:aws:elasticloadbalancing:us-east-1:101526122836:loadbalancer/net/abcjobs-qa-net-lb/edfeeba6a8222378
+    abcjobs-qa-net-lb-edfeeba6a8222378.elb.us-east-1.amazonaws.com
+
+aws elbv2 create-target-group --protocol TCP --port 80 --vpc-id vpc-038b519bea7fafb30 --target-type alb --name abcjobs-alb-tg
+    arn:aws:elasticloadbalancing:us-east-1:101526122836:targetgroup/abcjobs-alb-tg/6fa1bd9298ee07c8
+
+aws elbv2 create-listener --load-balancer-arn arn:aws:elasticloadbalancing:us-east-1:101526122836:loadbalancer/net/abcjobs-qa-net-lb/edfeeba6a8222378  --protocol TCP --port 80 --region us-east-1 --default-actions Type=forward,TargetGroupArn=arn:aws:elasticloadbalancing:us-east-1:101526122836:targetgroup/abcjobs-alb-tg/6fa1bd9298ee07c8
+    arn:aws:elasticloadbalancing:us-east-1:101526122836:listener/net/abcjobs-qa-net-lb/edfeeba6a8222378/218280d7973b09b8
+
+aws apigateway create-vpc-link --name abcjobs-qa-net-lb-vpc-link --target-arns arn:aws:elasticloadbalancing:us-east-1:101526122836:loadbalancer/net/abcjobs-qa-net-lb/edfeeba6a8222378
+    arn:aws:elasticloadbalancing:us-east-1:101526122836:loadbalancer/net/abcjobs-qa-net-lb/edfeeba6a8222378
+
+aws apigateway get-vpc-links
