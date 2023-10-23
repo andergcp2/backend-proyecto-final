@@ -24,14 +24,14 @@ class TestCandidatosQuery(TestCase):
         self.id_candidate = db.session.query(Candidate).filter(Candidate.firstname==candidate.firstname, Candidate.lastname==candidate.lastname).first().id
         #print(self.id_candidate, "=>", candidate.firstname, candidate.lastname, candidate.createdAt)
 
-        self.endpoint_health = '/candidates-query/ping'
-        self.endpoint_get = '/candidates-query'
-        self.endpoint_get_400 = '/candidates-query/id'
-        self.endpoint_get_404 = '/candidates-query/{}'.format(str(self.id_candidate * 100))
-        self.endpoint_get_200 = '/candidates-query/{}'.format(str(self.id_candidate))
-        self.endpoint_get_tests_400 = '/candidates-query/id/tests'
-        self.endpoint_get_tests_404 = '/candidates-query/{}/tests'.format(str(self.id_candidate * 100))
-        self.endpoint_get_tests_200 = '/candidates-query/{}/tests'.format(str(self.id_candidate))
+        self.endpoint_health = '/candidatos-query/ping'
+        self.endpoint_get = '/candidatos-query'
+        self.endpoint_get_400 = '/candidatos-query/id'
+        self.endpoint_get_404 = '/candidatos-query/{}'.format(str(self.id_candidate * 100))
+        self.endpoint_get_200 = '/candidatos-query/{}'.format(str(self.id_candidate))
+        self.endpoint_get_tests_400 = '/candidatos-query/id/tests'
+        self.endpoint_get_tests_404 = '/candidatos-query/{}/tests'.format(str(self.id_candidate * 100))
+        self.endpoint_get_tests_200 = '/candidatos-query/{}/tests'.format(str(self.id_candidate))
 
     def test_health_check(self):
         req_health = self.client.get(self.endpoint_health, headers={'Content-Type': 'application/json'})

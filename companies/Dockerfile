@@ -1,5 +1,4 @@
 FROM python:3.11-alpine
-LABEL author="m.agonf@uniandes.edu.co"
 EXPOSE 80
 WORKDIR /app
 COPY requirements.txt /app
