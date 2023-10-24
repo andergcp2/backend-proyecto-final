@@ -75,191 +75,191 @@ jobs:
         run: |
           aws ecs update-service --cluster cluster-abcjobs-qa --service pruebas-query-service --task-definition task-pruebas-query --force-new-deployment
 
-  preguntas-query-test:
-    name: preguntas-query unit tests 
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-    - name: Install dependencies
-      working-directory: ./experimentos/preguntas-query
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    - name: Test with pytest
-      working-directory: ./experimentos/preguntas-query
-      run: |
-        pip install pytest pytest-cov
-        pytest --cov=. -v -s --cov-fail-under=80
+  # preguntas-query-test:
+  #   name: preguntas-query unit tests 
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v4
+  #   - name: Set up Python
+  #     uses: actions/setup-python@v4
+  #     with:
+  #       python-version: '3.11'
+  #   - name: Install dependencies
+  #     working-directory: ./experimentos/preguntas-query
+  #     run: |
+  #       python -m pip install --upgrade pip
+  #       pip install -r requirements.txt
+  #   - name: Test with pytest
+  #     working-directory: ./experimentos/preguntas-query
+  #     run: |
+  #       pip install pytest pytest-cov
+  #       pytest --cov=. -v -s --cov-fail-under=80
 
-  preguntas-query-image:
-    name: crear imagen docker pruebas-query en AWS ECR
-    runs-on: ubuntu-latest
-    needs: preguntas-query-test
-    steps:
-    - uses: actions/checkout@v2
-    - name: Configurar Credenciales de AWS
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
+  # preguntas-query-image:
+  #   name: crear imagen docker pruebas-query en AWS ECR
+  #   runs-on: ubuntu-latest
+  #   needs: preguntas-query-test
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Configurar Credenciales de AWS
+  #     uses: aws-actions/configure-aws-credentials@v1
+  #     with:
+  #       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #       aws-region: us-east-1
 
-    - name: Iniciar sesión en AWS ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
+  #   - name: Iniciar sesión en AWS ECR
+  #     id: login-ecr
+  #     uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Crear, etiquetar y enviar imágen a AWS ECR
-      working-directory: ./experimentos/preguntas-query
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: preguntas-query
-        IMAGE_TAG: latest
-      run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+  #   - name: Crear, etiquetar y enviar imágen a AWS ECR
+  #     working-directory: ./experimentos/preguntas-query
+  #     env:
+  #       ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+  #       ECR_REPOSITORY: preguntas-query
+  #       IMAGE_TAG: latest
+  #     run: |
+  #       docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+  #       docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-  preguntas-query-deploy:
-    name: actualizar servicio en AWS ECS
-    runs-on: ubuntu-latest
-    needs: preguntas-query-image
-    steps:
-      - name: Configurar Credenciales de AWS
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+  # preguntas-query-deploy:
+  #   name: actualizar servicio en AWS ECS
+  #   runs-on: ubuntu-latest
+  #   needs: preguntas-query-image
+  #   steps:
+  #     - name: Configurar Credenciales de AWS
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         aws-region: us-east-1
  
-      - name: Actualizar versión en ECS
-        run: |
-          aws ecs update-service --cluster cluster-abcjobs-qa --service preguntas-query-service --task-definition task-preguntas-query --force-new-deployment
+  #     - name: Actualizar versión en ECS
+  #       run: |
+  #         aws ecs update-service --cluster cluster-abcjobs-qa --service preguntas-query-service --task-definition task-preguntas-query --force-new-deployment
 
-  candidatos-query-test:
-    name: unit tests candidatos-query 
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-    - name: Install dependencies
-      working-directory: ./experimentos/candidatos-query
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    - name: Test with pytest
-      working-directory: ./experimentos/candidatos-query
-      run: |
-        pip install pytest pytest-cov
-        pytest --cov=. -v -s --cov-fail-under=80
+  # candidatos-query-test:
+  #   name: unit tests candidatos-query 
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v4
+  #   - name: Set up Python
+  #     uses: actions/setup-python@v4
+  #     with:
+  #       python-version: '3.11'
+  #   - name: Install dependencies
+  #     working-directory: ./experimentos/candidatos-query
+  #     run: |
+  #       python -m pip install --upgrade pip
+  #       pip install -r requirements.txt
+  #   - name: Test with pytest
+  #     working-directory: ./experimentos/candidatos-query
+  #     run: |
+  #       pip install pytest pytest-cov
+  #       pytest --cov=. -v -s --cov-fail-under=80
 
-  candidatos-query-image:
-    name: crear imagen docker candidatos-query en AWS ECR
-    runs-on: ubuntu-latest
-    needs: candidatos-query-test
-    steps:
-    - uses: actions/checkout@v2
-    - name: Configurar Credenciales de AWS
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
+  # candidatos-query-image:
+  #   name: crear imagen docker candidatos-query en AWS ECR
+  #   runs-on: ubuntu-latest
+  #   needs: candidatos-query-test
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Configurar Credenciales de AWS
+  #     uses: aws-actions/configure-aws-credentials@v1
+  #     with:
+  #       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #       aws-region: us-east-1
 
-    - name: Iniciar sesión en AWS ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
+  #   - name: Iniciar sesión en AWS ECR
+  #     id: login-ecr
+  #     uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Crear, etiquetar y enviar imágen a AWS ECR
-      working-directory: ./experimentos/candidatos-query    
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: candidatos-query
-        IMAGE_TAG: latest
-      run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+  #   - name: Crear, etiquetar y enviar imágen a AWS ECR
+  #     working-directory: ./experimentos/candidatos-query    
+  #     env:
+  #       ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+  #       ECR_REPOSITORY: candidatos-query
+  #       IMAGE_TAG: latest
+  #     run: |
+  #       docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+  #       docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-  candidatos-query-deploy:
-    name: actualizar servicio en AWS ECS
-    runs-on: ubuntu-latest
-    needs: candidatos-query-image
-    steps:
-      - name: Configurar Credenciales de AWS
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+  # candidatos-query-deploy:
+  #   name: actualizar servicio en AWS ECS
+  #   runs-on: ubuntu-latest
+  #   needs: candidatos-query-image
+  #   steps:
+  #     - name: Configurar Credenciales de AWS
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         aws-region: us-east-1
  
-      - name: Actualizar versión en ECS
-        run: |
-          aws ecs update-service --cluster cluster-abcjobs-qa --service candidatos-query-service --task-definition task-candidatos-query --force-new-deployment
+  #     - name: Actualizar versión en ECS
+  #       run: |
+  #         aws ecs update-service --cluster cluster-abcjobs-qa --service candidatos-query-service --task-definition task-candidatos-query --force-new-deployment
 
-  companies-test:
-    name: companies unit tests 
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-    - name: Install dependencies
-      working-directory: ./companies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    - name: Test with pytest
-      working-directory: ./companies
-      run: |
-        pip install pytest pytest-cov
-        pytest --cov=. -v -s --cov-fail-under=80
+  # companies-test:
+  #   name: companies unit tests 
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v4
+  #   - name: Set up Python
+  #     uses: actions/setup-python@v4
+  #     with:
+  #       python-version: '3.11'
+  #   - name: Install dependencies
+  #     working-directory: ./companies
+  #     run: |
+  #       python -m pip install --upgrade pip
+  #       pip install -r requirements.txt
+  #   - name: Test with pytest
+  #     working-directory: ./companies
+  #     run: |
+  #       pip install pytest pytest-cov
+  #       pytest --cov=. -v -s --cov-fail-under=80
 
-  companies-image:
-    name: crear imagen docker companies en AWS ECR
-    runs-on: ubuntu-latest
-    needs: companies-test
-    steps:
-    - uses: actions/checkout@v2
-    - name: Configurar Credenciales de AWS
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
+  # companies-image:
+  #   name: crear imagen docker companies en AWS ECR
+  #   runs-on: ubuntu-latest
+  #   needs: companies-test
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Configurar Credenciales de AWS
+  #     uses: aws-actions/configure-aws-credentials@v1
+  #     with:
+  #       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #       aws-region: us-east-1
 
-    - name: Iniciar sesión en AWS ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
+  #   - name: Iniciar sesión en AWS ECR
+  #     id: login-ecr
+  #     uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Crear, etiquetar y enviar imágen a AWS ECR
-      working-directory: ./companies    
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: companies
-        IMAGE_TAG: latest
-      run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+  #   - name: Crear, etiquetar y enviar imágen a AWS ECR
+  #     working-directory: ./companies    
+  #     env:
+  #       ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+  #       ECR_REPOSITORY: companies
+  #       IMAGE_TAG: latest
+  #     run: |
+  #       docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+  #       docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-  companies-deploy:
-    name: actualizar servicio en AWS ECS
-    runs-on: ubuntu-latest
-    needs: companies-image
-    steps:
-      - name: Configurar Credenciales de AWS
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+  # companies-deploy:
+  #   name: actualizar servicio en AWS ECS
+  #   runs-on: ubuntu-latest
+  #   needs: companies-image
+  #   steps:
+  #     - name: Configurar Credenciales de AWS
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         aws-region: us-east-1
  
-      - name: Actualizar versión en ECS
-        run: |
-          aws ecs update-service --cluster cluster-abcjobs-qa --service companies-service --task-definition task-companies --force-new-deployment
+  #     - name: Actualizar versión en ECS
+  #       run: |
+  #         aws ecs update-service --cluster cluster-abcjobs-qa --service companies-service --task-definition task-companies --force-new-deployment
