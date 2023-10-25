@@ -1,4 +1,4 @@
-name: execute-unit-tests-build-image-and-deploy
+name: reusable workflow - execute unit tests, build image, deploy to ecr and update ecs service
 
 on:
   workflow_call:
@@ -37,7 +37,7 @@ jobs:
         pytest --cov=. -v -s --cov-fail-under=80
 
   build-image-deploy:
-    name: crear imagen docker en AWS ECR
+    name: push image and update service
     runs-on: ubuntu-latest
     needs: unit-test
     steps:
@@ -66,7 +66,7 @@ jobs:
 
     - name: Actualizar versión en ECS
       run: |
-        aws ecs update-service --cluster ${{ ECS_CLUSTER }} --service ${{ inputs.microservice }}-service --task-definition task-${{ inputs.microservice }} --force-new-deployment
+        aws ecs update-service --cluster $ECS_CLUSTER --service ${{ inputs.microservice }}-service --task-definition task-${{ inputs.microservice }} --force-new-deployment
 
 # check image tag strategy in: 
 # https://docs.github.com/en/actions/deployment/deploying-to-your-cloud-provider/deploying-to-amazon-elastic-container-service

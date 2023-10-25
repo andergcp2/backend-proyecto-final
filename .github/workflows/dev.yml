@@ -11,13 +11,11 @@ on:
       - develop
 
 jobs:
-  tests-image-depoy-workflow:
-    uses: ./.github/workflows/dev-test-image-deploy.yml
+  tests-build-deploy:
+    uses: ./.github/workflows/test-build-deploy.yml
     with:
        microservice: candidatos-query
        microservice-path: ./experimentos/candidatos-query
     secrets:
        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-
