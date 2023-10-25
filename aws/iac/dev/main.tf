@@ -19,14 +19,3 @@ module "ecr-repo" {
   image_mutability = var.image_mutability
 }
 
-# locals {
-#   project_family = "abcjobs"
-#   microservices = {
-#     "nginx" = {
-#     }
-#     "frontend" = {
-#     }
-#     "backend" = {
-#     }
-#   }
-# }

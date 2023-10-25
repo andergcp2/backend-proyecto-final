@@ -2,9 +2,9 @@ aws_profile = "abcjobs"
 aws_region = "us-east-1"
 
 microservices = [
-  "candidatos-qry",
-  "pruebas-qry",
-  "preguntas-qry"
+  "abcjobs/candidatos-qry",
+  "abcjobs/pruebas-qry",
+  "abcjobs/preguntas-qry"
 ]
 
 tags = {
