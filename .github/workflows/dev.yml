@@ -16,6 +16,27 @@ jobs:
     with:
        microservice: candidatos-query
        microservice-path: ./experimentos/candidatos-query
-    secrets:
-       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    secrets: inherit   
+    # secrets:
+    #    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  pruebas-query:
+    uses: ./.github/workflows/test-build-deploy.yml
+    with:
+       microservice: pruebas-query
+       microservice-path: ./experimentos/pruebas-query
+    secrets: inherit   
+    # secrets:
+    #    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  preguntas-query:
+    uses: ./.github/workflows/test-build-deploy.yml
+    with:
+       microservice: preguntas-query
+       microservice-path: ./experimentos/preguntas-query
+    secrets: inherit   
+    # secrets:
+    #    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
