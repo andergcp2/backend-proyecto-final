@@ -15,6 +15,10 @@ on:
       aws-secret-access-key:
         required: true
 
+env:
+  AWS_REGION: us-east-1
+  ECS_CLUSTER: cluster-abcjobs-qa
+
 jobs:
   unit-test:
     name: unit tests 
@@ -47,7 +51,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.aws-access-key-id }}
         aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
-        aws-region: us-east-1
+        aws-region: $AWS_REGION
 
     - name: Iniciar sesión en AWS ECR
       id: login-ecr
@@ -56,7 +60,6 @@ jobs:
     - name: Crear, etiquetar y enviar imágen a AWS ECR
       working-directory: ${{ inputs.microservice-path }}    
       env:
-        ECS_CLUSTER: cluster-abcjobs-qa
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: ${{ inputs.microservice }} 
         IMAGE_TAG: latest

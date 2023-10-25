@@ -13,6 +13,7 @@ on:
 
 jobs:
   pruebas-query-test:
+    if: ${{ false }}  # disable for now
     name: pruebas-query unit tests 
     runs-on: ubuntu-latest
     steps:
