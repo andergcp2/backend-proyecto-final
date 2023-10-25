@@ -4,18 +4,34 @@ variable "aws_profile" {
   type        = string
 }
 variable "aws_region" {
-  type    = string
+  type = string
 }
-variable "microservices" {
-  description = "The list of ecr names to create"
+
+variable "project" {
+  type = string
+}
+variable "team" {
+  type = string
+}
+variable "environment" {
+  type = string
+}
+
+variable "public_subnets" {
+  description = "List of public subnets"
   type        = list(string)
-  default     = null
 }
-variable "tags" {
-  description = "The key-value maps for tagging"
-  type        = map(string)
-  default     = {}
+
+variable "private_subnets" {
+  description = "List of private subnets"
+  type        = list(string)
 }
+
+variable "availability_zones" {
+  description = "List of availability zones"
+  type        = list(string)
+}
+
 variable "image_mutability" {
   description = "Provide image mutability"
   type        = string
@@ -27,4 +43,10 @@ variable "encrypt_type" {
   type        = string
   default     = "AES256"
   #default     = "KMS"
+}
+
+variable "microservices" {
+  description = "The list of ecr names to create"
+  type        = list(string)
+  default     = null
 }

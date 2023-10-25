@@ -1,22 +1,22 @@
-variable "ecr_name" {
-  description = "The list of ecr names to create"
+variable "services" {
+  description = "The list of service to create"
   type        = list(string)
   default     = null
 }
-variable "tags" {
-  description = "The key-value maps for tagging"
-  type        = map(string)
-  default     = {}
+
+variable "project" {
+  type    = string
 }
-variable "image_mutability" {
-  description = "Provide image mutability"
-  type        = string
-  default     = "MUTABLE"
+variable "environment" {
+  type    = string
 }
 
-variable "encrypt_type" {
-  description = "Provide type of encryption here"
-  type        = string
-  default     = "AES256"
-  #default     = "KMS"
+variable "public_subnets" {
+  type        = list(string)
+}
+variable "private_subnets" {
+  type        = list(string)
+}
+variable "availability_zones" {
+  type        = list(string)
 }

@@ -1,9 +1,7 @@
 resource "aws_ecr_repository" "ecr" {
-  for_each             = toset(var.ecr_name)
+  for_each             = toset(var.repositories)
   name                 = join("-", [each.key, "repo"])
-  image_tag_mutability = "MUTABLE"
-  #image_tag_mutability = "IMMUTABLE"
-  #image_tag_mutability = var.image_mutability
+  image_tag_mutability = var.image_mutability
 
   encryption_configuration {
     encryption_type = var.encrypt_type
@@ -13,5 +11,8 @@ resource "aws_ecr_repository" "ecr" {
     scan_on_push = false
   }
 
-  tags = var.tags
+  tags             = {
+    Name        = join("-", [each.key, "ecr"])
+    Environment = var.environment
+  }  
 }
