@@ -11,7 +11,7 @@ on:
       - develop
 
 jobs:
-  tests-build-deploy:
+  candidatos-query:
     uses: ./.github/workflows/test-build-deploy.yml
     with:
        microservice: candidatos-query
