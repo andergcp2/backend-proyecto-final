@@ -49,7 +49,7 @@ class VistaCollaborators(Resource):
         role = data['role']
         position = data['position']
         
-        #pendiente validaciones no crear empresa repetida
+        #pendiente validaciones no crear colaborador repetido
        
         new_collaborator = Collaborator(
                                 idType=idType,
