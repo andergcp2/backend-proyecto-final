@@ -23,8 +23,8 @@ class Project(db.Model):
     createdAt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     profiles = db.relationship('Profile', cascade='all, delete, delete-orphan')
 
-    def __repr__(self):
-        return f'<Project "{self.id}, {self.name}, {self.type}, {self.leader}, {self.role}, {self.phone}, {self.email}, {self.countryId}, {self.cityId}, {self.address}, {self.companyId}, {self.createdAt}">'
+    # def __repr__(self):
+    #     return f'<Project "{self.id}, {self.name}, {self.type}, {self.leader}, {self.role}, {self.phone}, {self.email}, {self.countryId}, {self.cityId}, {self.address}, {self.companyId}, {self.createdAt}">'
 
 @property
 def createdAt(self):
@@ -40,8 +40,8 @@ class Profile(db.Model):
     techskills = db.relationship('SkillProfile', cascade='all, delete, delete-orphan')
     tests = db.relationship('TestProfile', cascade='all, delete, delete-orphan')
 
-    def __repr__(self):
-        return f'<Profile "{self.id}, {self.name}, {self.professional}, {self.projectId}">'
+    # def __repr__(self):
+    #     return f'<Profile "{self.id}, {self.name}, {self.professional}, {self.projectId}">'
 
 class SkillProfile(db.Model):
     __tablename__ = "skill_profile"
@@ -49,8 +49,8 @@ class SkillProfile(db.Model):
     skillId = db.Column(db.Integer) # id skill microservice 
     profileId = db.Column(db.Integer, db.ForeignKey('profile.id'))
 
-    def __repr__(self):
-        return f'<SkillProfile "{self.id}, {self.skillId}, {self.profileId}">'
+    # def __repr__(self):
+    #     return f'<SkillProfile "{self.id}, {self.skillId}, {self.profileId}">'
 
 class TestProfile(db.Model):
     __tablename__ = "test_profile"
@@ -58,8 +58,8 @@ class TestProfile(db.Model):
     testId = db.Column(db.Integer) # id tests microservice 
     profileId = db.Column(db.Integer, db.ForeignKey('profile.id'))
 
-    def __repr__(self):
-        return f'<TestProfile "{self.id}, {self.testId}, {self.profileId}">'
+    # def __repr__(self):
+    #     return f'<TestProfile "{self.id}, {self.testId}, {self.profileId}">'
 
 # queries: 
 # customer = session.query(Customer).get(1)

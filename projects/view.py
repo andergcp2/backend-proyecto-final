@@ -21,7 +21,7 @@ class Projects(Resource):
 
         name = type = company = leader = role = phone = email = country = city = address = None
         data = request.get_json()
-        if "name" not in data:
+        if "name" not in data or request.json["name"] is None:
             return "project's name is required", 400
         elif "type" not in data:
             return "project's type is required", 400
@@ -74,21 +74,35 @@ class Projects(Resource):
         new_project = Project(name=name, type=type, leader=leader, role=role, phone=phone, email=email, 
         countryId=country, cityId=city, address=address, companyId=company) #createdAt=datetime.now()
 
-        print("init: ", new_project)
+        #print("init: ", new_project)
         for item in profiles:
             new_profile = Profile(name=item["name"], professional=item["professional"], projectId=new_project.id)
-            for item_soft in profiles["softskills"]:
-                new_profile.softskills.append(SkillProfile(skillId=item_soft["skillId"], profileId=new_profile.id)) 
-            for item_tech in profiles["techskills"]:
-                new_profile.techskills.append(SkillProfile(skillId=item_tech["skillId"], profileId=new_profile.id))
-            for item_test in profiles["tests"]:
-                new_profile.tests.append(TestProfile(testId=item_tech["testId"], profileId=new_profile.id))             
+            for item_soft in item["softskills"]:
+                new_skill = SkillProfile(skillId=item_soft["id"], profileId=new_profile.id)
+                new_profile.softskills.append(new_skill) 
+                #print("    softskill: ", new_skill)
+            for item_tech in item["techskills"]:
+                new_skill = SkillProfile(skillId=item_tech["id"], profileId=new_profile.id)
+                new_profile.techskills.append(new_skill)
+                #print("    techskill: ", new_skill)
+            for item_test in item["tests"]:
+                new_test = TestProfile(testId=item_tech["id"], profileId=new_profile.id)
+                new_profile.tests.append(new_test)     
+                #print("    testprof: ", new_test)        
+            
             new_project.profiles.append(new_profile)
-        print("done: ", new_project)
+            #print("  profile: ", new_profile)    
+        #print("")
+        #print("done: ", new_project)
         
         db.session.add(new_project)
         db.session.commit()
         project_created = Project.query.filter(Project.companyId == company).filter(Project.name==name).filter(Project.leader==leader).order_by(Project.createdAt.desc()).first()
+        
+        #project_created = db.session.query(Project).filter(Project.companyId==company).filter(Project.name==name).filter(Project.leader==leader).order_by(Project.createdAt.desc()).first()
+        #Profile, SkillProfile, TestProfile
+        #.filter(Project.id==Profile.projectId)
+        #.filter(SkillProfile.profileId==Profile.id).filter(TestProfile.profileId==Profile.id)
         return project_schema.dump(project_created), 201
 
     def get(self):

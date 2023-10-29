@@ -22,9 +22,9 @@ class TestProjectsData(TestCase):
 
         for x1 in range(numProjects):
             new_project = Project(name=self.fake.bs(), type=self.fake.android_platform_token(), leader=self.fake.name(), 
-            role=self.fake.job(), phone=self.fake.phone_number(), email=self.fake.company_email(), countryId=self.fake.country_code(), 
-            cityId=self.fake.random_int(1, 99999), address=self.fake.street_address() +" "+ self.fake.street_name(), 
-            companyId=self.fake.random_int(1, 999))
+                role=self.fake.job(), phone=self.fake.phone_number(), email=self.fake.company_email(), countryId=self.fake.country_code(), 
+                cityId=self.fake.random_int(1, 99999), address=self.fake.street_address() +" "+ self.fake.street_name(), 
+                companyId=self.fake.random_int(1, 999))
 
             for x2 in range(numProfiles):
                 new_profile = Profile(name=self.fake.job(), professional=self.fake.job(), projectId=new_project.id)
