@@ -30,7 +30,7 @@ db.create_all()
 cors = CORS(app)
 
 api = Api(app)
-api.add_resource(CreateProject, '/projects' )
+api.add_resource(Projects, '/projects' )
 api.add_resource(GetProject, '/projects/<string:id>')
 api.add_resource(GetCompanyProjects, '/projects/<string:id>')
 api.add_resource(HealthCheck,'/projects/ping' )

@@ -1,8 +1,8 @@
 import json, requests
 from flask import request, current_app
 from flask_restful import Resource
-from model import db, Project, Profile, ProjectSchema, ProfileSchema
-from datetime import datetime
+from model import db, Project, Profile, SkillProfile, TestProfile, ProjectSchema, ProfileSchema, SkillProfileSchema, TestProfileSchema
+# from datetime import datetime
 
 project_schema = ProjectSchema()
 profile_schema = ProfileSchema()
@@ -71,19 +71,20 @@ class Projects(Resource):
         except ValueError:
             return "project's city is not valid: {}".format(city), 412
 
-        new_project = Project(name=name, type=type, leader=leader, role=role, 
-        phone=phone, email=email, countryId=country, cityId=city, address=address, 
-        companyId=company,createdAt=datetime.now(), profiles = profiles)
+        new_project = Project(name=name, type=type, leader=leader, role=role, phone=phone, email=email, 
+        countryId=country, cityId=city, address=address, companyId=company) #createdAt=datetime.now()
 
-        print("init ": new_project)
+        print("init: ", new_project)
         for item in profiles:
             new_profile = Profile(name=item["name"], professional=item["professional"], projectId=new_project.id)
-                for item_soft in profiles["softskills"]:
-                    new_profile.softskills.append(SkillProfile(skillId=item_soft["skillId"], profileId=new_profile.id)) 
-                for item_tech in profiles["techskills"]:
-                    new_profile.techskills.append(SkillProfile(skillId=item_tech["skillId"], profileId=new_profile.id)) 
+            for item_soft in profiles["softskills"]:
+                new_profile.softskills.append(SkillProfile(skillId=item_soft["skillId"], profileId=new_profile.id)) 
+            for item_tech in profiles["techskills"]:
+                new_profile.techskills.append(SkillProfile(skillId=item_tech["skillId"], profileId=new_profile.id))
+            for item_test in profiles["tests"]:
+                new_profile.tests.append(TestProfile(testId=item_tech["testId"], profileId=new_profile.id))             
             new_project.profiles.append(new_profile)
-        print("done ": new_project)
+        print("done: ", new_project)
         
         db.session.add(new_project)
         db.session.commit()
