@@ -1,40 +1,108 @@
 import json, requests
 from flask import request, current_app
 from flask_restful import Resource
-from model import db, Prueba, PruebaSchema
+from model import db, Project, Profile, ProjectSchema, ProfileSchema
 from datetime import datetime
 
-test_schema = PruebaSchema()
+project_schema = ProjectSchema()
+profile_schema = ProfileSchema()
+skill_profile_schema = SkillProfileSchema()
 
 class HealthCheck(Resource):
     def get(self):
         return "ok"
 
-class GetProject(Resource):
+class Projects(Resource):
 
-    def get(self, id):
+    def post(self):
         # resp = validate_token(request.headers)
         # if(resp['status_code'] != 200):
         #     return resp['msg'], resp['status_code']
 
-        if id is not None: 
-            try:
-                int(id)
-            except ValueError:
-                data = {'error': 'id {} is not a number'.format(id)}
-                return json.dumps(data), 400
+        name = type = company = leader = role = phone = email = country = city = address = None
+        data = request.get_json()
+        if "name" not in data:
+            return "project's name is required", 400
+        elif "type" not in data:
+            return "project's type is required", 400
+        elif "company" not in data:
+            return "project's company is required", 400
+        elif "leader" not in data:
+            return "project's leader is required", 400
+        elif "role" not in data:
+            return "project's leader role is required", 400
+        elif "phone" not in data:
+            return "project's leader phone is required", 400
+        elif "email" not in data:
+            return "project's leader email is required", 400
+        elif "country" not in data:
+            return "project's country is required", 400
+        elif "city" not in data:
+            return "project's city is required", 400
+        elif "address" not in data:
+            return "project's  address is required", 400
+        elif "profiles" not in data:
+            return "project's profiles are required", 400
 
-        test = Prueba.query.filter(Prueba.id == id).first()
-        if test is None:
-            data = {'error': 'prueba {} does not exist'.format(id)}
-            return json.dumps(data), 404
+        name = request.json["name"]
+        type = request.json["type"]
+        company = request.json["company"]
+        leader = request.json["leader"]
+        role = request.json["role"]
+        phone = request.json["phone"]
+        email = request.json["email"]
+        country = request.json["country"]
+        city = request.json["city"]
+        address = request.json["address"]
+        profiles = request.json["profiles"]
 
-        return test_schema.dump(test)
+        # print("validation: ", country, isinstance(postId, int), size, (size in sizes), offer, (offer<=0))
+        # 412  el caso que los valores no estén entre lo esperado
+        # if(not isinstance(country, int) or size not in sizes or not isinstance(offer, int) or offer<=0): 
+        #     return "parameter(s) not valid {} {} {}".format(postId, size, offer), 412
 
+        try:
+            int(company)
+        except ValueError:
+            return "project's company is not valid: {}".format(company), 412
 
-class ViewProjects(Resource):
+        try:
+            int(city)
+        except ValueError:
+            return "project's city is not valid: {}".format(city), 412
+
+        new_project = Project(name=name, type=type, leader=leader, role=role, 
+        phone=phone, email=email, countryId=country, cityId=city, address=address, 
+        companyId=company,createdAt=datetime.now(), profiles = profiles)
+
+        print("init ": new_project)
+        for item in profiles:
+            new_profile = Profile(name=item["name"], professional=item["professional"], projectId=new_project.id)
+                for item_soft in profiles["softskills"]:
+                    new_profile.softskills.append(SkillProfile(skillId=item_soft["skillId"], profileId=new_profile.id)) 
+                for item_tech in profiles["techskills"]:
+                    new_profile.techskills.append(SkillProfile(skillId=item_tech["skillId"], profileId=new_profile.id)) 
+            new_project.profiles.append(new_profile)
+        print("done ": new_project)
+        
+        db.session.add(new_project)
+        db.session.commit()
+        project_created = Project.query.filter(Project.companyId == company).filter(Project.name==name).filter(Project.leader==leader).order_by(Project.createdAt.desc()).first()
+        return project_schema.dump(project_created), 201
 
     def get(self):
-        tests = db.session.query(Prueba).select_from(Prueba).all()
-        return [test_schema.dump(t) for t in tests]
+        # resp = validate_token(request.headers)
+        # if(resp['status_code'] != 200):
+        #     return resp['msg'], resp['status_code']
+        projects = db.session.query(Project).select_from(Project).all()
+        return [project_schema.dump(p) for p in Project.query.all()], 200
 
+class GetCompanyProjects(Resource):
+
+    def get(self, companyId):
+        return [project_schema.dump(p) for p in Project.query.filter(Project.companyId == companyId).all()], 200
+
+class GetProject(Resource):
+
+    def get(self, projectId):
+        return project_schema.dump(Project.query.get_or_404(projectId))
