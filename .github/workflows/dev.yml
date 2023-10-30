@@ -19,14 +19,18 @@ jobs:
        microservice: candidatos-query
        microservice-path: ./experimentos/candidatos-query
     secrets: inherit   
-
+  candidatos-cmd:
+    uses: ./.github/workflows/test-build-deploy.yml
+    with:
+       microservice: candidatos-cmd
+       microservice-path: ./candidatos_command
+    secrets: inherit   
   pruebas-query:
     uses: ./.github/workflows/test-build-deploy.yml
     with:
        microservice: pruebas-query
        microservice-path: ./experimentos/pruebas-query
-    secrets: inherit   
-
+    secrets: inherit
   preguntas-query:
     uses: ./.github/workflows/test-build-deploy.yml
     with:

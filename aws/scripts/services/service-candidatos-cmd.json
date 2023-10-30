@@ -3,7 +3,7 @@
     "taskDefinition": "task-candidatos-cmd",
     "loadBalancers": [
         {
-            "targetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:101526122836:targetgroup/candidatos-cmd-tg/4796b921afdc5c68",
+            "targetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:101526122836:targetgroup/candidatos-cmd-tg/f1d9cf46210019e6",
             "containerName": "candidatos-cmd-container",
             "containerPort": 80
         }

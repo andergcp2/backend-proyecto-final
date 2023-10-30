@@ -17,7 +17,7 @@
         ],
         "essential": true, 
         "healthCheck": {
-          "command": ["CMD-SHELL","curl -f http://localhost/candidatos-cmd/ping || exit 1"],
+          "command": ["CMD-SHELL","curl -f http://localhost/candidates/ping || exit 1"],
           "interval": 30,
           "timeout": 5,
           "retries": 3
