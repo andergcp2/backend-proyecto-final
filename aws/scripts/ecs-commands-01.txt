@@ -43,7 +43,7 @@ aws ecs create-service --cluster cluster-abcjobs-qa --cli-input-json file://aws/
 preguntas-query
 ===============
 
-aws ecs register-task-definition --cli-input-json file://aws/tasks/task-preguntas-query.json
+aws ecs register-task-definition --cli-input-json file://aws/scripts/tasks/task-preguntas-query.json
 
 aws elbv2 create-target-group --protocol HTTP --port 80 --vpc-id vpc-038b519bea7fafb30 --target-type ip --name preguntas-query-tg --health-check-path /preguntas-query/ping
     arn:aws:elasticloadbalancing:us-east-1:101526122836:targetgroup/preguntas-query-tg/2f2f2d4c86253f9c
@@ -54,6 +54,20 @@ aws elbv2 describe-rules --listener-arn arn:aws:elasticloadbalancing:us-east-1:1
 #aws ecs create-service --cluster cluster-abcjobs-qa --service-name preguntas-query-service --task-definition task-preguntas-query --desired-count 1 --launch-type "FARGATE" --network-configuration "awsvpcConfiguration={subnets=[subnet-07686950f6453601d, subnet-01fd8a67d859ff66c],securityGroups=[sg-0c8857307e3f9ac70],assignPublicIp=ENABLED}"
 
 aws ecs create-service --cluster cluster-abcjobs-qa --cli-input-json file://aws/services/service-preguntas-query.json
+
+
+projects-query
+===============
+
+aws ecs register-task-definition --cli-input-json file://aws/scripts/tasks/task-projects.json
+
+aws elbv2 create-target-group --protocol HTTP --port 80 --vpc-id vpc-038b519bea7fafb30 --target-type ip --name projects-tg --health-check-path /projects/ping
+    arn:aws:elasticloadbalancing:us-east-1:101526122836:targetgroup/projects-tg/ce2b43c1030c0917
+
+aws elbv2 create-rule --listener-arn arn:aws:elasticloadbalancing:us-east-1:101526122836:listener/app/abcjobs-qa-lb/fd86a86408ffe63b/a73e50ffb9eaa159 --priority 13 --conditions Field=path-pattern,Values='/projects/*'  --actions Type=forward,TargetGroupArn=arn:aws:elasticloadbalancing:us-east-1:101526122836:targetgroup/projects-tg/ce2b43c1030c0917
+aws elbv2 describe-rules --listener-arn arn:aws:elasticloadbalancing:us-east-1:101526122836:listener/app/abcjobs-qa-lb/fd86a86408ffe63b/a73e50ffb9eaa159 --query 'Rules[].{Priority:Priority,Path:Conditions[0].Values[0]}'
+
+aws ecs create-service --cluster cluster-abcjobs-qa --cli-input-json file://aws/scripts/services/service-projects.json
 
 
 companies

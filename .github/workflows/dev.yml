@@ -13,6 +13,14 @@ on:
 # check for run job based on file changes in GitHub Actions
 # https://how.wtf/run-workflow-step-or-job-based-on-file-changes-github-actions.html
 jobs:
+  projects:
+    uses: ./.github/workflows/test-build-deploy.yml
+    with:
+       microservice: projects
+       microservice-path: ./projects
+    secrets: inherit   
+
+
   candidatos-query:
     uses: ./.github/workflows/test-build-deploy.yml
     with:
