@@ -1,10 +1,10 @@
+import json
 from modelos import db, SoftSkills, TechnicalSkills, Candidate, CandidateSchema
-import requests
-from flask import request
+from flask import request, current_app
 from flask_restful import Resource
-from datetime import datetime
 from .errors import customError
 from .utils import lengthValidation
+import requests
 
 candidate_schema = CandidateSchema()
 
@@ -41,6 +41,21 @@ class VistaCandidate(Resource):
             if not lengthValidation(data.get(field, ""), min_len, max_len):
                 return customError(400, "CO02", f"El campo '{field}' no cumple con la longitud requerida: {min_len}-{max_len}")
         
+
+        if data['password'] != data['passwordConfirmation']:
+            return customError(400, "CO03", "El campo password y passwordConfirmation no conciden")
+        
+
+        request_auth = {
+            'username': data['username'],
+            'password': data['password'],
+            'email': data['email']
+        }
+        response = requests.post(current_app.config['USERS'], headers={"Content-Type":"application/json"}, json=request_auth, timeout=60)
+        print(response)
+        data_resp = json.loads(response.text)
+        if data_resp.get('errorMessage') is not None:
+            return customError(400, "CO04", f"Error en el registro del usuario en cognito - {data_resp.get('errorMessage')}")
 
         name = data['name']
         lastName = data['lastName']
