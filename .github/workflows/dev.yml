@@ -41,10 +41,3 @@ jobs:
        microservice: preguntas-query
        microservice-path: ./experimentos/preguntas-query
     secrets: inherit   
-
-  collaborators:
-    uses: ./.github/workflows/test-build-deploy.yml
-    with:
-       microservice: collaborators
-       microservice-path: ./collaborators
-    secrets: inherit    
