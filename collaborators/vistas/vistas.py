@@ -50,18 +50,23 @@ class VistaCollaborators(Resource):
         position = data['position']
         
         #pendiente validaciones no crear colaborador repetido
-       
-        new_collaborator = Collaborator(
-                                idType=idType,
-                                idNumber=idNumber,
-                                collaboratorName=collaboratorName,
-                                collaboratorLastName=collaboratorLastName,
-                                email=email,
-                                phone=phone,
-                                address=address,
-                                role=role,
-                                position=position
-                                )
-        db.session.add(new_collaborator)
+        idCollaborator = Collaborator.query.filter(Collaborator.idNumber == idNumber).first()
         db.session.commit()
-        return collaborator_schema.dump(new_collaborator), 201
+
+        if idCollaborator is None:      
+            new_collaborator = Collaborator(
+                                    idType=idType,
+                                    idNumber=idNumber,
+                                    collaboratorName=collaboratorName,
+                                    collaboratorLastName=collaboratorLastName,
+                                    email=email,
+                                    phone=phone,
+                                    address=address,
+                                    role=role,
+                                    position=position
+                                    )
+            db.session.add(new_collaborator)
+            db.session.commit()
+            return collaborator_schema.dump(new_collaborator), 201
+        else:
+            return customError(400, "CO03", f"El número de identificacion ya existe")

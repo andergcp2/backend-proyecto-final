@@ -28,11 +28,11 @@ class TestCollaborator(TestCase):
     def test_create_company_201_creation_success(self):
         new_company = {
             "idType" : "CC",
-            "idNumber" : self.data_factory.random_int(),
+            "idNumber" : self.data_factory.random_int(10000, 32000),
             "collaboratorName" : self.data_factory.first_name(), 
             "collaboratorLastName" : self.data_factory.last_name(),
             "email" : self.data_factory.email(),
-            "phone" : self.data_factory.phone_number(),
+            "phone" : self.data_factory.random_int(20000, 50000),
             "address" : self.data_factory.address(),
             "role" : "Reclutador",
             "position" : self.data_factory.job()
@@ -44,11 +44,11 @@ class TestCollaborator(TestCase):
     def test_create_collaborator_400_invalid_request(self):
         new_company = {
             "idType" : "C",
-            "idNumber" : self.data_factory.random_int(),
+            "idNumber" : self.data_factory.random_int(10000, 32000),
             "collaboratorName" : self.data_factory.first_name(), 
             "collaboratorLastName" : self.data_factory.last_name(),
             "email" : self.data_factory.email(),
-            "phone" : self.data_factory.phone_number(),
+            "phone" : self.data_factory.random_int(20000, 50000),
             "address" : self.data_factory.address(),
             "role" : "Rec",
             "position" : self.data_factory.job()
@@ -63,3 +63,37 @@ class TestCollaborator(TestCase):
         resp_get = self.client.get(self.endpoint_create, headers={'Content-Type': 'application/json'})
         print(resp_get.get_data())
         self.assertEqual(resp_get.status_code, 200)
+
+    def test_create_collaborator_400_user_duplicate(self):
+        idnum = self.data_factory.random_int(10000, 32000)
+        new_collaborator = {
+            "idType" : "CC",
+            "idNumber" : idnum,
+            "collaboratorName" : self.data_factory.first_name(), 
+            "collaboratorLastName" : self.data_factory.last_name(),
+            "email" : self.data_factory.email(),
+            "phone" : self.data_factory.random_int(20000, 50000),
+            "address" : self.data_factory.address(),
+            "role" : "Recluctador",
+            "position" : self.data_factory.job()
+        }
+
+        resp_create = self.client.post(self.endpoint_create, headers={'Content-Type': 'application/json'}, data=json.dumps(new_collaborator))
+        print(resp_create.get_data())
+        self.assertEqual(resp_create.status_code, 201)
+
+        new_collaborator2 = {
+            "idType" : "CC",
+            "idNumber" : idnum,
+            "collaboratorName" : self.data_factory.first_name(), 
+            "collaboratorLastName" : self.data_factory.last_name(),
+            "email" : self.data_factory.email(),
+            "phone" : self.data_factory.random_int(20000, 50000),
+            "address" : self.data_factory.address(),
+            "role" : "Recluctador",
+            "position" : self.data_factory.job()
+        }
+        resp_create = self.client.post(self.endpoint_create, headers={'Content-Type': 'application/json'}, data=json.dumps(new_collaborator2))
+        error_code = json.loads(resp_create.get_data()).get('errorCode') 
+        self.assertEqual(error_code, 'CO03')
+        self.assertEqual(resp_create.status_code, 400)
