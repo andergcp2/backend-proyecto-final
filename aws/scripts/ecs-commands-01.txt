@@ -56,8 +56,8 @@ aws elbv2 describe-rules --listener-arn arn:aws:elasticloadbalancing:us-east-1:1
 aws ecs create-service --cluster cluster-abcjobs-qa --cli-input-json file://aws/services/service-preguntas-query.json
 
 
-projects-query
-===============
+projects
+========
 
 aws ecs register-task-definition --cli-input-json file://aws/scripts/tasks/task-projects.json
 
@@ -65,9 +65,21 @@ aws elbv2 create-target-group --protocol HTTP --port 80 --vpc-id vpc-038b519bea7
     arn:aws:elasticloadbalancing:us-east-1:101526122836:targetgroup/projects-tg/ce2b43c1030c0917
 
 aws elbv2 create-rule --listener-arn arn:aws:elasticloadbalancing:us-east-1:101526122836:listener/app/abcjobs-qa-lb/fd86a86408ffe63b/a73e50ffb9eaa159 --priority 13 --conditions Field=path-pattern,Values='/projects/*'  --actions Type=forward,TargetGroupArn=arn:aws:elasticloadbalancing:us-east-1:101526122836:targetgroup/projects-tg/ce2b43c1030c0917
-aws elbv2 describe-rules --listener-arn arn:aws:elasticloadbalancing:us-east-1:101526122836:listener/app/abcjobs-qa-lb/fd86a86408ffe63b/a73e50ffb9eaa159 --query 'Rules[].{Priority:Priority,Path:Conditions[0].Values[0]}'
 
 aws ecs create-service --cluster cluster-abcjobs-qa --cli-input-json file://aws/scripts/services/service-projects.json
+
+
+collaborators
+===============
+
+aws ecs register-task-definition --cli-input-json file://aws/scripts/tasks/task-collaborators.json
+
+aws elbv2 create-target-group --protocol HTTP --port 80 --vpc-id vpc-038b519bea7fafb30 --target-type ip --name collaborators-tg --health-check-path /collaborators/ping
+    arn:aws:elasticloadbalancing:us-east-1:101526122836:targetgroup/collaborators-tg/8837434eb6b83909
+
+aws elbv2 create-rule --listener-arn arn:aws:elasticloadbalancing:us-east-1:101526122836:listener/app/abcjobs-qa-lb/fd86a86408ffe63b/a73e50ffb9eaa159 --priority 14 --conditions Field=path-pattern,Values='/collaborators/*'  --actions Type=forward,TargetGroupArn=arn:aws:elasticloadbalancing:us-east-1:101526122836:targetgroup/collaborators-tg/8837434eb6b83909
+
+aws ecs create-service --cluster cluster-abcjobs-qa --cli-input-json file://aws/scripts/services/service-collaborators.json
 
 
 companies

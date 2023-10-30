@@ -1,0 +1,20 @@
+{
+  "serviceName": "collaborators-service",
+  "taskDefinition": "task-collaborators",
+  "loadBalancers": [
+      {
+          "targetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:101526122836:targetgroup/collaborators-tg/8837434eb6b83909",
+          "containerName": "collaborators-container",
+          "containerPort": 80
+      }
+  ],
+  "networkConfiguration": {
+      "awsvpcConfiguration": {
+          "assignPublicIp": "ENABLED",
+          "securityGroups": ["sg-0c8857307e3f9ac70"],
+          "subnets": ["subnet-07686950f6453601d", "subnet-01fd8a67d859ff66c"] 
+      }
+  },
+  "desiredCount": 2,
+  "launchType": "FARGATE"
+}
