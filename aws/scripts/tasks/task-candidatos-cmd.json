@@ -1,0 +1,35 @@
+{
+    "family": "task-candidatos-cmd",
+    "networkMode": "awsvpc",
+    "taskRoleArn": "arn:aws:iam::101526122836:role/ecsTaskExecutionRole",
+    "executionRoleArn": "arn:aws:iam::101526122836:role/ecsTaskExecutionRole",
+    "containerDefinitions": [
+      {
+        "name": "candidatos-cmd-container",
+        
+        "image": "101526122836.dkr.ecr.us-east-1.amazonaws.com/candidatos-cmd:latest",
+        "portMappings": [
+            {
+                "containerPort": 80,
+                "hostPort": 80,
+                "protocol": "tcp"
+            }
+        ],
+        "essential": true, 
+        "healthCheck": {
+          "command": ["CMD-SHELL","curl -f http://localhost/candidatos-cmd/ping || exit 1"],
+          "interval": 30,
+          "timeout": 5,
+          "retries": 3
+        }
+      }
+    ],
+    "runtimePlatform": {
+      "operatingSystemFamily": "LINUX"
+    },    
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "256",
+    "memory": "512"
+}
