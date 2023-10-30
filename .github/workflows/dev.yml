@@ -20,13 +20,20 @@ jobs:
        microservice-path: ./projects
     secrets: inherit   
 
+  candidatos-cmd:
+    uses: ./.github/workflows/test-build-deploy.yml
+    with:
+       microservice: candidatos-cmd
+       microservice-path: ./candidatos_command
+    secrets: inherit   
+
   companies:
     uses: ./.github/workflows/test-build-deploy.yml
     with:
        microservice: companies
        microservice-path: ./companies
     secrets: inherit   
-
+    
   collaborators:
     uses: ./.github/workflows/test-build-deploy.yml
     with:
