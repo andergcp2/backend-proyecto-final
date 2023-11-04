@@ -100,10 +100,7 @@ aws elbv2 create-target-group --protocol HTTP --port 80 --vpc-id vpc-038b519bea7
 
 aws elbv2 create-rule --listener-arn arn:aws:elasticloadbalancing:us-east-1:101526122836:listener/app/abcjobs-qa-lb/fd86a86408ffe63b/a73e50ffb9eaa159 --priority 15 --conditions Field=path-pattern,Values='/candidates/*'  --actions Type=forward,TargetGroupArn=arn:aws:elasticloadbalancing:us-east-1:101526122836:targetgroup/candidatos-cmd-tg/f1d9cf46210019e6
 
-#aws ecs create-service --cluster cluster-abcjobs-qa --service-name candidatos-cmd-service --task-definition task-candidatos-cmd --desired-count 2 --launch-type "FARGATE" --network-configuration "awsvpcConfiguration={subnets=[subnet-07686950f6453601d, subnet-01fd8a67d859ff66c],securityGroups=[sg-0c8857307e3f9ac70],assignPublicIp=ENABLED}"
-
 aws ecs create-service --cluster cluster-abcjobs-qa --cli-input-json file://aws/scripts/services/service-candidatos-cmd.json
-
 
 
 ===============================================================================================
