@@ -21,8 +21,24 @@ env:
   ECS_CLUSTER: abcjobs-cluster
 
 jobs:
+
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      src: ${{ steps.changes.outputs.src }}
+    steps:
+    - uses: actions/checkout@v3
+    - uses: dorny/paths-filter@v2
+      id: changes
+      with:
+        filters: |
+          src:
+            - '${{ inputs.microservice-path }}/**'
+
   unit-test:
-    name: unit tests 
+    name: unit tests
+    needs: changes
+    if: ${{ needs.changes.outputs.src == 'true' }}    
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
