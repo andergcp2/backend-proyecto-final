@@ -7,14 +7,13 @@ terraform {
     }
   }
   #required_version = ">= 1.0.11"
-}
 
-#   backend "s3" {
-#     bucket = "du-terraform-state-bucket"
-#     key    = "state/terraform_state.tfstate"
-#     region = "us-east-1"
-#   }
-# }
+  # backend "s3" {
+  #   bucket = "du-terraform-state-bucket"
+  #   key    = "state/terraform_state.tfstate"
+  #   region = "us-east-1"
+  # }
+}
 
 provider "aws" {
   region  = var.region
@@ -33,6 +32,7 @@ module "iam" {
 
 module "vpc" {
   source             = "./modules/vpc"
+  region             = var.region
   app_name           = var.app_name
   env                = var.env
   cidr               = var.cidr

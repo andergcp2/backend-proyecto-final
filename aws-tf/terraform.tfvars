@@ -1,10 +1,10 @@
 ## Application configurations
 account      = 101526122836
-profile      = "abcjobs"
 region       = "us-east-1"
+profile      = "default"
 app_name     = "abcjobs"
 env          = "dev"
-app_services = ["webapp", "customer", "transaction"]
+app_services = ["candidatos-qry", "pruebas-qry", "preguntas-qry"]
 
 #VPC configurations
 cidr               = "10.10.0.0/16"
@@ -19,7 +19,6 @@ internal_alb_config = {
     "HTTP" = {
       listener_port     = 80
       listener_protocol = "HTTP"
-
     }
   }
 
@@ -52,7 +51,6 @@ public_alb_config = {
     "HTTP" = {
       listener_port     = 80
       listener_protocol = "HTTP"
-
     }
   }
 
@@ -77,8 +75,8 @@ public_alb_config = {
 
 #Microservices
 microservice_config = {
-  "WebApp" = {
-    name             = "WebApp"
+  "candidatos-qry" = {
+    name             = "candidatos-qry"
     is_public        = true
     container_port   = 80
     host_port        = 80
@@ -88,8 +86,8 @@ microservice_config = {
     alb_target_group = {
       port              = 80
       protocol          = "HTTP"
-      path_pattern      = ["/*"]
-      health_check_path = "/health"
+      path_pattern      = ["/candidates*"]
+      health_check_path = "/candidates/ping"
       priority          = 1
     }
     auto_scaling = {
@@ -103,19 +101,19 @@ microservice_config = {
       }
     }
   },
-  "Customer" = {
-    name             = "Customer"
+  "pruebas-qry" = {
+    name             = "pruebas-qry"
     is_public        = false
-    container_port   = 3000
-    host_port        = 3000
+    container_port   = 80
+    host_port        = 80
     cpu              = 256
     memory           = 512
     desired_count    = 1
     alb_target_group = {
-      port              = 3000
+      port              = 80
       protocol          = "HTTP"
-      path_pattern      = ["/customer*"]
-      health_check_path = "/health"
+      path_pattern      = ["/pruebas-query*"]
+      health_check_path = "/pruebas-query/ping"
       priority          = 1
     }
     auto_scaling = {
@@ -129,19 +127,19 @@ microservice_config = {
       }
     }
   },
-  "Transaction" = {
-    name             = "Transaction"
+  "preguntas-qry" = {
+    name             = "preguntas-qry"
     is_public        = false
-    container_port   = 3000
-    host_port        = 3000
+    container_port   = 80
+    host_port        = 80
     cpu              = 256
     memory           = 512
     desired_count    = 1
     alb_target_group = {
-      port              = 3000
+      port              = 80
       protocol          = "HTTP"
-      path_pattern      = ["/transaction*"]
-      health_check_path = "/health"
+      path_pattern      = ["/preguntas-query*"]
+      health_check_path = "/preguntas-query/ping"
       priority          = 1
     }
     auto_scaling = {
