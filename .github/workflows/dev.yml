@@ -13,38 +13,37 @@ on:
 # check for run job based on file changes in GitHub Actions
 # https://how.wtf/run-workflow-step-or-job-based-on-file-changes-github-actions.html
 jobs:
-  # projects:
-  #   uses: ./.github/workflows/test-build-deploy.yml
-  #   with:
-  #      microservice: projects
-  #      microservice-path: ./projects
-  #   secrets: inherit   
+  projects:
+    uses: ./.github/workflows/test-build-deploy.yml
+    with:
+       microservice: projects
+       microservice-path: ./projects
+    secrets: inherit
 
-  # candidatos-cmd:
-  #   uses: ./.github/workflows/test-build-deploy.yml
-  #   with:
-  #      microservice: candidatos-cmd
-  #      microservice-path: ./candidatos_command
-  #   secrets: inherit   
+  companies:
+    uses: ./.github/workflows/test-build-deploy.yml
+    with:
+       microservice: companies
+       microservice-path: ./companies
+    secrets: inherit
 
-  # companies:
-  #   uses: ./.github/workflows/test-build-deploy.yml
-  #   with:
-  #      microservice: companies
-  #      microservice-path: ./companies
-  #   secrets: inherit   
-    
-  # collaborators:
-  #   uses: ./.github/workflows/test-build-deploy.yml
-  #   with:
-  #      microservice: collaborators
-  #      microservice-path: ./collaborators
-  #   secrets: inherit
+  collaborators:
+    uses: ./.github/workflows/test-build-deploy.yml
+    with:
+       microservice: collaborators
+       microservice-path: ./collaborators
+    secrets: inherit
+
+  candidatos-cmd:
+    uses: ./.github/workflows/test-build-deploy.yml
+    with:
+       microservice: candidatos-cmd
+       microservice-path: ./candidatos_command
+    secrets: inherit
 
   candidatos-qry:
     uses: ./.github/workflows/test-build-deploy.yml
     with:
-       #microservice: candidatos-query
        microservice: candidatos-qry
        microservice-path: ./experimentos/candidatos-query
     secrets: inherit
@@ -52,7 +51,6 @@ jobs:
   pruebas-qry:
     uses: ./.github/workflows/test-build-deploy.yml
     with:
-       #microservice: pruebas-query
        microservice: pruebas-qry
        microservice-path: ./experimentos/pruebas-query
     secrets: inherit
@@ -60,7 +58,6 @@ jobs:
   preguntas-qry:
     uses: ./.github/workflows/test-build-deploy.yml
     with:
-       #microservice: preguntas-query
        microservice: preguntas-qry
        microservice-path: ./experimentos/preguntas-query
     secrets: inherit

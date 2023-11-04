@@ -113,3 +113,13 @@ aws ecs describe-services --cluster cluster-abcjobs-qa --services companies-serv
 
 - eliminar service
 #aws ecs delete-service --cluster cluster-abcjobs-qa --service preguntas-query-service --force
+
+aws ecs delete-task-definitions --task-definition task-candidatos-cmd:1
+aws ecs delete-task-definitions --task-definition task-candidatos-query:1
+aws ecs delete-task-definitions --task-definition task-collaborators:1
+aws ecs delete-task-definitions --task-definition task-companies:1
+aws ecs delete-task-definitions --task-definition task-preguntas-query:1
+aws ecs delete-task-definitions --task-definition task-projects:1
+aws ecs delete-task-definitions --task-definition task-pruebas-query:1
+aws ecs delete-task-definitions --task-definition arn:aws:ecs:us-east-1:101526122836:task-definition/task-pruebas-query:1
+
