@@ -4,8 +4,7 @@ region       = "us-east-1"
 profile      = "default"
 app_name     = "abcjobs"
 env          = "dev"
-#app_services = ["candidatos-qry", "pruebas-qry", "preguntas-qry"]
-app_services = ["candidatos-qry", "pruebas-qry"]
+app_services = ["candidatos-qry", "pruebas-qry", "preguntas-qry"]
 
 #VPC configurations
 cidr               = "10.10.0.0/16"
@@ -128,30 +127,30 @@ microservice_config = {
       }
     }
   },
-  # "preguntas-qry" = {
-  #   name             = "preguntas-qry"
-  #   is_public        = false
-  #   container_port   = 80
-  #   host_port        = 80
-  #   cpu              = 256
-  #   memory           = 512
-  #   desired_count    = 1
-  #   alb_target_group = {
-  #     port              = 80
-  #     protocol          = "HTTP"
-  #     path_pattern      = ["/preguntas-query*"]
-  #     health_check_path = "/preguntas-query/ping"
-  #     priority          = 1
-  #   }
-  #   auto_scaling = {
-  #     max_capacity = 2
-  #     min_capacity = 1
-  #     cpu          = {
-  #       target_value = 75
-  #     }
-  #     memory = {
-  #       target_value = 75
-  #     }
-  #   }
-  # }
+  "preguntas-qry" = {
+    name             = "preguntas-qry"
+    is_public        = false
+    container_port   = 80
+    host_port        = 80
+    cpu              = 256
+    memory           = 512
+    desired_count    = 1
+    alb_target_group = {
+      port              = 80
+      protocol          = "HTTP"
+      path_pattern      = ["/preguntas-query*"]
+      health_check_path = "/preguntas-query/ping"
+      priority          = 1
+    }
+    auto_scaling = {
+      max_capacity = 2
+      min_capacity = 1
+      cpu          = {
+        target_value = 75
+      }
+      memory = {
+        target_value = 75
+      }
+    }
+  }
 }
