@@ -1,0 +1,63 @@
+# Ejemplo de github action para probar python
+# Docs: https://docs.github.com/es/actions/using-workflows/workflow-syntax-for-github-actions
+name: Grupo-18 CI/CD Dev
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches: 
+      - develop
+
+# check for run job based on file changes in GitHub Actions
+# https://how.wtf/run-workflow-step-or-job-based-on-file-changes-github-actions.html
+jobs:
+  projects:
+    uses: ./.github/workflows/test-build-deploy.yml
+    with:
+       microservice: projects
+       microservice-path: ./projects
+    secrets: inherit
+
+  companies:
+    uses: ./.github/workflows/test-build-deploy.yml
+    with:
+       microservice: companies
+       microservice-path: ./companies
+    secrets: inherit
+
+  collaborators:
+    uses: ./.github/workflows/test-build-deploy.yml
+    with:
+       microservice: collaborators
+       microservice-path: ./collaborators
+    secrets: inherit
+
+  candidatos-cmd:
+    uses: ./.github/workflows/test-build-deploy.yml
+    with:
+       microservice: candidatos-cmd
+       microservice-path: ./candidatos_command
+    secrets: inherit
+
+  candidatos-qry:
+    uses: ./.github/workflows/test-build-deploy.yml
+    with:
+       microservice: candidatos-qry
+       microservice-path: ./experimentos/candidatos-query
+    secrets: inherit
+
+  pruebas-qry:
+    uses: ./.github/workflows/test-build-deploy.yml
+    with:
+       microservice: pruebas-qry
+       microservice-path: ./experimentos/pruebas-query
+    secrets: inherit
+
+  preguntas-qry:
+    uses: ./.github/workflows/test-build-deploy.yml
+    with:
+       microservice: preguntas-qry
+       microservice-path: ./experimentos/preguntas-query
+    secrets: inherit
