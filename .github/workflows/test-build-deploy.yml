@@ -17,7 +17,8 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECS_CLUSTER: cluster-abcjobs-qa
+  #ECS_CLUSTER: cluster-abcjobs-qa
+  ECS_CLUSTER: abcjobs-cluster
 
 jobs:
   unit-test:
@@ -61,7 +62,7 @@ jobs:
       working-directory: ${{ inputs.microservice-path }}    
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: ${{ inputs.microservice }} 
+        ECR_REPOSITORY: ${{ inputs.microservice }}-repo
         IMAGE_TAG: latest
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
@@ -69,7 +70,7 @@ jobs:
 
     - name: Actualizar versión en ECS
       run: |
-        aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ inputs.microservice }}-service --task-definition task-${{ inputs.microservice }} --force-new-deployment
+        aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ inputs.microservice }}-service --task-definition ${{ inputs.microservice }}-task --force-new-deployment
 
 # check image tag strategy in: 
 # https://docs.github.com/en/actions/deployment/deploying-to-your-cloud-provider/deploying-to-amazon-elastic-container-service
