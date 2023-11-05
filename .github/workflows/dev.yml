@@ -45,7 +45,7 @@ jobs:
     uses: ./.github/workflows/test-build-deploy.yml
     with:
        microservice: candidatos-qry
-       microservice-path: ./experimentos/candidatos-query
+       microservice-path: ./candidatos_qry
     secrets: inherit
 
   pruebas-qry:

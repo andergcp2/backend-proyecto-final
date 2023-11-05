@@ -8,6 +8,19 @@ import requests
 
 candidate_schema = CandidateSchema()
 
+def validacionCondiciones(role, softskill, tecnicalskill):
+    peso = 0
+    if role is not None:
+        peso = peso + 1
+
+    if softskill is not None:
+        peso = peso + 5
+
+    if tecnicalskill is not None:
+        peso = peso + 9
+
+    return peso
+
 class VistaPing(Resource):
     def get(self):
         return "PONG", 200
