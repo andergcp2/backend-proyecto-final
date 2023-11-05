@@ -16,9 +16,9 @@ class VistaSearch(Resource):
         """ Method get candidates by query params """
         role = request.args.get('role')
         softskill = request.args.get('softskill')
-        technicalSkill = request.args.get('technicalSkill')
+        technicalskill = request.args.get('technicalskill')
 
-        if role is not None and softskill is not None and technicalSkill is not None:
+        if role is None and softskill is None and technicalskill is None:
             return [candidate_schema.dump(candidate) for candidate in Candidate.query.all()], 200
 
         my_filters = set()
@@ -27,8 +27,8 @@ class VistaSearch(Resource):
             my_filters.add(Candidate.profession == role)
         if softskill is not None:
             my_filters.add(SoftSkills.skill == softskill)
-        if technicalSkill is not None:
-            my_filters.add(TechnicalSkills.skill == technicalSkill)
+        if technicalskill is not None:
+            my_filters.add(TechnicalSkills.skill == technicalskill)
 
         candidates = [candidate_schema.dump(candidate) for candidate in Candidate.query.join(SoftSkills).join(TechnicalSkills).filter(*my_filters).all()]
         if candidates:

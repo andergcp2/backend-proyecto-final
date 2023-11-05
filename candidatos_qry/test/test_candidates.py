@@ -10,8 +10,8 @@ class TestCompany(TestCase):
     def setUp(self):
         self.data_factory = Faker()
         self.client = app.test_client()
-        self.endpoint_get = '/candidates'
-        self.endpoint_health = '/candidates/ping'
+        self.endpoint_get = '/candidates-qry'
+        self.endpoint_health = '/candidates-qry/ping'
 
     def test_health(self):
         """Test for health check ping"""

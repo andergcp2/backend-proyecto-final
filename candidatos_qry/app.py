@@ -29,5 +29,5 @@ cors = CORS(app)
 
 api = Api(app)
 
-api.add_resource(VistaPing, '/candidates/ping')
-api.add_resource(VistaSearch, '/candidates')
+api.add_resource(VistaPing, '/candidates-qry/ping')
+api.add_resource(VistaSearch, '/candidates-qry')
