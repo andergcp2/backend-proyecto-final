@@ -10,7 +10,7 @@ app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
 if 'USERS_PATH' in os.environ:
-    app.config['USERS'] = 'http://'+ str(os.environ.get("USERS_PATH")) +":"+ str(os.environ.get("USERS_PORT")) +'/users/me'
+    app.config['USERS'] = os.environ.get("USERS_PATH")
     app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://"+ str(os.environ.get("DB_USER")) +":"+ str(os.environ.get("DB_PASSWORD")) +"@"+ str(os.environ.get("DB_HOST")) +":"+ str(os.environ.get("DB_PORT")) +"/"+ str(os.environ.get("DB_NAME"))
     print("prod: ", app.config['SQLALCHEMY_DATABASE_URI'], app.config['USERS'])
 else:
