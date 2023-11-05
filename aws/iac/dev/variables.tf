@@ -6,7 +6,9 @@ variable "aws_profile" {
 variable "aws_region" {
   type = string
 }
-
+variable "aws_cuenta" {
+  type = string
+}
 variable "project" {
   type = string
 }

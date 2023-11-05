@@ -1,18 +1,5 @@
-# Load balancer security group. CIDR and port ingress can be changed as required.
-resource "aws_security_group" "lb_sg" {
-  description = "LoadBalancer Security Group"
-  vpc_id = aws_vpc.this.id
-  ingress {
-    description      = "Allow from anyone on port 80"
-    from_port        = 80
-    to_port          = 80
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
-}
-
 # ECS cluster security group.
-resource "aws_security_group" "ecs_sg" {
+resource "aws_security_group" "ecs_security_group" {
   description = "ECS Security Group"
   vpc_id = aws_vpc.this.id
   egress {
@@ -20,6 +7,19 @@ resource "aws_security_group" "ecs_sg" {
     from_port        = 0
     to_port          = 0
     protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+}
+
+# Load balancer security group. CIDR and port ingress can be changed as required.
+resource "aws_security_group" "lb_security_group" {
+  description = "LoadBalancer Security Group"
+  vpc_id = aws_vpc.this.id
+  ingress {
+    description      = "Allow from anyone on port 80"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
     cidr_blocks      = ["0.0.0.0/0"]
   }
 }
@@ -32,7 +32,7 @@ resource "aws_security_group_rule" "sg_ingress_rule_all_to_lb" {
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
   ipv6_cidr_blocks  = ["::/0"]
-  security_group_id = aws_security_group.lb_sg.id
+  security_group_id = aws_security_group.lb_security_group.id
 }
 
 # Load balancer security group egress rule to ECS cluster security group.
@@ -42,8 +42,8 @@ resource "aws_security_group_rule" "sg_egress_rule_lb_to_ecs_cluster" {
   from_port         = 80
   to_port           = 80
   protocol          = "tcp"
-  security_group_id = aws_security_group.lb_sg.id
-  source_security_group_id = aws_security_group.ecs_sg.id
+  security_group_id = aws_security_group.lb_security_group.id
+  source_security_group_id = aws_security_group.ecs_security_group.id
 }
 
 # ECS cluster security group ingress from the load balancer.
@@ -53,6 +53,63 @@ resource "aws_security_group_rule" "sg_ingress_rule_ecs_cluster_from_lb" {
   from_port         = 80
   to_port           = 80
   protocol          = "tcp"
-  security_group_id = aws_security_group.ecs_sg.id
-  source_security_group_id = aws_security_group.lb_sg.id
+  security_group_id = aws_security_group.ecs_security_group.id
+  source_security_group_id = aws_security_group.lb_security_group.id
 }
+
+resource "aws_iam_role" "ecs_task_exec_role" {
+  name = "ecs_task_exec_role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role" "ecs_task_role" {
+  name = "ecs_task_role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+      },
+    ]
+  })
+}
+
+# data "aws_iam_policy_document" "assume_role_policy" {
+#   statement {
+#     actions = ["sts:AssumeRole"]
+
+#     principals {
+#       type        = "Service"
+#       identifiers = ["ecs-tasks.amazonaws.com"]
+#     }
+#   }
+# }
+
+# resource "aws_iam_role" "ecsTaskExecutionRole" {
+#   name               = "${var.project}-execution-task-role"
+#   assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
+#   tags = {
+#     Name        = "${var.project}-iam-role"
+#     Environment = var.environment
+#   }
+# }
+
+# resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRole_policy" {
+#   role       = aws_iam_role.ecsTaskExecutionRole.name
+#   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+# }

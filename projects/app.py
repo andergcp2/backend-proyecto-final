@@ -19,7 +19,7 @@ else:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///projects.db'
     #app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://usrabc:pwdjobs@localhost:5432/abcjobs"
     app.config['TESTING'] = True
-    print("test: ", app.config['SQLALCHEMY_DATABASE_URI'])
+    print("testing: ", app.config['SQLALCHEMY_DATABASE_URI'])
 
 app_context = app.app_context()
 app_context.push()

@@ -18,22 +18,15 @@ jobs:
     with:
        microservice: projects
        microservice-path: ./projects
-    secrets: inherit   
-
-  candidatos-cmd:
-    uses: ./.github/workflows/test-build-deploy.yml
-    with:
-       microservice: candidatos-cmd
-       microservice-path: ./candidatos_command
-    secrets: inherit   
+    secrets: inherit
 
   companies:
     uses: ./.github/workflows/test-build-deploy.yml
     with:
        microservice: companies
        microservice-path: ./companies
-    secrets: inherit   
-    
+    secrets: inherit
+
   collaborators:
     uses: ./.github/workflows/test-build-deploy.yml
     with:
@@ -41,23 +34,30 @@ jobs:
        microservice-path: ./collaborators
     secrets: inherit
 
-  # candidatos-query:
-  #   uses: ./.github/workflows/test-build-deploy.yml
-  #   with:
-  #      microservice: candidatos-query
-  #      microservice-path: ./experimentos/candidatos-query
-  #   secrets: inherit   
+  candidatos-cmd:
+    uses: ./.github/workflows/test-build-deploy.yml
+    with:
+       microservice: candidatos-cmd
+       microservice-path: ./candidatos_command
+    secrets: inherit
 
-  # pruebas-query:
-  #   uses: ./.github/workflows/test-build-deploy.yml
-  #   with:
-  #      microservice: pruebas-query
-  #      microservice-path: ./experimentos/pruebas-query
-  #   secrets: inherit   
+  candidatos-qry:
+    uses: ./.github/workflows/test-build-deploy.yml
+    with:
+       microservice: candidatos-qry
+       microservice-path: ./experimentos/candidatos-query
+    secrets: inherit
 
-  # preguntas-query:
-  #   uses: ./.github/workflows/test-build-deploy.yml
-  #   with:
-  #      microservice: preguntas-query
-  #      microservice-path: ./experimentos/preguntas-query
-  #   secrets: inherit   
+  pruebas-qry:
+    uses: ./.github/workflows/test-build-deploy.yml
+    with:
+       microservice: pruebas-qry
+       microservice-path: ./experimentos/pruebas-query
+    secrets: inherit
+
+  preguntas-qry:
+    uses: ./.github/workflows/test-build-deploy.yml
+    with:
+       microservice: preguntas-qry
+       microservice-path: ./experimentos/preguntas-query
+    secrets: inherit

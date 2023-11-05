@@ -17,11 +17,28 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECS_CLUSTER: cluster-abcjobs-qa
+  #ECS_CLUSTER: cluster-abcjobs-qa
+  ECS_CLUSTER: abcjobs-cluster
 
 jobs:
+
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      src: ${{ steps.changes.outputs.src }}
+    steps:
+    - uses: actions/checkout@v3
+    - uses: dorny/paths-filter@v2
+      id: changes
+      with:
+        filters: |
+          src:
+            - '${{ inputs.microservice-path }}/**'
+
   unit-test:
-    name: unit tests 
+    name: unit tests
+    needs: changes
+    if: ${{ needs.changes.outputs.src == 'true' }}    
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -61,7 +78,7 @@ jobs:
       working-directory: ${{ inputs.microservice-path }}    
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: ${{ inputs.microservice }} 
+        ECR_REPOSITORY: ${{ inputs.microservice }}
         IMAGE_TAG: latest
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
@@ -69,7 +86,7 @@ jobs:
 
     - name: Actualizar versión en ECS
       run: |
-        aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ inputs.microservice }}-service --task-definition task-${{ inputs.microservice }} --force-new-deployment
+        aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ inputs.microservice }}-service --task-definition ${{ inputs.microservice }}-task --force-new-deployment
 
 # check image tag strategy in: 
 # https://docs.github.com/en/actions/deployment/deploying-to-your-cloud-provider/deploying-to-amazon-elastic-container-service
