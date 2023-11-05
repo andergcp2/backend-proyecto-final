@@ -32,7 +32,7 @@ class TestProyectos(TestCase):
             "profiles": [
                 {
                     "name": self.fake.job(), 
-                    "professional": self.fake.job(), 
+                    "profession": self.fake.job(), 
                     "softskills": [
                         {"id": self.fake.random_int(100, 999), "name": self.fake.job()}, 
                         {"id": self.fake.random_int(100, 999), "name": self.fake.job()},                         
@@ -51,7 +51,7 @@ class TestProyectos(TestCase):
                 }, 
                 {
                     "name": self.fake.job(), 
-                    "professional": self.fake.job(), 
+                    "profession": self.fake.job(), 
                     "softskills": [
                         {"id": self.fake.random_int(100, 999), "name": self.fake.job()}, 
                         {"id": self.fake.random_int(100, 999), "name": self.fake.job()}, 
