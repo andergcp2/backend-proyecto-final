@@ -76,7 +76,7 @@ class Projects(Resource):
 
         #print("init: ", new_project)
         for item in profiles:
-            new_profile = Profile(name=item["name"], professional=item["professional"], projectId=new_project.id)
+            new_profile = Profile(name=item["name"], profession=item["profession"], projectId=new_project.id)
             for item_soft in item["softskills"]:
                 new_skill = SkillProfile(skillId=item_soft["id"], profileId=new_profile.id)
                 new_profile.softskills.append(new_skill) 
