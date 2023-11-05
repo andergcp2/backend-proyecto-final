@@ -24,7 +24,7 @@ def validacionCondiciones(role, softskill, tecnicalskill):
 class VistaPing(Resource):
     def get(self):
         return "PONG", 200
-    
+'''    
 class VistaCandidate(Resource):
 
     def get(self):
@@ -119,6 +119,33 @@ class VistaCandidate(Resource):
 '''    
 class VistaSearch(Resource):
     def get(self):
+        #Debe generarse la consulta general por filtros aqui y desppues hacer otro micro para validar token
+        #resp = validate_token(request.headers)
+        #if(resp['status_code'] != 200):
+        #    return resp['msg'], resp['status_code']
+
+        role = request.args.get('role')
+        softskill = request.args.get('softskill')
+        tecnicalskill = request.args.get('tecnicalskill')
+        #userId = resp["msg"]["id"]
+        if role is not None or softskill is not None or tecnicalskill is not None:
+            peso = validacionCondiciones(role, softskill, tecnicalskill)
+            if peso == 1:
+                return [candidate_schema.dump(candidate) for candidate in Candidate.query.filter(Candidate.profession==role).all()],200
+            if peso == 5:
+                return [candidate_schema.dump(candidate) for candidate in Candidate.query.filter(Candidate.softSkills == softskill).all()],200
+            if peso == 6:
+                return [candidate_schema.dump(candidate) for candidate in Candidate.query.filter(Candidate.profession==role).filter(Candidate.softSkills == softskill).all()],200
+            if peso == 9:
+                return [candidate_schema.dump(candidate) for candidate in Candidate.query.filter(Candidate.technicalSkills==tecnicalskill).all()],200
+            if peso == 14:
+                return [candidate_schema.dump(candidate) for candidate in Candidate.query.filter(Candidate.softSkills==softskill).filter(Candidate.technicalSkills == tecnicalskill).all()],200   
+            if peso == 15:
+                return [candidate_schema.dump(candidate) for candidate in Candidate.query.filter(Candidate.profession==role).filter(Candidate.softSkills == softskill).filter(Candidate.technicalSkills == tecnicalskill).all()],200
+        else:
+            return [candidate_schema.dump(candidate) for candidate in Candidate.query.all()]
+'''
+    def get(self, id):
         #Debe generarse la consulta general por filtros aqui y desppues hacer otro micro para validar token
         #resp = validate_token(request.headers)
         #if(resp['status_code'] != 200):
