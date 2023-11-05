@@ -26,6 +26,36 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       cpu          = each.value.cpu
       memory       = each.value.memory
       essential    = true
+      secrets = [
+        {
+          name      = "USERS_PATH"
+          valueFrom = "arn:aws:secretsmanager:us-east-1:101526122836:secret:users_path-V2eXvO"
+        }, 
+        {
+          name      = "USERS_PORT"
+          valueFrom = "arn:aws:secretsmanager:us-east-1:101526122836:secret:users_port-0qL9xg"
+        }, 
+        {
+          name      = "DB_USER"
+          valueFrom = "arn:aws:secretsmanager:us-east-1:101526122836:secret:rds_usr-qt5O4R"
+        }, 
+        {
+          name      = "DB_PASSWORD"
+          valueFrom = "arn:aws:secretsmanager:us-east-1:101526122836:secret:rds_pwd-i8ebsf"
+        }, 
+        {
+          name      = "DB_HOST"
+          valueFrom = "arn:aws:secretsmanager:us-east-1:101526122836:secret:rds_host-EkVWVQ"
+        }, 
+        {
+          name      = "DB_PORT"
+          valueFrom = "arn:aws:secretsmanager:us-east-1:101526122836:secret:rds_port-xETcnO"
+        }, 
+        {
+          name      = "DB_NAME"
+          valueFrom = "arn:aws:secretsmanager:us-east-1:101526122836:secret:rds_name-KBdDNB"
+        },                                                 
+      ]
       portMappings = [
         {
           containerPort = each.value.container_port
