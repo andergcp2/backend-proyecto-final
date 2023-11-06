@@ -27,7 +27,7 @@ class TestProjectsData(TestCase):
                 companyId=self.fake.random_int(1, 999))
 
             for x2 in range(numProfiles):
-                new_profile = Profile(name=self.fake.job(), professional=self.fake.job(), projectId=new_project.id)
+                new_profile = Profile(name=self.fake.job(), profession=self.fake.job(), projectId=new_project.id)
                 for x3 in range(numSkills):
                     new_profile.softskills.append(SkillProfile(skillId=self.fake.random_int(100, 999), profileId=new_profile.id)) 
                 for x4 in range(numSkills):

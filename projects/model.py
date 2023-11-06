@@ -34,14 +34,14 @@ class Profile(db.Model):
     __tablename__ = "profile"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
-    professional = db.Column(db.String(50))
+    profession = db.Column(db.String(50))
     projectId = db.Column(db.Integer, db.ForeignKey('project.id'))
     softskills = db.relationship('SkillProfile', cascade='all, delete, delete-orphan')
     techskills = db.relationship('SkillProfile', cascade='all, delete, delete-orphan')
     tests = db.relationship('TestProfile', cascade='all, delete, delete-orphan')
 
     # def __repr__(self):
-    #     return f'<Profile "{self.id}, {self.name}, {self.professional}, {self.projectId}">'
+    #     return f'<Profile "{self.id}, {self.name}, {self.profession}, {self.projectId}">'
 
 class SkillProfile(db.Model):
     __tablename__ = "skill_profile"

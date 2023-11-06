@@ -16,3 +16,7 @@ output "aws_alb_listener" {
 output "internal_alb" {
   value = aws_alb.alb
 }
+
+output "aws_alb_arn" {
+  value = aws_alb.alb.arn
+}
