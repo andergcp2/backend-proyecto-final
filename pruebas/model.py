@@ -16,20 +16,11 @@ class Test(db.Model):
     questions = db.relationship("Question", cascade='all, delete, delete-orphan')
     createdAt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     def __repr__(self):
-        return f'<Test "{self.id, self.name, self.techSkills, self.profiles}">'    
+        return f'<Test "{self.id, self.name, self.minLevel, self.numQuestions}">'    
 
 @property
 def createdAt(self):
     return self.createdAt.isoformat()
-
-class TechnicalSkill(db.Model):
-    __tablename__ = "tests_technical_skills"
-    id = db.Column(db.Integer, primary_key=True)
-    testId = db.Column(db.Integer, db.ForeignKey("tests.id"))
-    skill = db.Column(db.String(50))
-    #test = db.relationship("Test", back_populates="technicalSkills")
-    def __repr__(self):
-        return f'<TechnicalSkillsTest "{self.testId, self.skill}">'
 
 class Profile(db.Model):
     __tablename__ = "tests_profiles"
@@ -39,6 +30,15 @@ class Profile(db.Model):
     #test = db.relationship("Test", back_populates="profiles")
     def __repr__(self):
         return f'<ProfileTest "{self.testId, self.profile}">'
+
+class TechnicalSkill(db.Model):
+    __tablename__ = "tests_technical_skills"
+    id = db.Column(db.Integer, primary_key=True)
+    testId = db.Column(db.Integer, db.ForeignKey("tests.id"))
+    skill = db.Column(db.String(50))
+    #test = db.relationship("Test", back_populates="technicalSkills")
+    def __repr__(self):
+        return f'<TechnicalSkillsTest "{self.testId, self.skill}">'
 
 class Question(db.Model):
     __tablename__ = "tests_questions"
