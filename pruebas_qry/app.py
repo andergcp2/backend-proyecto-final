@@ -3,7 +3,7 @@ from flask import Flask
 from flask_cors import CORS
 from flask_restful import Api
 from model import db
-from view import HealthCheck, GetTests
+from view import HealthCheck, GetTests, GetTest
 
 app = Flask(__name__)
 
@@ -29,5 +29,6 @@ cors = CORS(app)
 
 api = Api(app)
 api.add_resource(GetTests, '/tests-qry' )
+api.add_resource(GetTest, '/tests-qry/<string:id>' )
 api.add_resource(HealthCheck,'/tests-qry/ping' )
 #jwt = JWTManager(app)

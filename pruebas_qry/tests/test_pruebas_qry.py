@@ -30,37 +30,38 @@ class PruebasQry(TestCase):
             db.session.add(new_test)
             db.session.commit()
             test_created = Test.query.filter(Test.name == new_test.name).filter(Test.minLevel==new_test.minLevel).order_by(Test.createdAt.desc()).first()
-            # print("test[", x, "]", test_created)
+            self.pruebaId = test_created.id
+
 
         self.endpoint_health = '/tests-qry/ping'
         self.endpoint_get = '/tests-qry'
-        # self.endpoint_get_200 = '/tests-qry/{}'.format(str(self.id_prueba))
-        # self.endpoint_get_400 = '/tests-qry/id'
-        # self.endpoint_get_404 = '/tests-qry/{}'.format(str(self.id_prueba * 100))
+        self.endpoint_get_200 = '/tests-qry/{}'.format(str(self.pruebaId))
+        self.endpoint_get_404 = '/tests-qry/{}'.format(str(self.pruebaId * 1000))
+        self.endpoint_get_412 = '/tests-qry/pruebaId'
 
     def test_health_check(self):
         req_health = self.client.get(self.endpoint_health, headers={'Content-Type': 'application/json'})
         self.assertEqual(req_health.status_code, 200)
 
+    def test_get_prueba_404(self):
+        req_get = self.client.get(self.endpoint_get_404, headers=self.headers_token)
+        self.assertEqual(req_get.status_code, 404)
+
+    def test_get_prueba_412(self):
+        req_get = self.client.get(self.endpoint_get_412, headers=self.headers_token)
+        self.assertEqual(req_get.status_code, 412)
+
+
+    def test_get_prueba_200(self):
+        req_get = self.client.get(self.endpoint_get_200, headers=self.headers_token)
+        resp_get = json.loads(req_get.get_data())
+        #print(self.pruebaId, resp_get["id"], resp_get["name"], resp_get["createdAt"])
+        self.assertEqual(self.pruebaId, resp_get["id"])
+        self.assertEqual(req_get.status_code, 200)
+
     def test_get_pruebas_200(self):
         req_get = self.client.get(self.endpoint_get, headers=self.headers_token)
         resp_get = json.loads(req_get.get_data())
-        print()
-        print(resp_get)
+        #print()
+        #print(resp_get)
         self.assertEqual(req_get.status_code, 200)
-
-    # def test_get_prueba_400(self):
-    #     req_get = self.client.get(self.endpoint_get_400, headers=self.headers_token)
-    #     self.assertEqual(req_get.status_code, 400)
-
-    # def test_get_prueba_404(self):
-    #     req_get = self.client.get(self.endpoint_get_404, headers=self.headers_token)
-    #     self.assertEqual(req_get.status_code, 404)
-
-    # def test_get_prueba_200(self):
-    #     req_get = self.client.get(self.endpoint_get_200, headers=self.headers_token)
-    #     resp_get = json.loads(req_get.get_data())
-    #     #print(resp_get["id"], resp_get["name"], resp_get["categoryId"], resp_get["createdAt"])
-
-    #     self.assertEqual(self.id_prueba, resp_get["id"])
-    #     self.assertEqual(req_get.status_code, 200)
