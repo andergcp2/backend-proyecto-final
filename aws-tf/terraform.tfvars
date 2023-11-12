@@ -4,7 +4,7 @@ region       = "us-east-1"
 profile      = "default"
 app_name     = "abcjobs"
 env          = "dev"
-app_services = ["candidatos-qry", "projects", "companies", "collaborators", "candidatos-cmd"]
+app_services = ["candidatos-qry", "projects", "companies", "collaborators", "candidatos-cmd", "pruebas-cmd", "pruebas-qry"]
 
 #VPC configurations
 cidr               = "10.10.0.0/16"
