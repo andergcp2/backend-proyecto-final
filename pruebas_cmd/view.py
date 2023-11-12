@@ -1,6 +1,7 @@
-import json, requests
+import os, json, requests
 from flask import request, current_app
 from flask_restful import Resource
+from werkzeug.utils import secure_filename
 from model import db, Test, TechnicalSkill, Profile, Question, Answer, TestSchema
 # TechnicalSkillSchema, ProfileSchema, QuestionSchema, AnswerSchema
 
@@ -21,51 +22,67 @@ class CreateTest(Resource):
         # if(resp['status_code'] != 200):
         #     return resp['msg'], resp['status_code']
 
+        filename = None
+        if 'file' not in request.files:
+            return "Test was not created - file missing", 400
+
+        file = request.files['file']
+        if file.filename == '':
+            return "Test was not created - no selected file", 400
+
+        filename = secure_filename(file.filename)
+        ext = os.path.splitext(filename)[-1].lower()
+        #print(filename, ext)
+
+        if ".json" != ext:
+            return "Test was not created - extension not supported", 400
+
         name = type = numQuestions = minLEvel = profiles = techSkills = questions = None
-        data = request.get_json()
+        #data = request.get_json()
+        data = json.load(file)
 
         if "name" not in data or data["name"] is None:
-            return "test's name is required", 400
+            return "Test was not created - name is required", 400
         elif "numQuestions" not in data or data["numQuestions"] is None:
-            return "test's number of questions is required", 400
+            return "Test was not created - number of questions is required", 400
         elif "minLevel" not in data or data["minLevel"] is None:
-            return "test's minimun level is required", 400
+            return "Test was not created - minimun level is required", 400
         elif "profiles" not in data or data["profiles"] is None:
-            return "test's profiles are required", 400
+            return "Test was not created - profiles are required", 400
         elif "techSkills" not in data or data["techSkills"] is None:
-            return "test's technical skills are required", 400
+            return "Test was not created - technical skills are required", 400
         elif "questions" not in data or data["questions"] is None:
-            return "test's questions are required", 400
+            return "Test was not created - questions are required", 400
 
-        for item in request.json["profiles"]:
+        for item in data["profiles"]:
             if "profile" not in item or item["profile"] is None:
-                return "profile is required", 400
+                return "Test was not created - profile is required", 400
 
-        for item in request.json["techSkills"]:
+        for item in data["techSkills"]:
             if "skill" not in item or item["skill"] is None:
-                return "skill is required", 400
+                return "Test was not created - skill is required", 400
 
-        for item in request.json["questions"]:
+        for item in data["questions"]:
             if "question" not in item or item["question"] is None:
-                return "question is required", 400
+                return "Test was not created - question is required", 400
             elif "level" not in item or item["level"] is None:
-                return "question's level is required", 400
+                return "Test was not created - level's question is required", 400
             elif "url" not in item or item["url"] is None:
-                return "question's url is required", 400
+                return "Test was not created - url's question is required", 400
             elif "answers" not in item or item["answers"] is None:
-                return "question's answers are required", 400
+                return "Test was not created - answers' question are required", 400
             for item_answer in item["answers"]:
                 if "answer" not in item_answer or item_answer["answer"] is None:
-                    return "answer is required", 400
+                    return "Test was not created - answer is required", 400
                 elif "correct" not in item_answer or item_answer["correct"] is None:
-                    return "answer's correctness is required", 400                
+                    return "Test was not created - correctness' answer is required", 400                
                 
-        name = request.json["name"]
-        numQuestions = request.json["numQuestions"]
-        minLevel = request.json["minLevel"]
-        profiles = request.json["profiles"]
-        skills = request.json["techSkills"]
-        questions = request.json["questions"]
+        name = data["name"]
+        numQuestions = data["numQuestions"]
+        minLevel = data["minLevel"]
+        profiles = data["profiles"]
+        skills = data["techSkills"]
+        questions = data["questions"]
 
         # print("validation: ", country, isinstance(postId, int), size, (size in sizes), offer, (offer<=0))
         # 412  el caso que los valores no estén entre lo esperado
@@ -75,16 +92,18 @@ class CreateTest(Resource):
         try:
             num = int(minLevel)
             if(num<1 or num>5):
-                return "test's minimum level is not valid: {}".format(minLevel), 412
+                return "Test was not created - minimum level is not valid", 412
         except ValueError:
-            return "test's minimum level is not valid: {}".format(minLevel), 412
+            return "Test was not created - minimum level is not valid", 412
 
         try:
             num = int(numQuestions)
             if(num<0 or num>50):
-                return "tests's number of questions is not valid: {}".format(numQuestions), 412
+                return "Test was not created - number of questions is not valid", 412
         except ValueError:
-            return "tests's number of questions is not valid: {}".format(numQuestions), 412
+            return "Test was not created - number of questions is not valid", 412
+
+        # return "Testing {}".format(filename), 404
 
         new_test = Test(name=name, numQuestions=numQuestions, minLevel=minLevel) #, profiles=profiles, techSkills=techSkills 
         #print()
