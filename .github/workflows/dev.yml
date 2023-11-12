@@ -61,3 +61,17 @@ jobs:
        microservice: pruebas-qry
        microservice-path: ./pruebas_qry
     secrets: inherit
+
+  candidatos-pruebas:
+    uses: ./.github/workflows/test-build-deploy.yml
+    with:
+       microservice: candidatos_pruebas
+       microservice-path: ./candidatos_pruebas
+    secrets: inherit  
+
+    record-score:
+    uses: ./.github/workflows/test-build-deploy.yml
+    with:
+       microservice: record_score
+       microservice-path: ./record_score
+    secrets: inherit   
