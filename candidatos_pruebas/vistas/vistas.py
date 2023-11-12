@@ -63,16 +63,16 @@ class VistaCandidateTest(Resource):
         else:
             return customError(400, "CO05", f'La prueba seleccionada ya se encuentra asignada al candidato')
     
-class VistaCandidateTestQry(Resource):
+class VistaTestsAssignedToCandidate(Resource):
 
     def get(self,idcandidate):
         #Consultar con el token
         lista = ["FINALIZADA", "CANCELADA"]
         return [candidatetest_schema.dump(candidatetest) for candidatetest in CandidateTest.query.filter(CandidateTest.idcandidate==idcandidate).filter(CandidateTest.testestatus.not_in(lista)).all()],200
     
-    def get(self,idtest, state):
+class VistaTestsAssignedToCandidates(Resource):
+    
+    def get(self,idtest):
         lista = ["FINALIZADA", "CANCELADA"]
-        if state == 1:
-            return [candidatetest_schema.dump(candidatetest) for candidatetest in CandidateTest.query.filter(CandidateTest.idtest==idtest).filter(CandidateTest.testestatus.not_in(lista)).all()],200
-        else:
-            return [candidatetest_schema.dump(candidatetest) for candidatetest in CandidateTest.query.filter(CandidateTest.idtest==idtest).filter(CandidateTest.testestatus.in_(lista)).all()],200
+        return [candidatetest_schema.dump(candidatetest) for candidatetest in CandidateTest.query.filter(CandidateTest.idtest==idtest).filter(CandidateTest.testestatus.not_in(lista)).all()],200
+    

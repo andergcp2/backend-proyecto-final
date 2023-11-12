@@ -69,4 +69,30 @@ class TestCandidateTest(TestCase):
         resp_get = self.client.get(self.endpoint_create, headers={'Content-Type': 'application/json'})
         print(resp_get.get_data())
         self.assertEqual(resp_get.status_code, 200)
+
+    def test_get_one_candidate_test(self):
+        idcandidate = self.data_factory.random_int(1, 500)
+        idtest = self.data_factory.random_int(1, 100)
+        new_candidatetest = {
+            "idcandidate": idcandidate,
+            "idtest": idtest
+        }
+        resp_create = self.client.post(self.endpoint_create, headers={'Content-Type': 'application/json'}, data=json.dumps(new_candidatetest))
+        print(resp_create.get_data())
+        endpoint_get = '/candidateTest/{}'.format(str(idcandidate)) 
+        resp_get = self.client.get(endpoint_get, headers={'Content-Type': 'application/json'})
+        self.assertEqual(resp_get.status_code, 200)
+
+    def test_get_one_test_candidates(self):
+        idcandidate = self.data_factory.random_int(1, 500)
+        idtest = self.data_factory.random_int(1, 100)
+        new_candidatetest = {
+            "idcandidate": idcandidate,
+            "idtest": idtest
+        }
+        resp_create = self.client.post(self.endpoint_create, headers={'Content-Type': 'application/json'}, data=json.dumps(new_candidatetest))
+        print(resp_create.get_data())
+        endpoint_get = '/candidateTest/{}'.format(str(idcandidate)) 
+        resp_get = self.client.get(endpoint_get, headers={'Content-Type': 'application/json'})
+        self.assertEqual(resp_get.status_code, 200)  
     
