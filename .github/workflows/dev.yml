@@ -48,16 +48,16 @@ jobs:
        microservice-path: ./candidatos_qry
     secrets: inherit
 
+  pruebas-cmd:
+    uses: ./.github/workflows/test-build-deploy.yml
+    with:
+       microservice: pruebas-cmd
+       microservice-path: ./pruebas_cmd
+    secrets: inherit
+
   pruebas-qry:
     uses: ./.github/workflows/test-build-deploy.yml
     with:
        microservice: pruebas-qry
-       microservice-path: ./experimentos/pruebas-query
-    secrets: inherit
-
-  preguntas-qry:
-    uses: ./.github/workflows/test-build-deploy.yml
-    with:
-       microservice: preguntas-qry
-       microservice-path: ./experimentos/preguntas-query
+       microservice-path: ./pruebas_qry
     secrets: inherit

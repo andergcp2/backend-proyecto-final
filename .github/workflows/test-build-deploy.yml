@@ -37,7 +37,7 @@ jobs:
 
   unit-test:
     name: unit tests
-    needs: changes
+    #needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}    
     runs-on: ubuntu-latest
     steps:
