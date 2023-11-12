@@ -17,8 +17,8 @@ class VistaSearch(Resource):
         role = request.args.getlist('role')
         softskill = request.args.getlist('softskill')
         technicalskill = request.args.getlist('technicalskill')
-        page = request.args.get('Page')
-        per_page = request.args.get('Per-page')
+        page = request.args.get('page')
+        per_page = request.args.get('perPage')
 
         if not role and not softskill and not technicalskill:
             result = Candidate.query.paginate(page=int(page), per_page=int(per_page))

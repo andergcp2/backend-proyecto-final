@@ -10,7 +10,7 @@ class TestCandidates(TestCase):
     def setUp(self):
         self.data_factory = Faker()
         self.client = app.test_client()
-        self.endpoint_get = '/candidates-qry?Page=1&Per-page=1'
+        self.endpoint_get = '/candidates-qry?page=1&perPage=1'
         self.endpoint_health = '/candidates-qry/ping'
         self.content_type = 'application/json'
 
