@@ -69,7 +69,7 @@ jobs:
        microservice-path: ./candidatos_pruebas
     secrets: inherit  
 
-    record-score:
+  record-score:
     uses: ./.github/workflows/test-build-deploy.yml
     with:
        microservice: record_score
