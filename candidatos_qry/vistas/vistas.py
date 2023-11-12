@@ -48,9 +48,7 @@ class VistaSearch(Resource):
                 'total_items': result.total,
                 'pages': result.pages
             }
-        if result.total != 0:
-            return response, 200
-        else:
-            return response, 404
+
+        return response, 200
 
         
