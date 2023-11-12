@@ -250,7 +250,9 @@ class PruebasCmd(TestCase):
         self.assertEqual(data, "Test was not created - number of questions is not valid")
 
     def test_create_test_201(self):
-        input_json = json.dumps(self.prueba, indent=4).encode("utf-8")
+        print()
+        print(json.dumps(self.prueba, indent=4))
+        input_json = json.dumps(self.prueba, indent=4).encode("utf-8") #sort_keys=True, indent=4
         self.data['file'] = FileStorage( stream=io.BytesIO(input_json), content_type="application/json", filename="test.json", )
         resp_create = self.client.post(self.endpoint, headers=self.headers_token, content_type='multipart/form-data', data=self.data) # follow_redirects=True
         data = json.loads(resp_create.get_data())

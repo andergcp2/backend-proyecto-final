@@ -8,7 +8,7 @@ db = SQLAlchemy()
 class Test(db.Model):
     __tablename__ = "tests"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(20))
+    name = db.Column(db.String(50))
     numQuestions = db.Column(db.Integer)
     minLevel = db.Column(db.Integer)
     profiles = db.relationship('Profile', cascade='all, delete, delete-orphan') #, back_populates="test"

@@ -32,14 +32,14 @@ class CreateTest(Resource):
 
         filename = secure_filename(file.filename)
         ext = os.path.splitext(filename)[-1].lower()
-        #print(filename, ext)
+        #print("-> ", filename, ext)
 
         if ".json" != ext:
             return "Test was not created - extension not supported", 400
 
-        name = type = numQuestions = minLEvel = profiles = techSkills = questions = None
         #data = request.get_json()
         data = json.load(file)
+        name = type = numQuestions = minLEvel = profiles = techSkills = questions = None
 
         if "name" not in data or data["name"] is None:
             return "Test was not created - name is required", 400
