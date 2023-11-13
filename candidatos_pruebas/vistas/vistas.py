@@ -62,14 +62,7 @@ class VistaCandidateTest(Resource):
             return candidatetest_schema.dump(new_candidatetest), 201
         else:
             return customError(400, "CO05", f'La prueba seleccionada ya se encuentra asignada al candidato')
-    
-class VistaTestsAssignedToCandidate(Resource):
-
-    def get(self,idcandidate):
-        #Consultar con el token
-        lista = ["FINALIZADA", "CANCELADA"]
-        return [candidatetest_schema.dump(candidatetest) for candidatetest in CandidateTest.query.filter(CandidateTest.idcandidate==idcandidate).filter(CandidateTest.testestatus.not_in(lista)).all()],200
-    
+      
 class VistaTestsAssignedToCandidates(Resource):
     
     def get(self,idtest):
