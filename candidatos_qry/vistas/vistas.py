@@ -32,14 +32,14 @@ class VistaSearch(Resource):
 
         my_filters = set()
 
-        if role is not None:
+        if role:
             my_filters.add(Candidate.profession.in_(role))
-        if softskill is not None:
+        if softskill:
             my_filters.add(SoftSkills.skill.in_(softskill))
-        if technicalskill is not None:
+        if technicalskill:
             my_filters.add(TechnicalSkills.skill.in_(technicalskill))
 
-
+        print(softskill)
         result = Candidate.query.join(SoftSkills).join(TechnicalSkills).filter(*my_filters).paginate(page=int(page), per_page=int(per_page))
         
         response = {
