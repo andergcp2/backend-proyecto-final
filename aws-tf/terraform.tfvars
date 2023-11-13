@@ -4,7 +4,7 @@ region       = "us-east-1"
 profile      = "default"
 app_name     = "abcjobs"
 env          = "dev"
-app_services = ["candidatos-qry", "pruebas-qry", "preguntas-qry", "projects", "companies", "collaborators", "candidatos-cmd"]
+app_services = ["candidatos-qry", "projects", "companies", "collaborators", "candidatos-cmd", "pruebas-cmd", "pruebas-qry", "candidatos-tests"]
 
 #VPC configurations
 cidr               = "10.10.0.0/16"
@@ -101,58 +101,6 @@ microservice_config = {
       }
     }
   },
-  "pruebas-qry" = {
-    name             = "pruebas-qry"
-    is_public        = true
-    container_port   = 80
-    host_port        = 80
-    cpu              = 256
-    memory           = 512
-    desired_count    = 1
-    alb_target_group = {
-      port              = 80
-      protocol          = "HTTP"
-      path_pattern      = ["/pruebas-query*"]
-      health_check_path = "/pruebas-query/ping"
-      priority          = 1
-    }
-    auto_scaling = {
-      max_capacity = 2
-      min_capacity = 1
-      cpu          = {
-        target_value = 75
-      }
-      memory = {
-        target_value = 75
-      }
-    }
-  },
-  "preguntas-qry" = {
-    name             = "preguntas-qry"
-    is_public        = true
-    container_port   = 80
-    host_port        = 80
-    cpu              = 256
-    memory           = 512
-    desired_count    = 1
-    alb_target_group = {
-      port              = 80
-      protocol          = "HTTP"
-      path_pattern      = ["/preguntas-query*"]
-      health_check_path = "/preguntas-query/ping"
-      priority          = 1
-    }
-    auto_scaling = {
-      max_capacity = 2
-      min_capacity = 1
-      cpu          = {
-        target_value = 75
-      }
-      memory = {
-        target_value = 75
-      }
-    }
-  }
   "projects" = {
     name             = "projects"
     is_public        = true
@@ -244,6 +192,84 @@ microservice_config = {
       protocol          = "HTTP"
       path_pattern      = ["/candidates*"]
       health_check_path = "/candidates/ping"
+      priority          = 1
+    }
+    auto_scaling = {
+      max_capacity = 2
+      min_capacity = 1
+      cpu          = {
+        target_value = 75
+      }
+      memory = {
+        target_value = 75
+      }
+    }
+  }
+  "pruebas-cmd" = {
+    name             = "pruebas-cmd"
+    is_public        = true
+    container_port   = 80
+    host_port        = 80
+    cpu              = 256
+    memory           = 512
+    desired_count    = 1
+    alb_target_group = {
+      port              = 80
+      protocol          = "HTTP"
+      path_pattern      = ["/tests*"]
+      health_check_path = "/tests/ping"
+      priority          = 1
+    }
+    auto_scaling = {
+      max_capacity = 2
+      min_capacity = 1
+      cpu          = {
+        target_value = 75
+      }
+      memory = {
+        target_value = 75
+      }
+    }
+  }
+  "pruebas-qry" = {
+    name             = "pruebas-qry"
+    is_public        = true
+    container_port   = 80
+    host_port        = 80
+    cpu              = 256
+    memory           = 512
+    desired_count    = 1
+    alb_target_group = {
+      port              = 80
+      protocol          = "HTTP"
+      path_pattern      = ["/tests-qry*"]
+      health_check_path = "/tests-qry/ping"
+      priority          = 1
+    }
+    auto_scaling = {
+      max_capacity = 2
+      min_capacity = 1
+      cpu          = {
+        target_value = 75
+      }
+      memory = {
+        target_value = 75
+      }
+    }
+  }
+  "candidatos-tests" = {
+    name             = "candidatos-tests"
+    is_public        = true
+    container_port   = 80
+    host_port        = 80
+    cpu              = 256
+    memory           = 512
+    desired_count    = 1
+    alb_target_group = {
+      port              = 80
+      protocol          = "HTTP"
+      path_pattern      = ["/candidateTest*"]
+      health_check_path = "/candidateTest/ping"
       priority          = 1
     }
     auto_scaling = {

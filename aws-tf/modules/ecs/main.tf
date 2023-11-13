@@ -48,6 +48,10 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           valueFrom = "arn:aws:secretsmanager:us-east-1:101526122836:secret:rds_host-EkVWVQ"
         }, 
         {
+          name      = "DB_HOST_READ"
+          valueFrom = "arn:aws:secretsmanager:us-east-1:101526122836:secret:aurora_host_read-5osQT0"
+        }, 
+        {
           name      = "DB_PORT"
           valueFrom = "arn:aws:secretsmanager:us-east-1:101526122836:secret:rds_port-xETcnO"
         }, 
