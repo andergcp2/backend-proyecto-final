@@ -65,13 +65,13 @@ jobs:
   candidatos-pruebas:
     uses: ./.github/workflows/test-build-deploy.yml
     with:
-       microservice: candidatos_pruebas
+       microservice: candidatos-tests
        microservice-path: ./candidatos_pruebas
     secrets: inherit  
 
-  record-score:
-    uses: ./.github/workflows/test-build-deploy.yml
-    with:
-       microservice: record_score
-       microservice-path: ./record_score
-    secrets: inherit   
+  # record-score:
+  #   uses: ./.github/workflows/test-build-deploy.yml
+  #   with:
+  #      microservice: record_score
+  #      microservice-path: ./record_score
+  #   secrets: inherit   
