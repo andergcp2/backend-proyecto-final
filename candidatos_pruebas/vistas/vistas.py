@@ -65,7 +65,14 @@ class VistaCandidateTest(Resource):
       
 class VistaTestsAssignedToCandidates(Resource):
     
-    def get(self,idtest):
+    def get(self,idcandidate):
         lista = ["FINALIZADA", "CANCELADA"]
-        return [candidatetest_schema.dump(candidatetest) for candidatetest in CandidateTest.query.filter(CandidateTest.idtest==idtest).filter(CandidateTest.testestatus.not_in(lista)).all()],200
+        candidatest = [candidatetest_schema.dump(candidatetest) for candidatetest in CandidateTest.query.filter(CandidateTest.idcandidate==idcandidate).filter(CandidateTest.testestatus.not_in(lista)).all()]
+        
+        for candidatet in candidatest:
+            print(candidatet)
+            response = requests.get("{0}/{1}".format(current_app.config['TEST_QRY_URL'], candidatet["idtest"]), headers={"Content-Type":"application/json"}, timeout=60)
+            candidatet["test"]=json.loads(response.text)
+        
+        return candidatest, 200
     

@@ -62,7 +62,8 @@ class VistaCandidate(Resource):
         request_auth = {
             'username': data['username'],
             'password': data['password'],
-            'email': data['email']
+            'email': data['email'],
+            'groupName': 'candidato'
         }
         response = requests.post(current_app.config['USERS'], headers={"Content-Type":"application/json"}, json=request_auth, timeout=60)
         print(response)
