@@ -28,9 +28,29 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       essential    = true
       secrets = [
         {
+          name      = "CACHE_PATH"
+          valueFrom = "arn:aws:secretsmanager:us-east-1:101526122836:secret:redis_host-bDx9aw"
+        },
+        {
+          name      = "CACHE_PORT"
+          valueFrom = "arn:aws:secretsmanager:us-east-1:101526122836:secret:redis_port-xRwupn"
+        },
+        {
+          name      = "CANDIDATOS_PATH"
+          valueFrom = "arn:aws:secretsmanager:us-east-1:101526122836:secret:candidatos_qry_path-UqZKuK"
+        },
+        {
+          name      = "PRUEBAS_PATH"
+          valueFrom = "arn:aws:secretsmanager:us-east-1:101526122836:secret:pruebas_qry_path-Mcg4ke"
+        },
+        {
+          name      = "CANDIDATOS_PRUEBAS_PATH"
+          valueFrom = "arn:aws:secretsmanager:us-east-1:101526122836:secret:candidatos_test_path-t1geph"
+        },
+        {
           name      = "USERS_PATH"
           valueFrom = "arn:aws:secretsmanager:us-east-1:101526122836:secret:users_path-V2eXvO"
-        }, 
+        },
         {
           name      = "USERS_PORT"
           valueFrom = "arn:aws:secretsmanager:us-east-1:101526122836:secret:users_port-0qL9xg"
