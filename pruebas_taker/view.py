@@ -40,31 +40,33 @@ class PruebaInit(Resource):
         if candidatoId is None or pruebaId is None: 
             return "parameter(s) missing", 400
 
-
-
         print(current_app.config['CANDIDATOS_QUERY'])
-        # 404 - El candidato que va iniciar la prueba no existe
         endpointC = format(current_app.config['CANDIDATOS_QUERY']) +"/{}".format(candidatoId)
         resp = get(endpointC, headers)
-        #print ("candidato: ", endpointC, resp.json())
+        print ("candidato-res: ", endpointC, resp.json())
 
+        # 404 - El candidato que va iniciar la prueba no existe
         if(resp.status_code != 200):
             return Response(resp.json(), resp.status_code, resp.headers.items())
-
-        # 404 - La prueba que se quiere iniciar no existe
+´
+        print(current_app.config['PRUEBAS_QUERY'])
         endpointT = format(current_app.config['PRUEBAS_QUERY']) +"/{}".format(pruebaId)
         resp = get(endpointT, headers)
-        #print ("prueba: ", endpointT, resp.json())
+        print ("prueba-res: ", endpointT, resp.json())
 
+        # 404 - La prueba a iniciar no existe
         if(resp.status_code != 200):
             return Response(resp.json(), resp.status_code, resp.headers.items())
 
-        endpointQ = format(current_app.config['PREGUNTAS_QUERY']) +"/prueba/{}".format(pruebaId)
-        resp = get(endpointQ, headers)
-        # print ("preguntas: ", endpointQ, resp.json())
-        
-        if(resp.status_code != 200):
-            return Response(resp.json(), resp.status_code, resp.headers.items())
+        mango = True
+        data = {
+            "pruebaId": pruebaId,
+            "candidatoId": candidatoId,
+            "endpoint-candidate-qry": endpointC,
+            "endpoint-pruebas-qry": endpointT
+        }
+        if (mango):
+            return json.dumps(data), 200
 
         idcache = pruebaId+"-"+candidatoId
         #self.redis.delete(idcache)

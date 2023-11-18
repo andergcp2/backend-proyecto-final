@@ -11,8 +11,8 @@ app.config['PROPAGATE_EXCEPTIONS'] = True
 
 if 'USERS_PATH' in os.environ:
     #app.config['USERS']  = str(os.environ.get("USERS_PATH")) +'/users/me'
-    app.config['CANDIDATOS_QUERY'] = str(os.environ.get("CANDIDATOS_QUERY_PATH"))
-    app.config['PRUEBAS_QUERY'] = str(os.environ.get("PRUEBAS_QUERY_PATH"))
+    app.config['CANDIDATOS_QUERY'] = str(os.environ.get("CANDIDATOS_PATH"))
+    app.config['PRUEBAS_QUERY'] = str(os.environ.get("PRUEBAS_PATH"))
     app.config['CACHE_HOST']  = str(os.environ.get("CACHE_PATH"))
     app.config['CACHE_PORT']  = str(os.environ.get("CACHE_PORT"))
 else:
