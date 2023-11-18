@@ -3,13 +3,22 @@ from flask import request, Response, current_app
 from flask_restful import Resource
 #from redis_client import RedisClient
 
-def getPruebasCandidato(endpoint, headers):
+def getPrueba(endpoint, headers):
+    return get(endpoint, headers)
+
+def getCandidato(endpoint, headers):
+    return get(endpoint, headers)
+
+def getPruebaCandidato(endpoint, headers):
     return get(endpoint, headers)
 
 def get(endpoint, headers):
     try:
         resp = requests.get(endpoint, headers = headers)
-        return resp
+        return resp        
+        # if (resp.status_code==200):
+        #     return {'msg': resp.json(), 'status_code': resp.status_code}
+        # return {'msg': resp.content, 'status_code': resp.status_code} 
     except Exception as ex:
         return {'msg': 'connection endpoint failed {} -> {}'.format(endpoint, ex), 'status_code': 500}
         # return (resp.json, resp.status_code, resp.headers.items())
@@ -41,29 +50,36 @@ class PruebaInit(Resource):
             return "parameter(s) missing", 400
 
         print(current_app.config['CANDIDATOS_QUERY'])
-        endpointC = format(current_app.config['CANDIDATOS_QUERY']) +"/{}".format(candidatoId)
-        resp = get(endpointC, headers)
-        print ("candidato-res: ", endpointC, resp.json())
+        endpoint = format(current_app.config['CANDIDATOS_QUERY']) +"/{}".format(candidatoId)
+        resp = getCandidato(endpoint, headers)
+        print ("candidato-resp: ", endpoint, resp.json())
 
         # 404 - El candidato que va iniciar la prueba no existe
         if(resp.status_code != 200):
             return Response(resp.json(), resp.status_code, resp.headers.items())
-´
+
         print(current_app.config['PRUEBAS_QUERY'])
-        endpointT = format(current_app.config['PRUEBAS_QUERY']) +"/{}".format(pruebaId)
-        resp = get(endpointT, headers)
-        print ("prueba-res: ", endpointT, resp.json())
+        endpoint = format(current_app.config['PRUEBAS_QUERY']) +"/{}".format(pruebaId)
+        resp = get(endpoint, headers)
+        print ("prueba-resp: ", endpoint, resp.json())
 
         # 404 - La prueba a iniciar no existe
+        if(resp.status_code != 200):
+            return Response(resp.json(), resp.status_code, resp.headers.items())
+
+        print(current_app.config['CANDIDATOS_PRUEBAS'])
+        endpoint = format(current_app.config['CANDIDATOS_PRUEBAS']) +"/{}/{}".format(candidatoId, pruebaId)
+        resp = get(endpoint, headers)
+        print ("candidatos-pruebas-res: ", endpoint, resp.json())
+
+        # 404 - El candidato que va iniciar la prueba no existe
         if(resp.status_code != 200):
             return Response(resp.json(), resp.status_code, resp.headers.items())
 
         mango = True
         data = {
             "pruebaId": pruebaId,
-            "candidatoId": candidatoId,
-            "endpoint-candidate-qry": endpointC,
-            "endpoint-pruebas-qry": endpointT
+            "candidatoId": candidatoId
         }
         if (mango):
             return json.dumps(data), 200

@@ -44,6 +44,10 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           valueFrom = "arn:aws:secretsmanager:us-east-1:101526122836:secret:pruebas_qry_path-Mcg4ke"
         },
         {
+          name      = "CANDIDATOS_PRUEBAS_PATH"
+          valueFrom = "arn:aws:secretsmanager:us-east-1:101526122836:secret:candidatos_test_path-t1geph"
+        },
+        {
           name      = "USERS_PATH"
           valueFrom = "arn:aws:secretsmanager:us-east-1:101526122836:secret:users_path-V2eXvO"
         },
