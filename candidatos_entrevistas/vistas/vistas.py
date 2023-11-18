@@ -21,10 +21,22 @@ class VistaPing(Resource):
     def get(self):
         return "PONG", 200
     
-class VistaCandidateTest(Resource):
+class VistaCandidateInterview(Resource):
 
     def get(self):
         #Insertar codigo para validar token... solo debería consultar un usuario previamente registrado.
+        '''
+        result = Candidate.query.join(SoftSkills).join(TechnicalSkills).filter(*my_filters).paginate(page=int(page), per_page=int(per_page))
+        
+        response = {
+                'items': [candidate_schema.dump(candidate) for candidate in result],
+                'page': page,
+                'total_items': result.total,
+                'pages': result.pages
+            }
+
+        return response, 200
+        '''
         return [interviewcandidate_schema.dump(interviewcandidate) for interviewcandidate in InterviewCandidate.query.all()]
     
     def post(self):
