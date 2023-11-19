@@ -69,7 +69,7 @@ class TestSchema(SQLAlchemyAutoSchema):
         load_instance = True
     profiles = fields.Nested("ProfileSchema", only=("id", "profile"), many=True)
     techSkills = fields.Nested("TechnicalSkillSchema", only=("id", "skill"), many=True)
-    questions = fields.Nested("QuestionSchema", only=("id", "question", "level"), many=True) 
+    questions = fields.Nested("QuestionSchema", only=("id", "question", "level", "answers"), many=True) 
 
 class TechnicalSkillSchema(SQLAlchemyAutoSchema):
     class Meta:
