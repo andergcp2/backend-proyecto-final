@@ -108,42 +108,44 @@ class VistaCandidateInterview(Resource):
     
     def post(self):
         data = request.get_json()
-        required_fields = ["idcandidate", "idinterview","summonsdate","interviewer"]
+        required_fields = ["candidateId", "companyId","projectId","interviewDate"]
         if not all(field in data for field in required_fields):
             return customError(400, "CO01", f'Hay campos sin diligenciar. Campos requeridos: {required_fields}')
         
-        if validarEntero(data['idcandidate'])==False:
+        if validarEntero(data['candidateId']) == False or validarEntero(data['companyId'])==False or validarEntero(data['projectId'])==False or validarFechaISO(data['interviewDate'])==False:
             return customError(400, "CO03", f'Los datos ingresados no cumplen el estandar de información')
         
-        #Invocar para validar la existencia del candidato
-        #Invocar para validar la existencia de la prueba
-        #Traer el usuario que generó la creación del registro
+        if validarFechaISO(data['interviewDate']):
+            interviewDate = datetime.fromisoformat(data['interviewDate'])
+            
+        actual = datetime.now()
+        if interviewDate < actual:
+            return customError(400, "CO06", f'La fecha no puede ser inferior a la fecha actual')
+        
+        candidateId = data['candidateId']
+        companyId = data['companyId']
+        projectId = data['projectId']
+        status = "CREADA"
 
-        idcandidate = data['idcandidate']
-        idinterview = data['idinterview']
-        summonsdate = datetime.fromisoformat(data['summonsdate']) 
-        interviewstatus = "PROGRAMADA"
-        interviewer = data['interviewer']
-
-        lista = ["PROGRAMADA","EN CURSO"]
-        candidateQuery = InterviewCandidate.query.filter(InterviewCandidate.idcandidate==idcandidate,
-                                                    InterviewCandidate.idinterview==idinterview,
-                                                    InterviewCandidate.interviewstatus.in_(lista)).first()
+        candidateQuery = InterviewCandidate.query.filter(InterviewCandidate.candidateId==candidateId,
+                                                        InterviewCandidate.companyId==companyId,
+                                                        InterviewCandidate.projectId==projectId,
+                                                        InterviewCandidate.status==status).first()
         db.session.commit()
         if candidateQuery is None:
             new_candidateinterview = InterviewCandidate(
-                                    idcandidate = idcandidate,
-                                    idinterview = idinterview,
-                                    summonsdate = summonsdate,
-                                    interviewstatus = interviewstatus,
-                                    interviewer = interviewer
-                                    )
+                                            candidateId = candidateId,
+                                            companyId = companyId,
+                                            projectId = projectId,
+                                            interviewDate = interviewDate,
+                                            status = status
+                                        )
             db.session.add(new_candidateinterview)
             db.session.commit()
             return interviewcandidate_schema.dump(new_candidateinterview), 201
         else:
             return customError(400, "CO05", f'La entrevista seleccionada ya se encuentra asignada al candidato')
-        
+
     def put(self, idcandidateinterview):
         data = request.get_json()
         required_fields = ["presentationdate","qualificationtest"]

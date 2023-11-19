@@ -6,14 +6,16 @@ db = SQLAlchemy()
 
 class InterviewCandidate(db.Model):
     __tablename__ = "candidateinterview"
-    id = db.Column(db.Integer, primary_key=True)
-    idcandidate = db.Column(db.Integer)
-    idinterview = db.Column(db.Enum("INDIVIDUAL SP", "GRUPAL", "JEFE", name='idInterview'))
-    summonsdate = db.Column(db.DateTime)
-    presentationdate = db.Column(db.DateTime)
-    qualificationtest = db.Column(db.Integer)
-    interviewstatus = db.Column(db.Enum("PROGRAMADA", "EN CURSO", "CANCELADA","FINALIZADA", name='interviewstatus'))
-    interviewer = db.Column(db.String(100))
+    interviewId = db.Column(db.Integer, primary_key=True)
+    candidateId = db.Column(db.Integer)
+    companyId = db.Column(db.Integer)
+    projectId = db.Column(db.Integer)
+    profileId = db.Column(db.Integer)
+    interviewDate = db.Column(db.DateTime)
+    topic = db.Column(db.String(50))
+    score = db.Column(db.Integer)
+    status = db.Column(db.Enum("CREADA", "FINALIZADA", name='status'))
+    comment = db.Column(db.String(250))
     createdAt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     
 class InterviewCandidateSchema(SQLAlchemyAutoSchema):
