@@ -51,4 +51,18 @@ class VistaSearch(Resource):
 
         return response, 200
 
-        
+class VistaGetCandidate(Resource):
+
+    def get(self, id):
+        if id is None: 
+            return "candidate id is required", 400
+        try:
+            int(id)
+        except ValueError:
+            return "candidate id is not a number", 412
+
+        candidate = Candidate.query.filter(Candidate.id == id).first()
+        if candidate is None:
+            return "candidate with the given id was not found", 404
+
+        return candidate_schema.dump(candidate)
