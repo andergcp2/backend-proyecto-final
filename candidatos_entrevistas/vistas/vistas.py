@@ -30,10 +30,11 @@ class VistaCandidateInterview(Resource):
         typet = request.args.getlist('typet')
         fini = request.args.getlist('fini')
         ffin = request.args.getlist('ffin')
+        idcandidate = request.args.getlist('idcandidate')
         page = request.args.get('page')
         per_page = request.args.get('perPage')
       
-        if not role and not page and not per_page and not type:
+        if not role and not page and not per_page and not typet and not fini and not ffin and not idcandidate:
             return [interviewcandidate_schema.dump(interviewcandidate) for interviewcandidate in InterviewCandidate.query.all()]
         elif not role and not type:
             result = InterviewCandidate.query.paginate(page=int(page), per_page=int(per_page))
@@ -58,7 +59,6 @@ class VistaCandidateInterview(Resource):
                 buscart = 2
             my_filters.add(InterviewCandidate.interviewstatus.in_(lista))
         
-        print(my_filters)
         if fini and ffin:
             fini = datetime.fromisoformat(fini[0])
             ffin = datetime.fromisoformat(ffin[0])
@@ -79,8 +79,16 @@ class VistaCandidateInterview(Resource):
                 my_filters.add(InterviewCandidate.summonsdate>=fini)
                 my_filters.add(InterviewCandidate.summonsdate<=ffin)
 
+        if idcandidate:
+            idcandidate = idcandidate[0]
+            my_filters.add(InterviewCandidate.idcandidate==idcandidate)
+
+        if not page and not per_page:
+            page = 1
+            per_page = 10
+
         result = InterviewCandidate.query.filter(*my_filters).paginate(page=int(page), per_page=int(per_page))
-        print(my_filters)
+
         response = {
                     'items': [interviewcandidate_schema.dump(interviewcandidate) for interviewcandidate in result],
                     'page': page,
@@ -88,33 +96,6 @@ class VistaCandidateInterview(Resource):
                     'pages': result.pages
                 }
         return response, 200
-        '''
-        my_filters = set()
-
-        if type:
-            print(type)
-            if type == '0':
-                lista = ["FINALIZADA"]
-            elif type == '1':
-                lista = ["PROGRAMADA","ASIGNADA"]
-
-        #if softskill:
-            #my_filters.add(SoftSkills.skill.in_(softskill))
-        #if technicalskill:
-            #my_filters.add(TechnicalSkills.skill.in_(technicalskill))
-
-        #result = InterviewCandidate.query.filter(*my_filters).paginate(page=int(page), per_page=int(per_page))
-        result = InterviewCandidate.query.filter(InterviewCandidate.interviewstatus.in_("PROGRAMADA","ASIGNADA")).paginate(page=int(page), per_page=int(per_page))
-        
-        response = {
-                'items': [interviewcandidate_schema.dump(interviewcandidate) for interviewcandidate in result],
-                'page': page,
-                'total_items': result.total,
-                'pages': result.pages
-            }
-
-        return response, 200
-        '''
     
     def post(self):
         data = request.get_json()
@@ -151,17 +132,30 @@ class VistaCandidateInterview(Resource):
             return interviewcandidate_schema.dump(new_candidateinterview), 201
         else:
             return customError(400, "CO05", f'La entrevista seleccionada ya se encuentra asignada al candidato')
+        
+    def put(self, idcandidateinterview):
+        data = request.get_json()
+        required_fields = ["presentationdate","qualificationtest"]
+        if not all(field in data for field in required_fields):
+            return customError(400, "CO01", f'Hay campos sin diligenciar. Campos requeridos: {required_fields}')
+        
+        pruebacandidato = InterviewCandidate.query.get_or_404(idcandidateinterview)
+        pruebacandidato.presentationdate = dt.datetime.now()
+        pruebacandidato.qualificationtest = data["qualificationtest"]
+        pruebacandidato.testestatus = "FINALIZADA"
+        db.session.commit()
+        return interviewcandidate_schema.dump(pruebacandidato)
       
 class VistaTestsAssignedToCandidates(Resource):
     
     def get(self,idcandidate):
         lista = ["FINALIZADA", "CANCELADA"]
         candidatest = [interviewcandidate_schema.dump(candidatetest) for candidatetest in InterviewCandidate.query.filter(InterviewCandidate.idcandidate==idcandidate).filter(InterviewCandidate.testestatus.not_in(lista)).all()]
-        '''
+        
         for candidatet in candidatest:
             print(candidatet)
             response = requests.get("{0}/{1}".format(current_app.config['TEST_QRY_URL'], candidatet["idtest"]), headers={"Content-Type":"application/json"}, timeout=60)
             candidatet["test"]=json.loads(response.text)
-        '''
+        
         return candidatest, 200
     
