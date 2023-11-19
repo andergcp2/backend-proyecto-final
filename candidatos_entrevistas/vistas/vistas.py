@@ -1,3 +1,4 @@
+import datetime
 import json
 from modelos import db, InterviewCandidate, InterviewCandidateSchema
 from flask import request, current_app
@@ -6,7 +7,7 @@ from .errors import customError
 from .utils import lengthValidation
 import requests
 import datetime as dt
-from datetime import timedelta
+from datetime import datetime
 
 interviewcandidate_schema = InterviewCandidateSchema()
 
@@ -25,11 +26,87 @@ class VistaCandidateInterview(Resource):
 
     def get(self):
         #Insertar codigo para validar token... solo debería consultar un usuario previamente registrado.
+        role = request.args.getlist('role')
+        typet = request.args.getlist('type')
+        fini = request.args.getlist('fini')
+        ffin = request.args.getlist('ffin')
+        page = request.args.get('page')
+        per_page = request.args.get('perPage')
+      
+        if not role and not page and not per_page and not type:
+            return [interviewcandidate_schema.dump(interviewcandidate) for interviewcandidate in InterviewCandidate.query.all()]
+        elif not role and not type:
+            result = InterviewCandidate.query.paginate(page=int(page), per_page=int(per_page))
+            response = {
+                    'items': [interviewcandidate_schema.dump(interviewcandidate) for interviewcandidate in result],
+                    'page': page,
+                    'total_items': result.total,
+                    'pages': result.pages
+                }
+            return response, 200
+        
+        my_filters = set()
+        buscart=0
+        buscarf=0
+        
+        if typet:
+            if typet == 0:
+                lista = ["FINALIZADA", "CANCELADA"]
+                buscart = 1
+            else:
+                lista = ["ASIGNADA", "PROGRAMADA"]
+                buscart = 2
+            my_filters.add(InterviewCandidate.interviewstatus.in_(lista))
+        
+        if fini and ffin:
+            fini = datetime.fromisoformat(fini[0])
+            ffin = datetime.fromisoformat(ffin[0])
+            buscarf=1
+        elif fini and not ffin:
+            fini = datetime.fromisoformat(fini[0])
+            ffin = dt.date.today()
+            buscarf=1
+        elif not fini and ffin:
+            return customError(400, "CO01", f'Hay campos sin diligenciar. Campos requeridos')
+        
+        if buscarf:
+            
+            if buscart == 1:
+                my_filters.add(InterviewCandidate.presentationdate>=fini)
+                my_filters.add(InterviewCandidate.presentationdate<=ffin)
+            if buscart == 2:
+                my_filters.add(InterviewCandidate.summonsdate>=fini)
+                my_filters.add(InterviewCandidate.summonsdate<=ffin)
+
+        result = InterviewCandidate.query.filter(*my_filters).paginate(page=int(page), per_page=int(per_page))
+        print(my_filters)
+        response = {
+                    'items': [interviewcandidate_schema.dump(interviewcandidate) for interviewcandidate in result],
+                    'page': page,
+                    'total_items': result.total,
+                    'pages': result.pages
+                }
+        return response, 200
         '''
-        result = Candidate.query.join(SoftSkills).join(TechnicalSkills).filter(*my_filters).paginate(page=int(page), per_page=int(per_page))
+        my_filters = set()
+
+        if type:
+            print(type)
+            if type == '0':
+                lista = ["FINALIZADA"]
+            elif type == '1':
+                lista = ["PROGRAMADA","ASIGNADA"]
+
+        #if softskill:
+            #my_filters.add(SoftSkills.skill.in_(softskill))
+        #if technicalskill:
+            #my_filters.add(TechnicalSkills.skill.in_(technicalskill))
+
+        #result = InterviewCandidate.query.filter(*my_filters).paginate(page=int(page), per_page=int(per_page))
+        result = InterviewCandidate.query.filter(InterviewCandidate.interviewstatus.in_("PROGRAMADA","ASIGNADA")).paginate(page=int(page), per_page=int(per_page))
         
         response = {
-                'items': [candidate_schema.dump(candidate) for candidate in result],
+                'items': [interviewcandidate_schema.dump(interviewcandidate) for interviewcandidate in result],
                 'page': page,
                 'total_items': result.total,
                 'pages': result.pages
@@ -37,7 +114,6 @@ class VistaCandidateInterview(Resource):
 
         return response, 200
         '''
-        return [interviewcandidate_schema.dump(interviewcandidate) for interviewcandidate in InterviewCandidate.query.all()]
     
     def post(self):
         data = request.get_json()
@@ -54,13 +130,13 @@ class VistaCandidateInterview(Resource):
 
         idcandidate = data['idcandidate']
         idinterview = data['idinterview']
-        summonsdate = data['summonsdate']
-        interviewstatus = "ASIGNADA"
+        summonsdate = datetime.fromisoformat(data['summonsdate']) 
+        interviewstatus = "PROGRAMADA"
 
         lista = ["ASIGNADA","EN CURSO"]
         candidateQuery = InterviewCandidate.query.filter(InterviewCandidate.idcandidate==idcandidate,
-                                                    InterviewCandidate.idtest==idinterview,
-                                                    InterviewCandidate.testestatus.in_(lista)).first()
+                                                    InterviewCandidate.idinterview==idinterview,
+                                                    InterviewCandidate.interviewstatus.in_(lista)).first()
         db.session.commit()
         if candidateQuery is None:
             new_candidateinterview = InterviewCandidate(

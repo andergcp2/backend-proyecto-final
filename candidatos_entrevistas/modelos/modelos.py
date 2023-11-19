@@ -12,7 +12,7 @@ class InterviewCandidate(db.Model):
     summonsdate = db.Column(db.DateTime)
     presentationdate = db.Column(db.DateTime)
     qualificationtest = db.Column(db.Integer)
-    interviewstatus = db.Column(db.Enum("ASIGNADA", "EN CURSO", "CANCELADA","FINALIZADA", name='interviewstatus'))
+    interviewstatus = db.Column(db.Enum("ASIGNADA", "PROGRAMADA", "EN CURSO", "CANCELADA","FINALIZADA", name='interviewstatus'))
     interviewer = db.Column(db.String(100))
     createdAt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     
