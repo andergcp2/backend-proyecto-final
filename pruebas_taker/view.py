@@ -64,7 +64,7 @@ class HealthCheck(Resource):
 
 class PruebaInit(Resource):
     def __init__(self) -> None:
-        setupCache('prueba-init')
+        setupCache(self, 'prueba-init')
         super().__init__()
 
     def post(self, candidatoId, pruebaId):
@@ -117,7 +117,7 @@ class PruebaInit(Resource):
             return resp, resp['status_code']
 
         idcache = pruebaId+"-"+candidatoId
-        deleteCache(idcache)
+        deleteCache(self, idcache)
 
         # for x in range(0, len(prueba['questions'])):
         #     y=x
@@ -134,7 +134,7 @@ class PruebaInit(Resource):
         #     answers.append(questions[y]['answer'])
 
         #     data = {'question': question, 'answers': answers}
-        #     pushCache(idcache, data)
+        #     pushCache(self, idcache, data)
 
         # mango = True
         # data = {
@@ -159,15 +159,15 @@ class PruebaInit(Resource):
         }
 
         #data = {'question': question, 'answers': answers}
-        setCache(idcache, data)
-        prueba = getCache(idcache)
+        setCache(self, idcache, data)
+        prueba = getCache(self, idcache)
 
         return json.dumps(data), 200
 
 
 class PruebaNext(Resource):
     def __init__(self) -> None:
-        setupCache('prueba-next')
+        setupCache(self, 'prueba-next')
         super().__init__()
        
     def post(self, candidatoId, pruebaId):
@@ -191,7 +191,7 @@ class PruebaNext(Resource):
             return "parameter(s) missing", 400
 
         idcache = pruebaId+"-"+candidatoId
-        pregunta = getCache(idcache)
+        pregunta = getCache(self, idcache)
         #pregunta = json.loads(self.redis.lpop(idcache))
         data = {
             "pruebaId": pruebaId,
@@ -206,7 +206,7 @@ class PruebaNext(Resource):
 
 class PruebaDone(Resource):
     def __init__(self) -> None:
-        setupCache('prueba-done')
+        setupCache(self, 'prueba-done')
         super().__init__()
 
     def post(self, candidatoId, pruebaId):
@@ -231,7 +231,7 @@ class PruebaDone(Resource):
             return "parameter(s) missing", 400
 
         idcache = pruebaId+"-"+candidatoId
-        pregunta = getCache(idcache)
+        pregunta = getCache(self, idcache)
 
         # en este punto se calcula el resultado de la prueba que está presentando el candidato 
         # consultando de cache las preguntas, sus respuestas y las respuestas del candidato
