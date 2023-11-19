@@ -14,20 +14,20 @@ class TestPruebasTaker(TestCase):
         self.token = "mangocat"
         self.headers_token = {'Content-Type': 'application/json', "Authorization": "Bearer {}".format(self.token)}
         
-        self.endpoint_health = '/pruebas-taker/ping'
-        self.endpoint_init_400_candidatoId = '/pruebas-taker/init/id/1'
-        self.endpoint_next_400_candidatoId = '/pruebas-taker/next/id/1'
-        self.endpoint_done_400_candidatoId = '/pruebas-taker/done/id/1'
-        self.endpoint_init_400_pruebaId = '/pruebas-taker/init/1/id'
-        self.endpoint_next_400_pruebaId = '/pruebas-taker/next/1/id'
-        self.endpoint_done_400_pruebaId = '/pruebas-taker/done/1/id'
+        self.endpoint_health = '/tests-taker/ping'
+        self.endpoint_init_400_candidatoId = '/tests-taker/init/id/1'
+        self.endpoint_next_400_candidatoId = '/tests-taker/next/id/1'
+        self.endpoint_done_400_candidatoId = '/tests-taker/done/id/1'
+        self.endpoint_init_400_pruebaId = '/tests-taker/init/1/id'
+        self.endpoint_next_400_pruebaId = '/tests-taker/next/1/id'
+        self.endpoint_done_400_pruebaId = '/tests-taker/done/1/id'
 
-        self.endpoint_init_404 = '/pruebas-taker/init/1/4'
-        self.endpoint_init_200 = '/pruebas-taker/init/1/4'
-        self.endpoint_next_404 = '/pruebas-taker/next/1/4'
-        self.endpoint_next_200 = '/pruebas-taker/next/1/4'
-        self.endpoint_done_404 = '/pruebas-taker/done/1/4'
-        self.endpoint_done_200 = '/pruebas-taker/done/1/4'
+        self.endpoint_init_404 = '/tests-taker/init/1/4'
+        self.endpoint_init_200 = '/tests-taker/init/1/4'
+        self.endpoint_next_404 = '/tests-taker/next/1/4'
+        self.endpoint_next_200 = '/tests-taker/next/1/4'
+        self.endpoint_done_404 = '/tests-taker/done/1/4'
+        self.endpoint_done_200 = '/tests-taker/done/1/4'
         #self.endpoint_init_200 = '/pruebas/init/9/45'
         #self.endpoint_init_200 = '/pruebas-orquestador/{}/{}'.format(str(self.id_prueba), str(self.id_prueba))
 
