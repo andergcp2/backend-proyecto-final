@@ -33,18 +33,18 @@ def updatePruebaCandidato(endpoint, data, headers):
         return {'msg': 'connection endpoint failed {} -> {}'.format(endpoint, ex), 'status_code': 500}
         #return (resp.json, resp.status_code, resp.headers.items())
 
-def deleteCache(key):
+def deleteCache(self, key):
     self.redis.delete(key)
 
-def setCache(key, data):
+def setCache(self, key, data):
     self.redis.hset(key, mapping=data)
     #self.redis.rpush(key, json.dumps(data))
 
-def getCache(key):
+def getCache(self, key):
     return self.redis.hgetall(key)
     #return json.loads(self.redis.lpop(key))
 
-def setupCache(fase):
+def setupCache(self, fase):
     print(fase, current_app.config['CACHE_HOST'], current_app.config['CACHE_PORT'] )
     #self.redis = redis.Redis(host=current_app.config['CACHE_HOST'], port=current_app.config['CACHE_PORT'], decode_responses=True, ssl=True) #encoding="utf-8"
     pool = redis.ConnectionPool(host=current_app.config['CACHE_HOST'], port=current_app.config['CACHE_PORT'], db=0)
