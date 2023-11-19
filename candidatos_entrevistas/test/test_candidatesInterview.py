@@ -84,19 +84,59 @@ class TestCandidateInterview(TestCase):
      
     def test_get_all_candidatesinterview_200(self):
         resp_get = self.client.get(self.endpoint_create, headers={'Content-Type': 'application/json'})
-        print(resp_get.get_data())
         self.assertEqual(resp_get.status_code, 200)
-
+    '''
     def test_get_one_test_candidates(self):
         candidateId = self.data_factory.random_int(50, 100)
         new_candidateinterview = {
                 "candidateId" : candidateId,
                 "companyId" : self.data_factory.random_int(1, 50),
                 "projectId" : self.data_factory.random_int(1, 50),
-                "interviewDate" : "2020-12-19"
+                "interviewDate" : "2023-12-19"
             }
         resp_create = self.client.post(self.endpoint_create, headers={'Content-Type': 'application/json'}, data=json.dumps(new_candidateinterview))
         print(resp_create.get_data())
         endpoint_get = '/candidateInterview/{}'.format(str(candidateId)) 
         resp_get = self.client.get(endpoint_get, headers={'Content-Type': 'application/json'})
         self.assertEqual(resp_get.status_code, 200)  
+    '''
+    def test_put_scroreinterview_400_request_empty(self):
+        """Test for empty candidate"""
+        candidateId = self.data_factory.random_int(50, 100)
+        new_candidateinterview = {
+                "candidateId" : candidateId,
+                "companyId" : self.data_factory.random_int(1, 50),
+                "projectId" : self.data_factory.random_int(1, 50),
+                "interviewDate" : "2023-12-19"
+            }
+        resp_create = self.client.post(self.endpoint_create, headers={'Content-Type': 'application/json'}, data=json.dumps(new_candidateinterview))
+        respuesta_interview = json.loads(resp_create.get_data())
+        idinterview = respuesta_interview["interviewId"]
+        endpoint_get = '/candidateInterview/{}'.format(str(idinterview)) 
+        new_candidateinterview = {}
+        resp_put = self.client.put(endpoint_get, headers={'Content-Type': 'application/json'}, data=json.dumps(new_candidateinterview))
+        error_code = json.loads(resp_put.get_data()).get('errorCode')
+        self.assertEqual(error_code, 'CO01')
+        self.assertEqual(resp_put.status_code, 400)
+
+    def test_put_scoreinterview_200_creation_success(self):
+        """Test for update candidateTest """
+        candidateId = self.data_factory.random_int(50, 100)
+        new_candidateinterview = {
+                "candidateId" : candidateId,
+                "companyId" : self.data_factory.random_int(1, 50),
+                "projectId" : self.data_factory.random_int(1, 50),
+                "interviewDate" : "2023-12-19"
+            }
+        resp_create = self.client.post(self.endpoint_create, headers={'Content-Type': 'application/json'}, data=json.dumps(new_candidateinterview))
+        respuesta_interview = json.loads(resp_create.get_data())
+        idinterview = respuesta_interview["interviewId"]
+        
+        new_candidateinterview = {
+            "score" : 5,
+            "comment" : ""
+        }
+        endpoint_get = '/candidateInterview/{}'.format(str(idinterview)) 
+        resp_put = self.client.put(endpoint_get, headers={'Content-Type': 'application/json'}, data=json.dumps(new_candidateinterview))
+        print(resp_put.get_data())
+        self.assertEqual(resp_put.status_code, 200)

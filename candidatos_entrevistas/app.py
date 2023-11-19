@@ -3,7 +3,7 @@ from flask import Flask
 from flask_cors import CORS
 from flask_restful import  Api
 from modelos import db
-from vistas import VistaPing, VistaCandidateInterview, VistaCandidateInterviewSearch, VistaTestsAssignedToCandidates
+from vistas import VistaPing, VistaCandidateInterview, VistaCandidateInterviewSearch, VistaTestsAssignedToCandidates, VistaUpdateInterviewCandidate
 
 app = Flask(__name__)
 app.config['PROPAGATE_EXCEPTIONS'] = True
@@ -34,4 +34,5 @@ api.add_resource(VistaCandidateInterview, '/candidateInterview')
 api.add_resource(VistaPing, '/candidateInterview/ping')
 api.add_resource(VistaCandidateInterviewSearch, '/candidateInterview/<companyId>/<projectId>')
 api.add_resource(VistaTestsAssignedToCandidates, '/candidateInterview/<candidateId>')
+api.add_resource(VistaUpdateInterviewCandidate, '/candidateInterview/<interviewId>')
 

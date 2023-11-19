@@ -74,18 +74,7 @@ class VistaCandidateInterview(Resource):
         else:
             return customError(400, "CO05", f'La entrevista seleccionada ya se encuentra asignada al candidato')
     
-    def put(self, idcandidateinterview):
-        data = request.get_json()
-        required_fields = ["presentationdate","qualificationtest"]
-        if not all(field in data for field in required_fields):
-            return customError(400, "CO01", f'Hay campos sin diligenciar. Campos requeridos: {required_fields}')
-        
-        pruebacandidato = InterviewCandidate.query.get_or_404(idcandidateinterview)
-        pruebacandidato.presentationdate = dt.datetime.now()
-        pruebacandidato.qualificationtest = data["qualificationtest"]
-        pruebacandidato.testestatus = "FINALIZADA"
-        db.session.commit()
-        return interviewcandidate_schema.dump(pruebacandidato)
+
       
 class VistaTestsAssignedToCandidates(Resource):
     
@@ -98,6 +87,20 @@ class VistaTestsAssignedToCandidates(Resource):
             candidatet["test"]=json.loads(response.text)
         
         return candidatest, 200
+    
+class VistaUpdateInterviewCandidate(Resource):
+    def put(self, interviewId):
+        data = request.get_json()
+        required_fields = ["score"]
+        if not all(field in data for field in required_fields):
+            return customError(400, "CO01", f'Hay campos sin diligenciar. Campos requeridos: {required_fields}')
+        
+        pruebacandidato = InterviewCandidate.query.get_or_404(interviewId)
+        pruebacandidato.score = data["score"]
+        pruebacandidato.comment = data["comment"]
+        pruebacandidato.status = "FINALIZADA"
+        db.session.commit()
+        return interviewcandidate_schema.dump(pruebacandidato)
     
 class VistaCandidateInterviewSearch(Resource):
 
