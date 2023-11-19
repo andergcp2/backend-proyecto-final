@@ -27,7 +27,7 @@ class VistaCandidateInterview(Resource):
     def get(self):
         #Insertar codigo para validar token... solo debería consultar un usuario previamente registrado.
         role = request.args.getlist('role')
-        typet = request.args.getlist('type')
+        typet = request.args.getlist('typet')
         fini = request.args.getlist('fini')
         ffin = request.args.getlist('ffin')
         page = request.args.get('page')
@@ -58,6 +58,7 @@ class VistaCandidateInterview(Resource):
                 buscart = 2
             my_filters.add(InterviewCandidate.interviewstatus.in_(lista))
         
+        print(my_filters)
         if fini and ffin:
             fini = datetime.fromisoformat(fini[0])
             ffin = datetime.fromisoformat(ffin[0])
