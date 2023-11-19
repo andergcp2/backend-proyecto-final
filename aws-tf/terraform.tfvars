@@ -91,7 +91,7 @@ microservice_config = {
       priority          = 1
     }
     auto_scaling = {
-      max_capacity = 3
+      max_capacity = 2
       min_capacity = 1
       cpu          = {
         target_value = 75
