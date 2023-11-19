@@ -18,6 +18,13 @@ def validarEntero(numero):
     except ValueError:
         return False
 
+def validarFechaISO(fecha):
+    try:
+        fecha = datetime.fromisoformat(fecha)
+        return True
+    except ValueError:
+        return False
+
 class VistaPing(Resource):
     def get(self):
         return "PONG", 200
@@ -59,16 +66,18 @@ class VistaCandidateInterview(Resource):
                 buscart = 2
             my_filters.add(InterviewCandidate.interviewstatus.in_(lista))
         
-        if fini and ffin:
+        if fini and ffin and validarFechaISO(fini[0]) and validarFechaISO(ffin[0]):
             fini = datetime.fromisoformat(fini[0])
             ffin = datetime.fromisoformat(ffin[0])
             buscarf=1
-        elif fini and not ffin:
+        elif fini and not ffin and validarFechaISO(fini[0]):
             fini = datetime.fromisoformat(fini[0])
             ffin = dt.date.today()
             buscarf=1
         elif not fini and ffin:
-            return customError(400, "CO01", f'Hay campos sin diligenciar. Campos requeridos')
+            return customError(400, "CO01", f'No es posible consultar un rando sin fecha de inicio')
+        elif not validarFechaISO(fini) and not validarFechaISO(ffin):
+            return customError(400, "CO03", f'Los formatos de fecha no corresponden')
         
         if buscarf:
             
@@ -99,7 +108,7 @@ class VistaCandidateInterview(Resource):
     
     def post(self):
         data = request.get_json()
-        required_fields = ["idcandidate", "idinterview","summonsdate"]
+        required_fields = ["idcandidate", "idinterview","summonsdate","interviewer"]
         if not all(field in data for field in required_fields):
             return customError(400, "CO01", f'Hay campos sin diligenciar. Campos requeridos: {required_fields}')
         
@@ -114,8 +123,9 @@ class VistaCandidateInterview(Resource):
         idinterview = data['idinterview']
         summonsdate = datetime.fromisoformat(data['summonsdate']) 
         interviewstatus = "PROGRAMADA"
+        interviewer = data['interviewer']
 
-        lista = ["ASIGNADA","EN CURSO"]
+        lista = ["PROGRAMADA","EN CURSO"]
         candidateQuery = InterviewCandidate.query.filter(InterviewCandidate.idcandidate==idcandidate,
                                                     InterviewCandidate.idinterview==idinterview,
                                                     InterviewCandidate.interviewstatus.in_(lista)).first()
@@ -125,7 +135,8 @@ class VistaCandidateInterview(Resource):
                                     idcandidate = idcandidate,
                                     idinterview = idinterview,
                                     summonsdate = summonsdate,
-                                    interviewstatus = interviewstatus
+                                    interviewstatus = interviewstatus,
+                                    interviewer = interviewer
                                     )
             db.session.add(new_candidateinterview)
             db.session.commit()
