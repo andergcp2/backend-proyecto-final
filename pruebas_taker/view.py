@@ -45,16 +45,15 @@ def getCache(key):
     #return json.loads(self.redis.lpop(key))
 
 def setupCache(fase):
-    print()
-    print(fase, ': ', current_app.config['CACHE_HOST'], current_app.config['CACHE_PORT'] )
-    self.redis = redis.Redis(host=current_app.config['CACHE_HOST'], port=current_app.config['CACHE_PORT'], decode_responses=True, ssl=True) #encoding="utf-8"
-    # pool = redis.ConnectionPool(host=current_app.config['CACHE_HOST'], port=current_app.config['CACHE_PORT'], db=0)
-    # self.redis = redis.Redis(connection_pool=pool)
+    print(fase, current_app.config['CACHE_HOST'], current_app.config['CACHE_PORT'] )
+    #self.redis = redis.Redis(host=current_app.config['CACHE_HOST'], port=current_app.config['CACHE_PORT'], decode_responses=True, ssl=True) #encoding="utf-8"
+    pool = redis.ConnectionPool(host=current_app.config['CACHE_HOST'], port=current_app.config['CACHE_PORT'], db=0)
+    self.redis = redis.Redis(connection_pool=pool)
     try:
         cache_is_working = self.redis.ping()    
-        logging.info("pruebaInit: connected to Redis")
+        logging.info(fase, "connected to redis")
     except Exception as ex:
-        print('pruebaInit exception: redis host could not be accessed: {}'.format(ex))
+        print(fase, 'exception: host could not be accessed: {}'.format(ex))
     print("urls: ", current_app.config['CANDIDATOS_QUERY'], current_app.config['PRUEBAS_QUERY'], current_app.config['CANDIDATOS_PRUEBAS'])
 
 
