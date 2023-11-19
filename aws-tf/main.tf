@@ -6,6 +6,13 @@ terraform {
       #version = ">= 4.0.0"
     }
   }
+  #required_version = ">= 1.0.11"
+
+  # backend "s3" {
+  #   bucket = "du-terraform-state-bucket"
+  #   key    = "state/terraform_state.tfstate"
+  #   region = "us-east-1"
+  # }
 }
 
 provider "aws" {
@@ -106,22 +113,4 @@ module "ecs" {
   internal_alb_security_group = module.internal_alb_security_group
   internal_alb_target_groups  = module.internal_alb.target_groups
   public_alb_target_groups    = module.public_alb.target_groups
-}
-
-resource "aws_elasticache_cluster" "redis" {
-  cluster_id              = "abcjobs-redis-cluster"
-  engine                  = "redis"
-  node_type               = "cache.t3.micro"
-  num_cache_nodes         = 1
-  #parameter_group_name    = "default.redis3.2"
-  port                    = 6379
-  tags = {
-    Name = "redis-cluster"
-  }
-}
-
-output "redis_endpoint" {
-  #value = "${aws_elasticache_cluster.redis.endpoint}"
-  #value = "${aws_elasticache_cluster.redis.configuration_endpoint_address}"
-  value = "${aws_elasticache_cluster.redis.cache_nodes[0].address}:${aws_elasticache_cluster.redis.cache_nodes[0].port}" 
 }

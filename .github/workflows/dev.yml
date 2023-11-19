@@ -69,13 +69,6 @@ jobs:
        microservice-path: ./candidatos_pruebas
     secrets: inherit  
 
-  pruebas-taker:
-    uses: ./.github/workflows/test-build-deploy.yml
-    with:
-       microservice: pruebas-taker
-       microservice-path: ./pruebas_taker
-    secrets: inherit
-
   # record-score:
   #   uses: ./.github/workflows/test-build-deploy.yml
   #   with:

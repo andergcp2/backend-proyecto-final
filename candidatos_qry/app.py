@@ -3,7 +3,7 @@ from flask import Flask
 from flask_cors import CORS
 from flask_restful import  Api
 from modelos import db
-from vistas import VistaPing, VistaSearch, VistaGetCandidate
+from vistas import VistaPing, VistaSearch
 
 app = Flask(__name__)
 app.config['PROPAGATE_EXCEPTIONS'] = True
@@ -31,4 +31,3 @@ api = Api(app)
 
 api.add_resource(VistaPing, '/candidates-qry/ping')
 api.add_resource(VistaSearch, '/candidates-qry')
-api.add_resource(VistaGetCandidate, '/candidates-qry/<string:id>')
