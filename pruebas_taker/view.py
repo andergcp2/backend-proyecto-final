@@ -88,10 +88,10 @@ class PruebaInit(Resource):
             return "parameter(s) missing", 400
 
         endpoint = format(current_app.config['CANDIDATOS_QUERY']) +"/{}".format(candidatoId)
-        if not testing:
-            print ("candidato-url: ", endpoint)
+        #if not testing:
+        print ("candidato-url: ", endpoint)
         resp = getCandidato(endpoint, headers)
-        #print ("candidato-resp: ", endpoint, resp)
+        print ("candidato-resp: ", resp)
         if(resp['status_code'] != 200):
             # 404 - El candidato que va a tomar la prueba no existe
             return resp, resp['status_code'] # Response(resp['msg'], resp['status_code']) resp.headers.items()
