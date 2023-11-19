@@ -47,12 +47,16 @@ def getCache(key):
 
 class HealthCheck(Resource):
     def get(self):
+        print("health-check")
         return "ok"
 
 class PruebaInit(Resource):
     def __init__(self) -> None:
+        print()
+        print("pruebaInit: ", current_app.config['CACHE_HOST'], current_app.config['CACHE_PORT'] )
         pool = redis.ConnectionPool(host=current_app.config['CACHE_HOST'], port=current_app.config['CACHE_PORT'], db=0)
         self.redis = redis.Redis(connection_pool=pool)
+        print("urls: ", current_app.config['CANDIDATOS_QUERY'], current_app.config['PRUEBAS_QUERY'], current_app.config['CANDIDATOS_PRUEBAS'])
         # self.redis_cli = redis.Redis(host="10.182.0.3", port=6379, decode_responses=True, encoding="utf-8", )
         super().__init__()
 
@@ -155,7 +159,15 @@ class PruebaInit(Resource):
 
 
 class PruebaNext(Resource):
-
+    def __init__(self) -> None:
+        print()
+        print("pruebaInit: ", current_app.config['CACHE_HOST'], current_app.config['CACHE_PORT'] )
+        pool = redis.ConnectionPool(host=current_app.config['CACHE_HOST'], port=current_app.config['CACHE_PORT'], db=0)
+        self.redis = redis.Redis(connection_pool=pool)
+        print("urls: ", current_app.config['CANDIDATOS_QUERY'], current_app.config['PRUEBAS_QUERY'], current_app.config['CANDIDATOS_PRUEBAS'])
+        # self.redis_cli = redis.Redis(host="10.182.0.3", port=6379, decode_responses=True, encoding="utf-8", )
+        super().__init__()
+       
     def post(self, candidatoId, pruebaId):
         testing = current_app.config['TESTING']
         headers = {"Content-Type":"application/json", "Authorization": request.headers['Authorization']}
@@ -191,6 +203,14 @@ class PruebaNext(Resource):
 
 
 class PruebaDone(Resource):
+    def __init__(self) -> None:
+        print()
+        print("pruebaInit: ", current_app.config['CACHE_HOST'], current_app.config['CACHE_PORT'] )
+        pool = redis.ConnectionPool(host=current_app.config['CACHE_HOST'], port=current_app.config['CACHE_PORT'], db=0)
+        self.redis = redis.Redis(connection_pool=pool)
+        print("urls: ", current_app.config['CANDIDATOS_QUERY'], current_app.config['PRUEBAS_QUERY'], current_app.config['CANDIDATOS_PRUEBAS'])
+        # self.redis_cli = redis.Redis(host="10.182.0.3", port=6379, decode_responses=True, encoding="utf-8", )
+        super().__init__()
 
     def post(self, candidatoId, pruebaId):
         testing = current_app.config['TESTING']
