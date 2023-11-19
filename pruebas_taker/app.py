@@ -16,6 +16,11 @@ if 'USERS_PATH' in os.environ:
     app.config['CANDIDATOS_QUERY'] = str(os.environ.get("CANDIDATOS_PATH"))
     app.config['PRUEBAS_QUERY'] = str(os.environ.get("PRUEBAS_PATH"))
     app.config['CANDIDATOS_PRUEBAS'] = str(os.environ.get("CANDIDATOS_PRUEBAS_PATH"))
+    print("prod env-var")
+    print("cache: ", app.config['CACHE_HOST'], app.config['CACHE_PORT'] )
+    print("cands_url: ", app.config['CANDIDATOS_QUERY'])
+    print("tests_url: ", app.config['PRUEBAS_QUERY'])
+    print("testc_url: ", app.config['CANDIDATOS_PRUEBAS'])
 else:
     app.config['CACHE_HOST']  = 'localhost'
     app.config['CACHE_PORT']  = 6379
@@ -25,6 +30,11 @@ else:
 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pruebas-taker.db'
     app.config['TESTING'] = True
+    print("test env-var")
+    print("cache: ", app.config['CACHE_HOST'], app.config['CACHE_PORT'] )
+    print("cands_url: ", app.config['CANDIDATOS_QUERY'])
+    print("tests_url: ", app.config['PRUEBAS_QUERY'])
+    print("testc_url: ", app.config['CANDIDATOS_PRUEBAS'])    
     print("test: ", app.config['SQLALCHEMY_DATABASE_URI'])
 
 app_context = app.app_context()
