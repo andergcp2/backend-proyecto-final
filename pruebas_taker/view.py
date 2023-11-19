@@ -62,7 +62,7 @@ class PruebaInit(Resource):
 
     def post(self, candidatoId, pruebaId):
         testing = current_app.config['TESTING']
-        headers = {"Content-Type":"application/json", "Authorization": request.headers['Authorization']}
+        headers = {"Content-Type":"application/json"} # , "Authorization": request.headers['Authorization']
 
         if candidatoId is not None: 
             try:
@@ -170,7 +170,7 @@ class PruebaNext(Resource):
        
     def post(self, candidatoId, pruebaId):
         testing = current_app.config['TESTING']
-        headers = {"Content-Type":"application/json", "Authorization": request.headers['Authorization']}
+        headers = {"Content-Type":"application/json"} # , "Authorization": request.headers['Authorization']
 
         if candidatoId is not None: 
             try:
@@ -214,7 +214,7 @@ class PruebaDone(Resource):
 
     def post(self, candidatoId, pruebaId):
         testing = current_app.config['TESTING']
-        headers = {"Content-Type":"application/json", "Authorization": request.headers['Authorization']}
+        headers = {"Content-Type":"application/json"} # , "Authorization": request.headers['Authorization']
 
         if candidatoId is not None: 
             try:

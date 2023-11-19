@@ -12,7 +12,7 @@ class TestPruebasTaker(TestCase):
         self.data_factory = Faker()
      
         self.token = "mangocat"
-        self.headers_token = {'Content-Type': 'application/json', "Authorization": "Bearer {}".format(self.token)}
+        self.headers_token = {'Content-Type': 'application/json'} # , "Authorization": "Bearer {}".format(self.token)
         
         self.endpoint_health = '/tests-taker/ping'
         self.endpoint_init_400_candidatoId = '/tests-taker/init/id/1'
