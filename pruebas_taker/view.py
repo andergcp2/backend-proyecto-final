@@ -25,7 +25,7 @@ def get(endpoint, headers):
         #return json.dumps('connection endpoint failed {} -> {}'.format(endpoint, ex)), resp.status_code
         return {'msg': 'connection endpoint failed {} -> {}'.format(endpoint, ex), 'status_code': 500}
 
-def update(endpoint, data, headers):
+def updatePruebaCandidato(endpoint, data, headers):
     try:
         resp = requests.post(endpoint, data=json.dumps(data), headers = headers)
         return resp
@@ -125,38 +125,41 @@ class PruebaInit(Resource):
         #     data = {'question': question, 'answers': answers}
         #     pushCache(idcache, data)
 
-        mango = True
-        data = {
-            "prueba": prueba,
-            "candidato": candidato,
-            "questions": prueba['questions'],
-            "totalQuestions": prueba['numQuestions']
-        }
+        # mango = True
+        # data = {
+        #     "prueba": prueba,
+        #     "candidato": candidato,
+        #     "questions": prueba['questions'],
+        #     "totalQuestions": prueba['numQuestions']
+        # }
 
-        print()
-        print(data)
-        if (mango):
-            return json.dumps(data), 200
+        # print()
+        # print(data)
+        # if (mango):
+        #     return json.dumps(data), 200
 
-        data = {'question': question, 'answers': answers}
-        setCache(idcache, data)
-
-        prueba = getCache(idcache)
-        
         data = {
             "pruebaId": pruebaId,
             "candidatoId": candidatoId,
             "totalQuestions": prueba['numQuestions'], 
             "numQuestion": 1, 
-            "question": pregunta['question'],
-            #"answers": pregunta['answers']
+            # "question": pregunta['question'],
+            # "answers": pregunta['answers']
         }
+
+        #data = {'question': question, 'answers': answers}
+        setCache(idcache, data)
+        prueba = getCache(idcache)
+
         return json.dumps(data), 200
 
 
 class PruebaNext(Resource):
 
     def post(self, candidatoId, pruebaId):
+        testing = current_app.config['TESTING']
+        headers = {"Content-Type":"application/json", "Authorization": request.headers['Authorization']}
+
         if candidatoId is not None: 
             try:
                 int(candidatoId)
@@ -174,13 +177,15 @@ class PruebaNext(Resource):
             return "parameter(s) missing", 400
 
         idcache = pruebaId+"-"+candidatoId
-        pregunta = popCache(idcache)
+        pregunta = getCache(idcache)
         #pregunta = json.loads(self.redis.lpop(idcache))
         data = {
             "pruebaId": pruebaId,
             "candidatoId": candidatoId,
-            "question": pregunta['question'],
-            "answers": pregunta['answers']
+            # "totalQuestions": prueba['numQuestions'], 
+            # "numQuestion": 1, 
+            # "question": pregunta['question'],
+            # "answers": pregunta['answers']
         }
         return json.dumps(data), 200
 
@@ -188,9 +193,28 @@ class PruebaNext(Resource):
 class PruebaDone(Resource):
 
     def post(self, candidatoId, pruebaId):
+        testing = current_app.config['TESTING']
+        headers = {"Content-Type":"application/json", "Authorization": request.headers['Authorization']}
+
+        if candidatoId is not None: 
+            try:
+                int(candidatoId)
+            except ValueError:
+                return "candidato id is not a number", 400
+
+        if pruebaId is not None: 
+            try:
+                int(pruebaId)
+            except ValueError:
+                return "prueba id is not a number", 400
+
+
         # 400 - En el caso que alguno de los campos no esté presente en la solicitud
         if candidatoId is None or pruebaId is None: 
             return "parameter(s) missing", 400
+
+        idcache = pruebaId+"-"+candidatoId
+        pregunta = getCache(idcache)
 
         # en este punto se calcula el resultado de la prueba que está presentando el candidato 
         # consultando de cache las preguntas, sus respuestas y las respuestas del candidato
@@ -204,11 +228,11 @@ class PruebaDone(Resource):
         }
 
         # y se actualiza el resultado de la prueba para el candidato
-        endpointP = format(current_app.config['CANDIDATOS_QUERY'])
-        resp = updatePrueba(endpointP, data, headers)
+        endpointP = format(current_app.config['CANDIDATOS_PRUEBAS'])
+        resp = updatePruebaCandidato(endpointP, data, headers)
         # print("prueba: ", endpointP, resp)
         status_code = resp['status_code']
-        if(status_code != 201):
+        if(status_code != 200):
             return resp['msg'], status_code
 
-        return data, 201
+        return data, 200
