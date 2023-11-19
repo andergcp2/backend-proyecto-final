@@ -34,26 +34,31 @@ def updatePruebaCandidato(endpoint, data, headers):
         #return (resp.json, resp.status_code, resp.headers.items())
 
 def deleteCache(self, key):
-    self.redis.delete(key)
+    #self.redis.delete(key)
+    print("delete-cache")
 
 def setCache(self, key, data):
-    self.redis.hset(key, mapping=data)
+    #self.redis.hset(key, mapping=data)
+    print("set-cache")
     #self.redis.rpush(key, json.dumps(data))
 
 def getCache(self, key):
-    return self.redis.hgetall(key)
+    #return self.redis.hgetall(key)
+    print("get-cache")
+    return {}
     #return json.loads(self.redis.lpop(key))
 
 def setupCache(self, fase):
+    print("setup-cache")
     print(fase, current_app.config['CACHE_HOST'], current_app.config['CACHE_PORT'] )
     #self.redis = redis.Redis(host=current_app.config['CACHE_HOST'], port=current_app.config['CACHE_PORT'], decode_responses=True, ssl=True) #encoding="utf-8"
-    pool = redis.ConnectionPool(host=current_app.config['CACHE_HOST'], port=current_app.config['CACHE_PORT'], db=0)
-    self.redis = redis.Redis(connection_pool=pool)
-    try:
-        cache_is_working = self.redis.ping()    
-        logging.info(fase, "connected to redis")
-    except Exception as ex:
-        print(fase, 'exception: host could not be accessed: {}'.format(ex))
+    # pool = redis.ConnectionPool(host=current_app.config['CACHE_HOST'], port=current_app.config['CACHE_PORT'], db=0)
+    # self.redis = redis.Redis(connection_pool=pool)
+    # try:
+    #     cache_is_working = self.redis.ping()    
+    #     logging.info(fase, "connected to redis")
+    # except Exception as ex:
+    #     print(fase, 'exception: host could not be accessed: {}'.format(ex))
     print("urls: ", current_app.config['CANDIDATOS_QUERY'], current_app.config['PRUEBAS_QUERY'], current_app.config['CANDIDATOS_PRUEBAS'])
 
 
