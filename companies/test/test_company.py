@@ -2,7 +2,7 @@ import json
 from app import app
 from faker import Faker
 from unittest import TestCase
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 from datetime import datetime, timedelta
 
 class TestCompany(TestCase):
@@ -33,7 +33,8 @@ class TestCompany(TestCase):
         self.assertEqual(error_code, 'CO01')
         self.assertEqual(resp_create.status_code, 400)
 
-    def test_create_company_201_creation_success(self):
+    @patch('vistas.requests.post')
+    def test_create_company_201_creation_success(self, mock_post):
         new_company = {
             "idType": "NIT",
             "idNumber": 123456,
@@ -46,8 +47,13 @@ class TestCompany(TestCase):
             "city": "Bogota",
             "reprName": self.data_factory.name(),
             "reprIdType": "CC",
-            "reprIdNumber": 123456
+            "reprIdNumber": 123456,
+            "password": 123456
         }
+        mock_response = MagicMock()
+        mock_post.status_code = 200
+        mock_post.return_value.text = '{\"statusCode\": 200,\"body\": \"{\\"message\\":\\"User signed up successfully\\"}\"}'
+        mock_response.return_value = mock_post
         resp_create = self.client.post(self.endpoint_create, headers={'Content-Type': 'application/json'}, data=json.dumps(new_company))
         print(resp_create.get_data())
         self.assertEqual(resp_create.status_code, 201)
@@ -65,7 +71,8 @@ class TestCompany(TestCase):
             "city": "Bo",
             "reprName": self.data_factory.name(),
             "reprIdType": "C",
-            "reprIdNumber": "123456"
+            "reprIdNumber": "123456",
+            "password": 123456
         }
         resp_create = self.client.post(self.endpoint_create, headers={'Content-Type': 'application/json'}, data=json.dumps(new_company))
         error_code = json.loads(resp_create.get_data()).get('errorCode') 

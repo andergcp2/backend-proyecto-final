@@ -1,9 +1,10 @@
-import requests
-from flask import request
+import json
+from flask import request, current_app
 from flask_restful import Resource
 from datetime import datetime
 from .errors import customError
 from .utils import lengthValidation
+import requests
 
 from modelos import db, Company, CompanySchema
 
@@ -71,4 +72,20 @@ class VistaCompany(Resource):
                                 )
         db.session.add(new_company)
         db.session.commit()
+
+        request_auth = {
+            'username': data['reprName'],
+            'password': data['password'],
+            'email': data['email'],
+            'groupName': 'empresa',
+            'idDb': str(new_company.id)
+        }
+        response = requests.post(current_app.config['USERS'], headers={"Content-Type":"application/json"}, json=request_auth, timeout=60)
+        print(response)
+        data_resp = json.loads(response.text)
+        if data_resp.get('errorMessage') is not None:
+            db.session.delete(new_company)
+            db.session.commit()
+            return customError(400, "CO04", f"Error en el registro del usuario en cognito - {data_resp.get('errorMessage')}")
+
         return company_schema.dump(new_company), 201
