@@ -1,7 +1,7 @@
 import json, requests, redis
 from flask import request, Response, current_app
 from flask_restful import Resource
-#from redis_client import RedisClient
+
 
 def getCandidato(endpoint, headers):
     return get(endpoint, headers)
@@ -33,31 +33,43 @@ def updatePruebaCandidato(endpoint, data, headers):
         return {'msg': 'connection endpoint failed {} -> {}'.format(endpoint, ex), 'status_code': 500}
         #return (resp.json, resp.status_code, resp.headers.items())
 
-def deleteCache(key):
-    self.redis.delete(key)
+def deleteCache(self, key):
+    #self.redis.delete(key)
+    print("delete-cache")
 
-def setCache(key, data):
-    self.redis.hset(key, mapping=data)
+def setCache(self, key, data):
+    #self.redis.hset(key, mapping=data)
+    print("set-cache")
     #self.redis.rpush(key, json.dumps(data))
 
-def getCache(key):
-    return self.redis.hgetall(key)
+def getCache(self, key):
+    #return self.redis.hgetall(key)
+    print("get-cache")
+    return {}
     #return json.loads(self.redis.lpop(key))
+
+def setupCache(self, fase):
+    print("setup-cache")
+    print(fase, current_app.config['CACHE_HOST'], current_app.config['CACHE_PORT'] )
+    #self.redis = redis.Redis(host=current_app.config['CACHE_HOST'], port=current_app.config['CACHE_PORT'], decode_responses=True, ssl=True) #encoding="utf-8"
+    # pool = redis.ConnectionPool(host=current_app.config['CACHE_HOST'], port=current_app.config['CACHE_PORT'], db=0)
+    # self.redis = redis.Redis(connection_pool=pool)
+    # try:
+    #     cache_is_working = self.redis.ping()    
+    #     logging.info(fase, "connected to redis")
+    # except Exception as ex:
+    #     print(fase, 'exception: host could not be accessed: {}'.format(ex))
+    print("urls: ", current_app.config['CANDIDATOS_QUERY'], current_app.config['PRUEBAS_QUERY'], current_app.config['CANDIDATOS_PRUEBAS'])
 
 
 class HealthCheck(Resource):
     def get(self):
-        print("health-check")
+        #print("check-ok")
         return "ok"
 
 class PruebaInit(Resource):
     def __init__(self) -> None:
-        print()
-        print("pruebaInit: ", current_app.config['CACHE_HOST'], current_app.config['CACHE_PORT'] )
-        pool = redis.ConnectionPool(host=current_app.config['CACHE_HOST'], port=current_app.config['CACHE_PORT'], db=0)
-        self.redis = redis.Redis(connection_pool=pool)
-        print("urls: ", current_app.config['CANDIDATOS_QUERY'], current_app.config['PRUEBAS_QUERY'], current_app.config['CANDIDATOS_PRUEBAS'])
-        # self.redis_cli = redis.Redis(host="10.182.0.3", port=6379, decode_responses=True, encoding="utf-8", )
+        setupCache(self, 'prueba-init')
         super().__init__()
 
     def post(self, candidatoId, pruebaId):
@@ -81,10 +93,10 @@ class PruebaInit(Resource):
             return "parameter(s) missing", 400
 
         endpoint = format(current_app.config['CANDIDATOS_QUERY']) +"/{}".format(candidatoId)
-        if not testing:
-            print ("candidato-url: ", endpoint)
+        #if not testing:
+        print ("candidato-url: ", endpoint)
         resp = getCandidato(endpoint, headers)
-        #print ("candidato-resp: ", endpoint, resp)
+        print ("candidato-resp: ", resp)
         if(resp['status_code'] != 200):
             # 404 - El candidato que va a tomar la prueba no existe
             return resp, resp['status_code'] # Response(resp['msg'], resp['status_code']) resp.headers.items()
@@ -110,7 +122,7 @@ class PruebaInit(Resource):
             return resp, resp['status_code']
 
         idcache = pruebaId+"-"+candidatoId
-        deleteCache(idcache)
+        deleteCache(self, idcache)
 
         # for x in range(0, len(prueba['questions'])):
         #     y=x
@@ -127,7 +139,7 @@ class PruebaInit(Resource):
         #     answers.append(questions[y]['answer'])
 
         #     data = {'question': question, 'answers': answers}
-        #     pushCache(idcache, data)
+        #     pushCache(self, idcache, data)
 
         # mango = True
         # data = {
@@ -152,20 +164,15 @@ class PruebaInit(Resource):
         }
 
         #data = {'question': question, 'answers': answers}
-        setCache(idcache, data)
-        prueba = getCache(idcache)
+        setCache(self, idcache, data)
+        prueba = getCache(self, idcache)
 
         return json.dumps(data), 200
 
 
 class PruebaNext(Resource):
     def __init__(self) -> None:
-        print()
-        print("pruebaInit: ", current_app.config['CACHE_HOST'], current_app.config['CACHE_PORT'] )
-        pool = redis.ConnectionPool(host=current_app.config['CACHE_HOST'], port=current_app.config['CACHE_PORT'], db=0)
-        self.redis = redis.Redis(connection_pool=pool)
-        print("urls: ", current_app.config['CANDIDATOS_QUERY'], current_app.config['PRUEBAS_QUERY'], current_app.config['CANDIDATOS_PRUEBAS'])
-        # self.redis_cli = redis.Redis(host="10.182.0.3", port=6379, decode_responses=True, encoding="utf-8", )
+        setupCache(self, 'prueba-next')
         super().__init__()
        
     def post(self, candidatoId, pruebaId):
@@ -189,7 +196,7 @@ class PruebaNext(Resource):
             return "parameter(s) missing", 400
 
         idcache = pruebaId+"-"+candidatoId
-        pregunta = getCache(idcache)
+        pregunta = getCache(self, idcache)
         #pregunta = json.loads(self.redis.lpop(idcache))
         data = {
             "pruebaId": pruebaId,
@@ -204,12 +211,7 @@ class PruebaNext(Resource):
 
 class PruebaDone(Resource):
     def __init__(self) -> None:
-        print()
-        print("pruebaInit: ", current_app.config['CACHE_HOST'], current_app.config['CACHE_PORT'] )
-        pool = redis.ConnectionPool(host=current_app.config['CACHE_HOST'], port=current_app.config['CACHE_PORT'], db=0)
-        self.redis = redis.Redis(connection_pool=pool)
-        print("urls: ", current_app.config['CANDIDATOS_QUERY'], current_app.config['PRUEBAS_QUERY'], current_app.config['CANDIDATOS_PRUEBAS'])
-        # self.redis_cli = redis.Redis(host="10.182.0.3", port=6379, decode_responses=True, encoding="utf-8", )
+        setupCache(self, 'prueba-done')
         super().__init__()
 
     def post(self, candidatoId, pruebaId):
@@ -234,7 +236,7 @@ class PruebaDone(Resource):
             return "parameter(s) missing", 400
 
         idcache = pruebaId+"-"+candidatoId
-        pregunta = getCache(idcache)
+        pregunta = getCache(self, idcache)
 
         # en este punto se calcula el resultado de la prueba que está presentando el candidato 
         # consultando de cache las preguntas, sus respuestas y las respuestas del candidato

@@ -141,34 +141,44 @@ class TestPruebasTaker(TestCase):
         req_health = self.client.get(self.endpoint_health, headers={'Content-Type': 'application/json'})
         self.assertEqual(req_health.status_code, 200)
 
-    def test_init_test_400_candidatoId(self):
+    @patch('view.setupCache')
+    def test_init_test_400_candidatoId(self, mock_setup_cache):
+        mock_setup_cache.return_value = ''
         req_get = self.client.post(self.endpoint_init_400_candidatoId, headers=self.headers_token)
         self.assertEqual(req_get.status_code, 400)
 
-    def test_init_test_400_testId(self):
+    @patch('view.setupCache')
+    def test_init_test_400_testId(self, mock_setup_cache):
+        mock_setup_cache.return_value = ''
         req_get = self.client.post(self.endpoint_init_400_pruebaId, headers=self.headers_token)
         self.assertEqual(req_get.status_code, 400)
 
+    @patch('view.setupCache')
     @patch('view.getCandidato')
-    def test_init_test_404_candidato_not_found(self, mock_candidato):
+    def test_init_test_404_candidato_not_found(self, mock_candidato, mock_setup_cache):
+        mock_setup_cache.return_value = ''
         mock_candidato.return_value = {'msg': 'candidato was not found by mango', 'status_code': 404}
         req = self.client.post(self.endpoint_init_404, headers=self.headers_token)
         #print("test-404: ", json.loads(req.get_data())) 
         self.assertEqual(req.status_code, 404)
 
+    @patch('view.setupCache')
     @patch('view.getCandidato')
     @patch('view.getPrueba')
-    def test_init_test_404_test_not_found(self, mock_prueba, mock_candidato):
+    def test_init_test_404_test_not_found(self, mock_prueba, mock_candidato, mock_setup_cache):
+        mock_setup_cache.return_value = ''
         mock_candidato.return_value = {'msg': self.candidato_200, 'status_code': 200}
         mock_prueba.return_value = {'msg': 'prueba was not found by mango', 'status_code': 404}
         req = self.client.post(self.endpoint_init_404, headers=self.headers_token)
         #print("test-404: ", json.loads(req.get_data()))
         self.assertEqual(req.status_code, 404)
 
+    @patch('view.setupCache')
     @patch('view.getCandidato')
     @patch('view.getPrueba')
     @patch('view.getPruebaCandidato')    
-    def test_init_test_404_candidato_test_not_associated(self, mock_prueba_candidato, mock_prueba, mock_candidato):
+    def test_init_test_404_candidato_test_not_associated(self, mock_prueba_candidato, mock_prueba, mock_candidato, mock_setup_cache):
+        mock_setup_cache.return_value = ''
         mock_candidato.return_value = {'msg': self.candidato_200, 'status_code': 200}
         mock_prueba.return_value = {'msg': self.prueba_200, 'status_code': 200}
         mock_prueba_candidato.return_value = {'msg': 'prueba is not associated to candidato by mango', 'status_code': 404}
@@ -176,13 +186,15 @@ class TestPruebasTaker(TestCase):
         #print("test-404: ", json.loads(req.get_data()))
         self.assertEqual(req.status_code, 404)
 
+    @patch('view.setupCache')
     @patch('view.getCandidato')
     @patch('view.getPrueba')
     @patch('view.getPruebaCandidato')
     @patch('view.deleteCache')
     @patch('view.setCache')
     @patch('view.getCache')
-    def test_init_test_200(self, mock_get_cache, mock_set_cache, mock_delete_cache, mock_prueba_candidato, mock_prueba, mock_candidato):
+    def test_init_test_200(self, mock_get_cache, mock_set_cache, mock_delete_cache, mock_prueba_candidato, mock_prueba, mock_candidato, mock_setup_cache):
+        mock_setup_cache.return_value = ''
         mock_candidato.return_value = {'msg': self.candidato_200, 'status_code': 200}
         mock_prueba.return_value = {'msg': self.prueba_200, 'status_code': 200}
         mock_prueba_candidato.return_value = {'msg': self.prueba_candidato_200, 'status_code': 200}
@@ -193,41 +205,55 @@ class TestPruebasTaker(TestCase):
         # print("test-200: ", json.loads(req.get_data()))
         self.assertEqual(req.status_code, 200)
 
-    def test_next_test_400_candidatoId(self):
+    @patch('view.setupCache')
+    def test_next_test_400_candidatoId(self, mock_setup_cache):
+        mock_setup_cache.return_value = ''
         req_get = self.client.post(self.endpoint_next_400_candidatoId, headers=self.headers_token)
         self.assertEqual(req_get.status_code, 400)
 
-    def test_next_test_400_testId(self):
+    @patch('view.setupCache')
+    def test_next_test_400_testId(self, mock_setup_cache):
+        mock_setup_cache.return_value = ''
         req_get = self.client.post(self.endpoint_next_400_pruebaId, headers=self.headers_token)
         self.assertEqual(req_get.status_code, 400)
 
+    @patch('view.setupCache')
     @patch('view.getCache')
-    def test_next_test_200(self, mock_get_cache):
+    def test_next_test_200(self, mock_get_cache, mock_setup_cache):
+        mock_setup_cache.return_value = ''
         mock_get_cache.return_value = {}
         req = self.client.post(self.endpoint_next_200, headers=self.headers_token)
         # print("test-200: ", json.loads(req.get_data()))
         self.assertEqual(req.status_code, 200)
 
-    def test_done_test_400_candidatoId(self):
+    @patch('view.setupCache')
+    def test_done_test_400_candidatoId(self, mock_setup_cache):
+        mock_setup_cache.return_value = ''
         req_get = self.client.post(self.endpoint_done_400_candidatoId, headers=self.headers_token)
         self.assertEqual(req_get.status_code, 400)
 
-    def test_done_test_400_testId(self):
+    @patch('view.setupCache')
+    def test_done_test_400_testId(self, mock_setup_cache):
+        mock_setup_cache.return_value = ''
         req_get = self.client.post(self.endpoint_done_400_pruebaId, headers=self.headers_token)
         self.assertEqual(req_get.status_code, 400)
 
+    @patch('view.setupCache')
     @patch('view.getCache')
     @patch('view.updatePruebaCandidato')
-    def test_done_test_404(self, mock_prueba_candidato, mock_get_cache):
+    def test_done_test_404(self, mock_prueba_candidato, mock_get_cache, mock_setup_cache):
+        mock_setup_cache.return_value = ''
         mock_get_cache.return_value = {}
         mock_prueba_candidato.return_value = {'msg': 'prueba was not updated by mango', 'status_code': 404}
         req = self.client.post(self.endpoint_done_404, headers=self.headers_token)
         # print("test-200: ", json.loads(req.get_data()))
         self.assertEqual(req.status_code, 404)
 
+    @patch('view.setupCache')
     @patch('view.getCache')
     @patch('view.updatePruebaCandidato')
-    def test_done_test_200(self, mock_prueba_candidato, mock_get_cache):
+    def test_done_test_200(self, mock_prueba_candidato, mock_get_cache, mock_setup_cache):
+        mock_setup_cache.return_value = ''
         mock_get_cache.return_value = {}
         mock_prueba_candidato.return_value = {'msg': 'prueba updated by mango', 'status_code': 200}
         req = self.client.post(self.endpoint_done_200, headers=self.headers_token)
