@@ -1,7 +1,6 @@
 import json, requests, redis
-from flask import request, Response, current_app
+from flask import request, current_app, jsonify
 from flask_restful import Resource
-
 
 def getCandidato(endpoint, headers):
     return get(endpoint, headers)
@@ -58,7 +57,6 @@ def setupCache(self, fase):
         logging.info(fase, "connected to redis")
     except Exception as ex:
         print(fase, 'exception: host could not be accessed: {}'.format(ex))
-    print("urls: ", current_app.config['CANDIDATOS_QUERY'], current_app.config['PRUEBAS_QUERY'], current_app.config['CANDIDATOS_PRUEBAS'])
 
 
 class HealthCheck(Resource):
@@ -87,7 +85,7 @@ class PruebaInit(Resource):
             except ValueError:
                 return "prueba id is not a number", 400
 
-        # 400 - En el caso que alguno de los campos no esté presente en la solicitud
+        # 400 si alguno de los parametros no esta presente
         if candidatoId is None or pruebaId is None: 
             return "parameter(s) missing", 400
 
@@ -95,7 +93,6 @@ class PruebaInit(Resource):
         if not testing:
             print ("candidato-url: ", endpoint)
         resp = getCandidato(endpoint, headers)
-        # print ("candidato-resp: ", resp)
         if(resp['status_code'] != 200):
             # 404 - El candidato que va a tomar la prueba no existe
             return resp, resp['status_code'] # Response(resp['msg'], resp['status_code']) resp.headers.items()
@@ -105,7 +102,6 @@ class PruebaInit(Resource):
         if not testing:
             print ("prueba-url: ", endpoint)
         resp = getPrueba(endpoint, headers)
-        #print ("prueba-resp: ", endpoint, resp)
         if(resp['status_code'] != 200):
             # 404 - La prueba a iniciar no existe
             return resp, resp['status_code']
@@ -115,44 +111,42 @@ class PruebaInit(Resource):
         if not testing:
             print ("candidato-prueba-url: ", endpoint)
         resp = getPruebaCandidato(endpoint, headers)
-        #print ("candidato-prueba-res: ", endpoint, resp)
         if(resp['status_code'] != 200):
             # 404 - El candidato no está asociado a la prueba
             return resp, resp['status_code']
 
         data = {
-            "pruebaId": pruebaId,
-            "candidatoId": candidatoId,
+            'pruebaId': prueba['id'],
+            'candidatoId': candidato['id'],
             "totalQuestions": prueba['numQuestions'],
             "numQuestion": 1, 
+            "answersOK": 0, 
             "prueba": prueba,
             "candidato": candidato,
         }
-
-        # "": pregunta['question'],
-        # "": pregunta['answers']
 
         idcache = pruebaId+"-"+candidatoId
         deleteCache(self, idcache)
         setCache(self, idcache, data)
         test = getCache(self, idcache)
 
-        #print("num-q: ", test.numQuestions)
-        #print("num-q: ", test['numQuestions'])
+        answers = []
+        respuestas = prueba['questions'][0]['answers']
+        for x in range(len(respuestas)):
+            answers.append({"id": respuestas[x]['id'], "answer": respuestas[x]['answer']})
 
-        question = {
-            "pruebaId": pruebaId,
-            "candidatoId": candidatoId,
-            "question": prueba['questions'][0],
-            "answers": prueba['questions'][0]['answers'],
-            "totalQuestions": prueba['numQuestions'], 
-            "numQuestion": 1, 
+        resp_init = {
+            'pruebaId': prueba['id'],
+            'candidatoId': candidato['id'],
+            'question': {'id': prueba['questions'][0]['id'], 'question': prueba['questions'][0]['question']},
+            'answers': answers,
+            'totalQuestions': prueba['numQuestions'], 
+            'numQuestion': 1, 
         }
-
-        print()
-        print(question)
-        return json.dumps(question), 200
-
+ 
+        #print(type(resp_init), resp_init)
+        #return json.dumps(resp_init), 200
+        return jsonify(resp_init)
 
 class PruebaNext(Resource):
     def __init__(self) -> None:
@@ -175,22 +169,62 @@ class PruebaNext(Resource):
             except ValueError:
                 return "prueba id is not a number", 400
 
-        # 400 - En el caso que alguno de los campos no esté presente en la solicitud
+        # 400 si alguno de los parametros no esta presente
         if candidatoId is None or pruebaId is None: 
             return "parameter(s) missing", 400
 
+        data = request.get_json()
+        totalQuestions = numQuestion = questionId = answerId = None
+
+        if "totalQuestions" not in data or data["totalQuestions"] is None:
+            return "total questions is required", 400
+        elif "numQuestion" not in data or data["numQuestion"] is None:
+            return "number of question is required", 400
+        elif "questionId" not in data or data["questionId"] is None:
+            return "question id is required", 400
+        elif "answerId" not in data or data["answerId"] is None:
+            return "answer id is required", 400
+
+        totalQuestions = data["totalQuestions"]
+        numQuestion = data["numQuestion"]
+        questionId = data["questionId"]
+        answerId = data["answerId"]
+
         idcache = pruebaId+"-"+candidatoId
-        pregunta = getCache(self, idcache)
-        #pregunta = json.loads(self.redis.lpop(idcache))
-        data = {
-            "pruebaId": pruebaId,
-            "candidatoId": candidatoId,
-            # "totalQuestions": prueba['numQuestions'], 
-            # "numQuestion": 1, 
-            # "question": pregunta['question'],
-            # "answers": pregunta['answers']
+        test = getCache(self, idcache)
+        # 404 si no existen los parametros como llave en la cache
+        if(test is None):
+            return "this test was not started by candidate", 404
+
+        # 412 no debe ser la ultima pregunta
+        if (numQuestion == totalQuestions):
+            return "this question should not be the last question", 412
+
+        idx = numQuestion
+        numQuestion +=1    
+
+        respuestas = test['prueba']['questions'][idx-1]['answers']
+        for x in range(len(respuestas)):
+            if(respuestas[x]['id'] == answerId and respuestas[x]['correct']):
+                test['answersOK'] = test['answersOK'] +1
+                setCache(self, idcache, test)
+                print("question ok ", idx)
+
+        answers = []
+        respuestas = test['prueba']['questions'][idx]['answers']
+        for x in range(len(respuestas)):
+            answers.append({"id": respuestas[x]['id'], "answer": respuestas[x]['answer']})
+
+        resp_next = {
+            'pruebaId': test['prueba']['id'],
+            'candidatoId': test['candidato']['id'],
+            'question': {'id': test['prueba']['questions'][idx]['id'], 'question': test['prueba']['questions'][idx]['question']},
+            'answers': answers,
+            'totalQuestions': test['prueba']['numQuestions'], 
+            'numQuestion': numQuestion, 
         }
-        return json.dumps(data), 200
+
+        return jsonify(resp_next)
 
 
 class PruebaDone(Resource):
@@ -214,31 +248,60 @@ class PruebaDone(Resource):
             except ValueError:
                 return "prueba id is not a number", 400
 
-
-        # 400 - En el caso que alguno de los campos no esté presente en la solicitud
+        # 400 si alguno de los parametros no esta presente
         if candidatoId is None or pruebaId is None: 
             return "parameter(s) missing", 400
 
+        data = request.get_json()
+        totalQuestions = numQuestion = questionId = answerId = None
+
+        if "totalQuestions" not in data or data["totalQuestions"] is None:
+            return "total questions is required", 400
+        elif "numQuestion" not in data or data["numQuestion"] is None:
+            return "number of question is required", 400
+        elif "questionId" not in data or data["questionId"] is None:
+            return "question id is required", 400
+        elif "answerId" not in data or data["answerId"] is None:
+            return "answer id is required", 400
+
+        totalQuestions = data["totalQuestions"]
+        numQuestion = data["numQuestion"]
+        questionId = data["questionId"]
+        answerId = data["answerId"]
+
         idcache = pruebaId+"-"+candidatoId
-        pregunta = getCache(self, idcache)
+        test = getCache(self, idcache)
+        # 404 si no existen los parametros como llave en la cache
+        if(test is None):
+            return "this test was not started by candidate", 404
 
-        # en este punto se calcula el resultado de la prueba que está presentando el candidato 
-        # consultando de cache las preguntas, sus respuestas y las respuestas del candidato
-        # ...
-        result = 0
+        # 412 no debe ser la ultima pregunta
+        if (numQuestion != totalQuestions):
+            return "this question should be the last question", 412
 
-        data = {
-            "pruebaId": pruebaId,
-            "candidatoId": candidatoId,
-            "result": result
+        idx = numQuestion
+        numQuestion +=1    
+
+        respuestas = test['prueba']['questions'][idx-1]['answers']
+        for x in range(len(respuestas)):
+            if(respuestas[x]['id'] == answerId and respuestas[x]['correct']):
+                test['answersOK'] = test['answersOK'] +1
+                setCache(self, idcache, test)
+                print("question ok ", idx)
+
+        resp_done = {
+            'pruebaId': test['prueba']['id'],
+            'candidatoId': test['candidato']['id'],
+            'totalQuestions': test['prueba']['numQuestions'], 
+            'answersOK': test['answersOK'], 
+            'result': round (test['answersOK'] / test['prueba']['numQuestions'], 2)
         }
 
-        # y se actualiza el resultado de la prueba para el candidato
-        endpointP = format(current_app.config['CANDIDATOS_PRUEBAS'])
-        resp = updatePruebaCandidato(endpointP, data, headers)
-        # print("prueba: ", endpointP, resp)
-        status_code = resp['status_code']
-        if(status_code != 200):
-            return resp['msg'], status_code
+        # endpointP = format(current_app.config['CANDIDATOS_PRUEBAS'])
+        # resp = updatePruebaCandidato(endpointP, datresp_donea, headers)
+        # # print("prueba: ", endpointP, resp)
+        # status_code = resp['status_code']
+        # if(status_code != 200):
+        #     return resp['msg'], status_code
 
-        return data, 200
+        return jsonify(resp_done)
