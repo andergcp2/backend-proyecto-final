@@ -151,7 +151,7 @@ class PruebaInit(Resource):
 
         print()
         print(question)
-        return json.dumps(prueba), 200
+        return json.dumps(question), 200
 
 
 class PruebaNext(Resource):
