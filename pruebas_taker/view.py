@@ -38,15 +38,13 @@ def deleteCache(self, key):
     print("delete-cache")
 
 def setCache(self, key, data):
-    self.redis.hset(key, mapping=data)
+    self.redis.set(key, json.dumps(data))
+    #self.redis.hset(key, mapping=data)
     #self.redis.hset(key, mapping=json.dumps(data))
-    print("set-cache")
-    #self.redis.rpush(key, json.dumps(data))
 
 def getCache(self, key):
-    print("get-cache")
-    #return {}
-    return self.redis.hgetall(key)
+    return json.loads(self.redis.get(key))
+    # return self.redis.hgetall(key)
     #return json.loads(self.redis.lpop(key))
 
 def setupCache(self, fase):
