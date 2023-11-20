@@ -38,7 +38,8 @@ def deleteCache(self, key):
     print("delete-cache")
 
 def setCache(self, key, data):
-    self.redis.hset(key, mapping=data)
+    #self.redis.hset(key, mapping=data)
+    self.redis.hset(key, json.dumps(data))
     print("set-cache")
     #self.redis.rpush(key, json.dumps(data))
 
@@ -155,8 +156,8 @@ class PruebaInit(Resource):
         #     return json.dumps(data), 200
 
         data = {
-            "prueba": prueba,
-            "candidato": candidato,
+            # "prueba": prueba,
+            # "candidato": candidato,
             "pruebaId": pruebaId,
             "candidatoId": candidatoId,
             "totalQuestions": prueba['numQuestions'], 
@@ -169,7 +170,7 @@ class PruebaInit(Resource):
         setCache(self, idcache, data)
         prueba = getCache(self, idcache)
 
-        return json.dumps(data), 200
+        return json.dumps(prueba), 200
 
 
 class PruebaNext(Resource):

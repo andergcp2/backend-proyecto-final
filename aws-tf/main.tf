@@ -108,13 +108,47 @@ module "ecs" {
   public_alb_target_groups    = module.public_alb.target_groups
 }
 
+# resource "aws_elasticache_security_group" "default" {
+#   name                 = "${lower(var.app_name)}-redis-sg"
+#   security_group_names = [aws_security_group.redis.name]
+# }
+
+resource "aws_elasticache_subnet_group" "default" {
+  name       = "${lower(var.app_name)}-cache-subnet"
+  subnet_ids = module.vpc.public_subnets
+  # subnet_ids = ["${aws_subnet.default.*.id}"]
+}
+
+resource "aws_security_group" "redis" {
+  name = "redis-sg"
+  description = "ElastiCache Redis Securtity Group"
+    vpc_id = module.vpc.vpc_id
+    ingress {
+      from_port = "6379"
+      to_port = "6379"
+      protocol = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+      #security_groups = [module.public_alb_security_group.security_group_id]
+      security_groups = [module.public_alb_security_group.security_group_id, module.internal_alb_security_group.security_group_id]
+    }
+    egress {
+      from_port = "0"
+      to_port = "0"
+      protocol = "-1"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+}
+
 resource "aws_elasticache_cluster" "redis" {
   cluster_id              = "abcjobs-redis-cluster"
   engine                  = "redis"
   node_type               = "cache.t3.micro"
   num_cache_nodes         = 1
-  #parameter_group_name    = "default.redis3.2"
   port                    = 6379
+  subnet_group_name       = aws_elasticache_subnet_group.default.name
+  security_group_ids      = [aws_security_group.redis.id]
+  #security_group_ids     = ["${aws_security_group.redis.id}"]
+  #parameter_group_name   = "default.redis3.2"
   tags = {
     Name = "redis-cluster"
   }
