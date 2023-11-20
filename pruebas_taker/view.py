@@ -39,7 +39,7 @@ def deleteCache(self, key):
 
 def setCache(self, key, data):
     #self.redis.hset(key, mapping=data)
-    self.redis.hset(key, json.dumps(data))
+    self.redis.hset(key, mapping=json.dumps(data))
     print("set-cache")
     #self.redis.rpush(key, json.dumps(data))
 
@@ -122,49 +122,20 @@ class PruebaInit(Resource):
             # 404 - El candidato no está asociado a la prueba
             return resp, resp['status_code']
 
-        idcache = pruebaId+"-"+candidatoId
-        deleteCache(self, idcache)
-
-        # for x in range(0, len(prueba['questions'])):
-        #     y=x
-        #     answers = []
-        #     question = questions[x]['question']
-        #     answers.append(questions[y]['answer'])
-        #     y+=1
-        #     answers.append(questions[y]['answer'])
-        #     y+=1
-        #     answers.append(questions[y]['answer'])
-        #     y+=1
-        #     answers.append(questions[y]['answer'])
-        #     y+=1
-        #     answers.append(questions[y]['answer'])
-
-        #     data = {'question': question, 'answers': answers}
-        #     pushCache(self, idcache, data)
-
-        # mango = True
-        # data = {
-        #     "prueba": prueba,
-        #     "candidato": candidato,
-        #     "questions": prueba['questions'],
-        #     "totalQuestions": prueba['numQuestions']
-        # }
-
-        # print()
-        # print(data)
-        # if (mango):
-        #     return json.dumps(data), 200
-
         data = {
-            # "prueba": prueba,
-            # "candidato": candidato,
             "pruebaId": pruebaId,
             "candidatoId": candidatoId,
             "totalQuestions": prueba['numQuestions'], 
             "numQuestion": 1, 
-            # "question": pregunta['question'],
-            # "answers": pregunta['answers']
+            "prueba": prueba,
+            "candidato": candidato,
         }
+
+        # "question": pregunta['question'],
+        # "answers": pregunta['answers']
+
+        idcache = pruebaId+"-"+candidatoId
+        deleteCache(self, idcache)
 
         #data = {'question': question, 'answers': answers}
         setCache(self, idcache, data)
