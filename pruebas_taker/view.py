@@ -123,22 +123,34 @@ class PruebaInit(Resource):
         data = {
             "pruebaId": pruebaId,
             "candidatoId": candidatoId,
-            "totalQuestions": prueba['numQuestions'], 
+            "totalQuestions": prueba['numQuestions'],
             "numQuestion": 1, 
             "prueba": prueba,
             "candidato": candidato,
         }
 
-        # "question": pregunta['question'],
-        # "answers": pregunta['answers']
+        # "": pregunta['question'],
+        # "": pregunta['answers']
 
         idcache = pruebaId+"-"+candidatoId
         deleteCache(self, idcache)
-
-        #data = {'question': question, 'answers': answers}
         setCache(self, idcache, data)
-        prueba = getCache(self, idcache)
+        test = getCache(self, idcache)
 
+        #print("num-q: ", test.numQuestions)
+        #print("num-q: ", test['numQuestions'])
+
+        question = {
+            "pruebaId": pruebaId,
+            "candidatoId": candidatoId,
+            "question": prueba['questions'][0],
+            "answers": prueba['questions'][0]['answers'],
+            "totalQuestions": prueba['numQuestions'], 
+            "numQuestion": 1, 
+        }
+
+        print()
+        print(question)
         return json.dumps(prueba), 200
 
 
