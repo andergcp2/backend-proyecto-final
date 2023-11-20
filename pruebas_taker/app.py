@@ -22,11 +22,11 @@ if 'USERS_PATH' in os.environ:
     print("tests_url: ", app.config['PRUEBAS_QUERY'])
     print("testc_url: ", app.config['CANDIDATOS_PRUEBAS'])
 else:
-    app.config['CACHE_HOST']  = 'localhost'
+    app.config['CACHE_HOST']  = '127.0.0.1'
     app.config['CACHE_PORT']  = 6379
-    app.config['CANDIDATOS_QUERY'] = 'http://localhost:80/candidates-qry'
-    app.config['PRUEBAS_QUERY'] = 'http://localhost:80/pruebas-qry'
-    app.config['CANDIDATOS_PRUEBAS'] = 'http://localhost:80/candidatesTest'    
+    app.config['CANDIDATOS_QUERY'] = 'http://abcjobs-public-alb-388103681.us-east-1.elb.amazonaws.com/candidates-qry'
+    app.config['PRUEBAS_QUERY'] = 'http://abcjobs-public-alb-388103681.us-east-1.elb.amazonaws.com/tests-qry'
+    app.config['CANDIDATOS_PRUEBAS'] = 'http://abcjobs-public-alb-388103681.us-east-1.elb.amazonaws.com/candidateTest'
 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pruebas-taker.db'
     app.config['TESTING'] = True
@@ -35,7 +35,7 @@ else:
     print("cands_url: ", app.config['CANDIDATOS_QUERY'])
     print("tests_url: ", app.config['PRUEBAS_QUERY'])
     print("testc_url: ", app.config['CANDIDATOS_PRUEBAS'])    
-    print("test: ", app.config['SQLALCHEMY_DATABASE_URI'])
+    #print("test: ", app.config['SQLALCHEMY_DATABASE_URI'])
 
 app_context = app.app_context()
 app_context.push()
