@@ -97,6 +97,10 @@ class VistaCandidateTestTaker(Resource):
         if not all(field in data for field in required_fields):
             return customError(400, "CO01", f'Hay campos sin diligenciar. Campos requeridos: {required_fields}')
 
+        result = data['record']
+        if validarEntero(result)==False:
+            return "the test result is not a valid format", 412
+
         pruebacandidato = CandidateTest.query.filter(CandidateTest.idcandidate==idcandidate).filter(CandidateTest.idtest==idtest).first()
         if pruebacandidato is None:
             return "the test with the given id is not associated to candidate", 404
@@ -107,7 +111,7 @@ class VistaCandidateTestTaker(Resource):
             return "the test with the given id is associated to candidate, but is finished/cancelled", 412
 
         pruebacandidato.presentationdate = dt.datetime.now()
-        pruebacandidato.qualificationtest = round(data["record"])
+        pruebacandidato.qualificationtest = round(result)
         pruebacandidato.testestatus = "FINALIZADA"
         db.session.commit()
         return candidatetest_schema.dump(pruebacandidato)

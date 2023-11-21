@@ -43,7 +43,8 @@ class TestCandidateTest(TestCase):
         self.endpoint_get_200 = '/candidateTest/{}/{}'.format(str(self.candidatoId), str(self.pruebaId))
 
         self.headers = {'Content-Type': 'application/json'}
-        self.data = {'record': round (self.data_factory.random_int(0, 5), 2)}
+        self.data = {"record": round (self.data_factory.random.uniform(0, 5), 2)}
+        #print(self.data)
 
     def test_health(self):
         # """Test for health check ping"""
@@ -140,6 +141,12 @@ class TestCandidateTest(TestCase):
         self.assertEqual(req_get.status_code, 404)
 
     def test_put_candidate_test_412(self):
+        req_get = self.client.put(self.endpoint_get_412, headers = self.headers, data=json.dumps(self.data))
+        #print(json.loads(req_get.get_data()))
+        self.assertEqual(req_get.status_code, 412)
+
+    def test_put_candidate_test_412_result(self):
+        self.data["record"] = '3.x'
         req_get = self.client.put(self.endpoint_get_412, headers = self.headers, data=json.dumps(self.data))
         #print(json.loads(req_get.get_data()))
         self.assertEqual(req_get.status_code, 412)
