@@ -24,19 +24,17 @@ class TestPruebasTaker(TestCase):
         self.endpoint_init_200 = '/tests-taker/init/1/4'
         self.endpoint_next_200 = '/tests-taker/next/1/4'
         self.endpoint_done_200 = '/tests-taker/done/1/4'
-        #self.endpoint_init_200 = '/pruebas/init/9/45'
-        #self.endpoint_init_200 = '/pruebas-orquestador/{}/{}'.format(str(self.id_prueba), str(self.id_prueba))
 
         profiles = []
         techSkills = []
         questions = []
-        numQuestions = self.fake.random_int(2, 4)
+        numQuestions = self.fake.random_int(5, 5)
 
-        for x in range(2):
+        for x in range(3):
             profiles.append({"id": self.fake.random_int(10, 49), "profile": self.fake.job()})
-        for x in range(2):
+        for x in range(3):
             techSkills.append({"id": self.fake.random_int(50, 99), "skill": self.fake.sentence(2)})
-        for x in range(numQuestions):
+        for x in range(numQuestions*2):
             answers = []
             for y in range(5):
                 answers.append({"id": self.fake.random_int(1000, 9999), "answer": self.fake.sentence(2), "correct": False})
@@ -174,8 +172,8 @@ class TestPruebasTaker(TestCase):
             "candidato": self.candidato,
         }
         req = self.client.post(self.endpoint_init_200, headers=self.headers_token)
-        print()
-        print(json.loads(req.get_data()))
+        # print()
+        # print(json.loads(req.get_data()))
         self.assertEqual(req.status_code, 200)
 
     @patch('view.setupCache')
@@ -249,8 +247,8 @@ class TestPruebasTaker(TestCase):
             'answerId': self.prueba["questions"][1]["answers"][0]["id"]
         }
         req = self.client.post(self.endpoint_next_200, headers=self.headers_token, data=json.dumps(self.next_question))
-        print()
-        print(json.loads(req.get_data()))
+        # print()
+        # print(json.loads(req.get_data()))
         self.assertEqual(req.status_code, 200)
 
     @patch('view.setupCache')
@@ -318,7 +316,8 @@ class TestPruebasTaker(TestCase):
     @patch('view.setupCache')
     @patch('view.getCache')
     @patch('view.setCache')
-    def test_done_test_200(self, mock_set_cache, mock_get_cache, mock_setup_cache):
+    @patch('view.updatePruebaCandidato')    
+    def test_done_test_400_update_result(self, mock_prueba_candidato, mock_set_cache, mock_get_cache, mock_setup_cache):
         mock_setup_cache.return_value = ''
         mock_get_cache.return_value = {
             'pruebaId': self.prueba['id'],
@@ -330,7 +329,7 @@ class TestPruebasTaker(TestCase):
             "candidato": self.candidato,
         }
         mock_set_cache.return_value = {}
-
+        mock_prueba_candidato.return_value = {'msg': 'parameters required by mango', 'status_code': 400}
         self.next_question = {
             'numQuestion': self.prueba["numQuestions"], 
             'totalQuestions': self.prueba["numQuestions"], 
@@ -338,7 +337,101 @@ class TestPruebasTaker(TestCase):
             'answerId': self.prueba["questions"][1]["answers"][0]["id"]
         }
         req = self.client.post(self.endpoint_done_200, headers=self.headers_token, data=json.dumps(self.next_question))
-        print()
-        print(json.loads(req.get_data()))
+        self.assertEqual(req.status_code, 400)
+
+    @patch('view.setupCache')
+    @patch('view.getCache')
+    @patch('view.setCache')
+    @patch('view.updatePruebaCandidato')
+    def test_done_test_200(self, mock_candidate_test, mock_set_cache, mock_get_cache, mock_setup_cache):
+        mock_setup_cache.return_value = ''
+        mock_get_cache.return_value = {
+            'pruebaId': self.prueba['id'],
+            'candidatoId': self.candidato['id'],
+            "totalQuestions": self.prueba['numQuestions'],
+            "numQuestion": 1, 
+            "answersOK": 0, 
+            "prueba": self.prueba,
+            "candidato": self.candidato,
+        }
+        mock_set_cache.return_value = {}
+        candidateTest = {
+            'pruebaId': self.prueba['id'], 
+            'candidatoId': self.candidato['id'],
+            'result': 3.69,
+        }
+        mock_candidate_test.return_value = {'msg': candidateTest, 'status_code': 200}
+        self.next_question = {
+            'numQuestion': self.prueba["numQuestions"], 
+            'totalQuestions': self.prueba["numQuestions"], 
+            'questionId': self.prueba["questions"][1]["id"],
+            'answerId': self.prueba["questions"][1]["answers"][0]["id"]
+        }
+        req = self.client.post(self.endpoint_done_200, headers=self.headers_token, data=json.dumps(self.next_question))
+        # print()
+        # print(json.loads(req.get_data()))
         self.assertEqual(req.status_code, 200)
+
+    @patch('view.setupCache')
+    @patch('view.getCandidato')
+    @patch('view.getPrueba')
+    @patch('view.getPruebaCandidato')
+    @patch('view.deleteCache')
+    @patch('view.setCache')
+    @patch('view.getCache')
+    @patch('view.updatePruebaCandidato')    
+    def test_all_test_200_result5(self, mock_candidate_test, mock_get_cache, mock_set_cache, mock_delete_cache, mock_prueba_candidato, mock_prueba, mock_candidato, mock_setup_cache):
+        mock_setup_cache.return_value = ''
+        mock_candidato.return_value = {'msg': self.candidato, 'status_code': 200}
+        mock_prueba.return_value = {'msg': self.prueba, 'status_code': 200}
+        mock_prueba_candidato.return_value = {'msg': self.prueba_candidato, 'status_code': 200}
+        mock_delete_cache.return_value = ''
+        mock_set_cache.return_value = ''
+        mock_get_cache.return_value = {
+            'pruebaId': self.prueba['id'],
+            'candidatoId': self.candidato['id'],
+            "totalQuestions": self.prueba['numQuestions'],
+            "numQuestion": 1, 
+            "answersOK": 0, 
+            "prueba": self.prueba,
+            "candidato": self.candidato,
+        }
+        req = self.client.post(self.endpoint_init_200, headers=self.headers_token)
+        # print()
+        # print(json.loads(req.get_data()))
+        self.assertEqual(req.status_code, 200)
+
+        numQuestions = self.prueba['numQuestions']
+        for x in range(1, numQuestions+1):
+            mock_setup_cache.return_value = ''
+            mock_get_cache.return_value = {
+                'pruebaId': self.prueba['id'],
+                'candidatoId': self.candidato['id'],
+                "totalQuestions": self.prueba['numQuestions'],
+                "numQuestion": x, 
+                "answersOK": x-1,
+                "prueba": self.prueba,
+                "candidato": self.candidato,
+            }
+            mock_set_cache.return_value = {}
+            self.next_question = {
+                'numQuestion': x, 
+                'totalQuestions': self.prueba["numQuestions"], 
+                'questionId': self.prueba["questions"][x-1]["id"],
+                'answerId': self.prueba["questions"][x-1]["answers"][0]["id"]
+            }
+            if(x == numQuestions):
+                candidateTest = {
+                    'pruebaId': self.prueba['id'], 
+                    'candidatoId': self.candidato['id'],
+                    'result': 3.69,
+                }
+                mock_candidate_test.return_value = {'msg': candidateTest, 'status_code': 200}
+                req = self.client.post(self.endpoint_done_200, headers=self.headers_token, data=json.dumps(self.next_question))            
+                resp = json.loads(req.get_data())
+                #print("result: ", resp['result'])
+                self.assertEqual(5.0, resp['result'])
+            else: 
+                req = self.client.post(self.endpoint_next_200, headers=self.headers_token, data=json.dumps(self.next_question))
+            self.assertEqual(req.status_code, 200)
 
