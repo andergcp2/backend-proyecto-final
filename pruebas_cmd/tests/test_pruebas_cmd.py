@@ -15,33 +15,50 @@ class PruebasCmd(TestCase):
         self.token = "mangocat"
         self.headers_token = {'Content-Type': 'application/json', "Authorization": "Bearer {}".format(self.token)}
 
-        testProfiles = []
-        for x in range(3):
-            testProfiles.append({"profile": self.fake.job()})
+        names1 = ['Cloud ', 'Python ', 'Angular ', 'Java ', 'React ', 'Node.js ']
+        names2 = ['Developer ', 'TechLead ', 'Architect ']
+        names3 = ['Junior', 'Middle', 'Senior']
+        skills1 = ['Teamwork', 'Communication', 'Leadership']
+        skills2 = ['Self-managed', 'Proactive', 'Focused']
 
-        testTechSkills = []
-        for x in range(3):
-            testTechSkills.append({"skill": self.fake.word()})
+        name1 = self.fake.word(ext_word_list=names1)
+        name2 = self.fake.word(ext_word_list=names2)
+        name3 = self.fake.word(ext_word_list=names3)
+        minLevel = self.fake.random_int(1, 5)
+        numQuestions = self.fake.random_element(elements=(5, 10, 15, 20))
+        #minLevel = 3
+        #numQuestions = 10
+
+        testProfiles = [
+            {"profile": name1 + self.fake.job()},
+            {"profile": name1 + self.fake.job()}
+        ]
+
+        testTechSkills = [
+            {"skill": self.fake.word(ext_word_list=skills1)}, 
+            {"skill": self.fake.word(ext_word_list=skills2)}
+        ]
 
         testQuestions = []
-        for x in range(9):
-            testQuestions.append(
-                { 
-                    "question": self.fake.sentence(3), 
-                    "level": self.fake.random_int(1, 5), 
+        for x in range(minLevel, 6): 
+            for y in range(numQuestions*3):
+                answers = []
+                for z in range(5):
+                    answers.append({"answer": name1 + self.fake.bs(), "correct": False})
+                answers[self.fake.random_int(0, 4)] = {"answer": name1 + name3 + " "+ self.fake.bs(), "correct": True}
+
+                question = {
+                    "question": name1 + name2 + self.fake.bs() +"?", 
+                    "level": x, 
                     "url": self.fake.url(), 
-                    "answers": [
-                        {"answer": self.fake.sentence(2), "correct": False}, 
-                        {"answer": self.fake.sentence(2), "correct": False}, 
-                        {"answer": self.fake.sentence(2), "correct": True}, 
-                    ] 
+                    "answers": answers
                 }
-            )
+                testQuestions.append(question)
 
         self.prueba = {
-            "name": self.fake.job() +" "+ self.fake.bs(), 
-            "numQuestions": self.fake.random_int(0, 50),
-            "minLevel": self.fake.random_int(1, 5), 
+            "name":  "Test "+ name1 + name2 + name3, 
+            "numQuestions": numQuestions, 
+            "minLevel": minLevel, 
             "profiles": testProfiles, 
             "techSkills": testTechSkills, 
             "questions": testQuestions,
@@ -51,6 +68,14 @@ class PruebasCmd(TestCase):
         self.data = {}
         self.endpoint = '/tests'
         self.endpoint_health = '/tests/ping'
+
+        # print()
+        # print(json.dumps(self.prueba, indent=4))
+
+        # jsonString = json.dumps(self.prueba, indent=4)
+        # jsonFile = open("Test "+ name1 + name2 + name3 +"-"+ str(numQuestions)+"-"+ str(minLevel) +".json" , "w")
+        # jsonFile.write(jsonString)
+        # jsonFile.close()
 
     def test_health_check(self):
         req_health = self.client.get(self.endpoint_health, headers={'Content-Type': 'application/json'})
@@ -250,8 +275,8 @@ class PruebasCmd(TestCase):
         self.assertEqual(data, "Test was not created - number of questions is not valid")
 
     def test_create_test_201(self):
-        print()
-        print(json.dumps(self.prueba, indent=4))
+        # print()
+        # print(json.dumps(self.prueba, indent=4))
         input_json = json.dumps(self.prueba, indent=4).encode("utf-8") #sort_keys=True, indent=4
         self.data['file'] = FileStorage( stream=io.BytesIO(input_json), content_type="application/json", filename="test.json", )
         resp_create = self.client.post(self.endpoint, headers=self.headers_token, content_type='multipart/form-data', data=self.data) # follow_redirects=True

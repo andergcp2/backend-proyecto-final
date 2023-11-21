@@ -3,34 +3,29 @@ from flask import request, current_app, jsonify
 from flask_restful import Resource
 
 def getCandidato(endpoint, headers):
-    return get(endpoint, headers)
+    return requestMicro("get", endpoint, headers, None)
 
 def getPrueba(endpoint, headers):
-    return get(endpoint, headers)
+    return requestMicro("get", endpoint, headers, None)
 
 def getPruebaCandidato(endpoint, headers):
-    return get(endpoint, headers)
+    return requestMicro("get", endpoint, headers, None)
 
-def get(endpoint, headers):
+def updatePruebaCandidato(endpoint, headers, data):
+    return requestMicro("put", endpoint, headers, data)
+
+def requestMicro(method, endpoint, headers, data):
     try:
-        resp = requests.get(endpoint, headers = headers)
+        if(method == 'put'):
+            resp = requests.put(endpoint, headers = headers, data=json.dumps(data))
+        else: 
+            resp = requests.get(endpoint, headers = headers)
+
         if (resp.status_code==200):
-            #return json.dumps(resp.json()), resp.status_code
             return {'msg': resp.json(), 'status_code': resp.status_code}
-        #return json.dumps(resp.content), resp.status_code
-        return {'msg': resp.content, 'status_code': resp.status_code} 
-    except Exception as ex:
-        # return (resp.json, resp.status_code, resp.headers.items())
-        #return json.dumps('connection endpoint failed {} -> {}'.format(endpoint, ex)), resp.status_code
-        return {'msg': 'connection endpoint failed {} -> {}'.format(endpoint, ex), 'status_code': 500}
-
-def updatePruebaCandidato(endpoint, data, headers):
-    try:
-        resp = requests.post(endpoint, data=json.dumps(data), headers = headers)
-        return resp
+        return {'msg': resp.text, 'status_code': resp.status_code} 
     except Exception as ex:
         return {'msg': 'connection endpoint failed {} -> {}'.format(endpoint, ex), 'status_code': 500}
-        #return (resp.json, resp.status_code, resp.headers.items())
 
 def deleteCache(self, key):
     self.redis.delete(key)
@@ -38,13 +33,9 @@ def deleteCache(self, key):
 
 def setCache(self, key, data):
     self.redis.set(key, json.dumps(data))
-    #self.redis.hset(key, mapping=data)
-    #self.redis.hset(key, mapping=json.dumps(data))
 
 def getCache(self, key):
     return json.loads(self.redis.get(key))
-    # return self.redis.hgetall(key)
-    #return json.loads(self.redis.lpop(key))
 
 def setupCache(self, fase):
     print("setup-cache")
@@ -54,7 +45,7 @@ def setupCache(self, fase):
     self.redis = redis.Redis(connection_pool=pool)
     try:
         cache_is_working = self.redis.ping()    
-        logging.info(fase, "connected to redis")
+        print(fase, "connected to redis")
     except Exception as ex:
         print(fase, 'exception: host could not be accessed: {}'.format(ex))
 
@@ -148,6 +139,7 @@ class PruebaInit(Resource):
         #return json.dumps(resp_init), 200
         return jsonify(resp_init)
 
+
 class PruebaNext(Resource):
     def __init__(self) -> None:
         setupCache(self, 'prueba-next')
@@ -198,17 +190,17 @@ class PruebaNext(Resource):
 
         # 412 no debe ser la ultima pregunta
         if (numQuestion == totalQuestions):
-            return "this question should not be the last question", 412
+            return "this question should not be the last question {}/{}".format(numQuestion, totalQuestions), 412
 
         idx = numQuestion
-        numQuestion +=1    
+        numQuestion +=1
 
         respuestas = test['prueba']['questions'][idx-1]['answers']
         for x in range(len(respuestas)):
             if(respuestas[x]['id'] == answerId and respuestas[x]['correct']):
                 test['answersOK'] = test['answersOK'] +1
                 setCache(self, idcache, test)
-                print("question ok ", idx)
+                #print("next-question ok ", idx, test['answersOK'])
 
         answers = []
         respuestas = test['prueba']['questions'][idx]['answers']
@@ -277,7 +269,7 @@ class PruebaDone(Resource):
 
         # 412 no debe ser la ultima pregunta
         if (numQuestion != totalQuestions):
-            return "this question should be the last question", 412
+            return "this question should be the last question {}/{}".format(numQuestion, totalQuestions), 412
 
         idx = numQuestion
         numQuestion +=1    
@@ -287,21 +279,28 @@ class PruebaDone(Resource):
             if(respuestas[x]['id'] == answerId and respuestas[x]['correct']):
                 test['answersOK'] = test['answersOK'] +1
                 setCache(self, idcache, test)
-                print("question ok ", idx)
+                #print("done-question ok ", idx)
 
+        result = round (5 * test['answersOK'] / test['prueba']['numQuestions'], 2)
+        endpoint = format(current_app.config['CANDIDATOS_PRUEBAS']) +"/{}/{}".format(candidatoId, pruebaId)
+        if not testing:
+            print("candidato-prueba-url: ", endpoint)
+        resp = updatePruebaCandidato(endpoint, headers, {'record': result})
+        if(resp['status_code'] != 200):
+            # 400 - campos requeridos
+            return resp, resp['status_code']
+        candidatoTest = resp['msg']
+        if not testing:
+            print("update-candidato-test: ", candidatoTest)
+
+        #deleteCache(self, idcache)
+        
         resp_done = {
             'pruebaId': test['prueba']['id'],
             'candidatoId': test['candidato']['id'],
             'totalQuestions': test['prueba']['numQuestions'], 
             'answersOK': test['answersOK'], 
-            'result': round (test['answersOK'] / test['prueba']['numQuestions'], 2)
+            'result': result
         }
-
-        # endpointP = format(current_app.config['CANDIDATOS_PRUEBAS'])
-        # resp = updatePruebaCandidato(endpointP, datresp_donea, headers)
-        # # print("prueba: ", endpointP, resp)
-        # status_code = resp['status_code']
-        # if(status_code != 200):
-        #     return resp['msg'], status_code
-
+        
         return jsonify(resp_done)
