@@ -23,7 +23,7 @@ def requestMicro(method, endpoint, headers, data):
 
         if (resp.status_code==200):
             return {'msg': resp.json(), 'status_code': resp.status_code}
-        return {'msg': resp.content, 'status_code': resp.status_code} 
+        return {'msg': resp.text, 'status_code': resp.status_code} 
     except Exception as ex:
         return {'msg': 'connection endpoint failed {} -> {}'.format(endpoint, ex), 'status_code': 500}
 
@@ -283,7 +283,6 @@ class PruebaDone(Resource):
 
         result = round (5 * test['answersOK'] / test['prueba']['numQuestions'], 2)
 
-        # param: idcandidatetest -> change for candidatoId y pruebaId / json: record=result
         endpoint = format(current_app.config['CANDIDATOS_PRUEBAS']) +"/{}/{}".format(candidatoId, pruebaId)
         if not testing:
             print("candidato-prueba-url: ", endpoint)
