@@ -282,11 +282,15 @@ class PruebaDone(Resource):
                 #print("done-question ok ", idx)
 
         result = round (5 * test['answersOK'] / test['prueba']['numQuestions'], 2)
-
+        updateCT = {
+            'record': result, 
+            'totalQuestions': test['prueba']['numQuestions'], 
+            'answersOK': test['answersOK'], 
+        }
         endpoint = format(current_app.config['CANDIDATOS_PRUEBAS']) +"/{}/{}".format(candidatoId, pruebaId)
         if not testing:
             print("candidato-prueba-url: ", endpoint)
-        resp = updatePruebaCandidato(endpoint, headers, data=json.dumps({'record': result}))
+        resp = updatePruebaCandidato(endpoint, headers, data=json.dumps(updateCT))
         if(resp['status_code'] != 200):
             # 400 - campos requeridos
             return resp, resp['status_code']
