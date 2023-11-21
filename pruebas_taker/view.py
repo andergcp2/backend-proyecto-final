@@ -17,7 +17,7 @@ def updatePruebaCandidato(endpoint, headers, data):
 def requestMicro(method, endpoint, headers, data):
     try:
         if(method == 'put'):
-           resp = requests.put(endpoint, headers = headers, data=json.dumps(data))
+            resp = requests.put(endpoint, headers = headers, data=json.dumps(data))
         else: 
             resp = requests.get(endpoint, headers = headers)
 
@@ -294,6 +294,8 @@ class PruebaDone(Resource):
         if not testing:
             print("update-candidato-test: ", candidatoTest)
 
+        #deleteCache(self, idcache)
+        
         resp_done = {
             'pruebaId': test['prueba']['id'],
             'candidatoId': test['candidato']['id'],

@@ -107,7 +107,7 @@ class VistaCandidateTestTaker(Resource):
             return "the test with the given id is associated to candidate, but is finished/cancelled", 412
 
         pruebacandidato.presentationdate = dt.datetime.now()
-        pruebacandidato.qualificationtest = data["record"]
+        pruebacandidato.qualificationtest = round(data["record"])
         pruebacandidato.testestatus = "FINALIZADA"
         db.session.commit()
         return candidatetest_schema.dump(pruebacandidato)
