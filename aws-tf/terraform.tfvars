@@ -4,7 +4,7 @@ region       = "us-east-1"
 profile      = "default"
 app_name     = "abcjobs"
 env          = "dev"
-app_services = ["pruebas-taker", "pruebas-qry", "pruebas-cmd", "candidatos-tests", "candidatos-qry", "candidatos-cmd", "collaborators", "companies", "projects"]
+app_services = ["interviews", "pruebas-taker", "pruebas-qry", "pruebas-cmd", "candidatos-tests", "candidatos-qry", "candidatos-cmd", "collaborators", "companies", "projects"]
 
 #VPC configurations
 cidr               = "10.10.0.0/16"
@@ -75,6 +75,32 @@ public_alb_config = {
 
 #Microservices
 microservice_config = {
+  "interviews" = {
+    name             = "interviews"
+    is_public        = true
+    container_port   = 80
+    host_port        = 80
+    cpu              = 256
+    memory           = 512
+    desired_count    = 1
+    alb_target_group = {
+      port              = 80
+      protocol          = "HTTP"
+      path_pattern      = ["/candidateInterview*"]
+      health_check_path = "/candidateInterview/ping"
+      priority          = 1
+    }
+    auto_scaling = {
+      max_capacity = 2
+      min_capacity = 1
+      cpu          = {
+        target_value = 75
+      }
+      memory = {
+        target_value = 75
+      }
+    }
+  }  
   "pruebas-taker" = {
     name             = "pruebas-taker"
     is_public        = true
