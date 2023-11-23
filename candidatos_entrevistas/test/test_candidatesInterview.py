@@ -140,3 +140,40 @@ class TestCandidateInterview(TestCase):
         resp_put = self.client.put(endpoint_get, headers={'Content-Type': 'application/json'}, data=json.dumps(new_candidateinterview))
         print(resp_put.get_data())
         self.assertEqual(resp_put.status_code, 200)
+
+
+    def test_put_scoreinterview_400_creation_error(self):
+        """Test for update candidateTest """
+        candidateId = self.data_factory.random_int(50, 100)
+        new_candidateinterview = {
+                "candidateId" : candidateId,
+                "companyId" : self.data_factory.random_int(1, 50),
+                "projectId" : self.data_factory.random_int(1, 50),
+                "interviewDate" : "2023-12-19"
+            }
+        resp_create = self.client.post(self.endpoint_create, headers={'Content-Type': 'application/json'}, data=json.dumps(new_candidateinterview))
+        respuesta_interview = json.loads(resp_create.get_data())
+        idinterview = respuesta_interview["interviewId"]
+        
+        new_candidateinterview = {
+            "score" : -4,
+            "comment" : ""
+        }
+        endpoint_get = '/candidateInterview/{}'.format(str(idinterview)) 
+        resp_put = self.client.put(endpoint_get, headers={'Content-Type': 'application/json'}, data=json.dumps(new_candidateinterview))
+        print(resp_put.get_data())
+        self.assertEqual(resp_put.status_code, 400)
+
+
+    def test_put_scoreinterview_404_interview_notfound(self):
+        """Test for update candidateTest """
+        idinterview = 10000
+        
+        new_candidateinterview = {
+            "score" : 4,
+            "comment" : ""
+        }
+        endpoint_get = '/candidateInterview/{}'.format(str(idinterview)) 
+        resp_put = self.client.put(endpoint_get, headers={'Content-Type': 'application/json'}, data=json.dumps(new_candidateinterview))
+        print(resp_put.get_data())
+        self.assertEqual(resp_put.status_code, 404)

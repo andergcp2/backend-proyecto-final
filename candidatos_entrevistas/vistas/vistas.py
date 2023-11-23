@@ -90,25 +90,44 @@ class VistaTestsAssignedToCandidates(Resource):
     
 class VistaUpdateInterviewCandidate(Resource):
     def put(self, interviewId):
+
+        if validarEntero(interviewId) == False:
+            return customError(400, "CO03", f'Error en el Id de entrevista, el dato ingresado no corresponde a un valor númerico')
+
         data = request.get_json()
         required_fields = ["score"]
         if not all(field in data for field in required_fields):
             return customError(400, "CO01", f'Hay campos sin diligenciar. Campos requeridos: {required_fields}')
         
-        pruebacandidato = InterviewCandidate.query.get_or_404(interviewId)
+        score = data["score"]
+        if validarEntero(score) == False:
+            return customError(400, "CO03", f'El campo ingresado no corresponde a un entero')
+        else:
+            score = int(score)
+
+        if score < 0 or score > 5:
+            return customError(400, "CO03", f'El puntaje de la entrevista no se encuentra en el rango esperado [0 - 5] ')
+    
+        pruebacandidato = InterviewCandidate.query.get(interviewId)
+        if pruebacandidato is None:
+            return customError(404, "CO09", f'La entrevista consultada no existe en el registro')
+        
+        if pruebacandidato.status == "FINALIZADA":
+            return customError(400, "CO08", f'La entrevista consultada no se encuentra activa')
+        
         pruebacandidato.score = data["score"]
         pruebacandidato.comment = data["comment"]
         pruebacandidato.status = "FINALIZADA"
         db.session.commit()
         return interviewcandidate_schema.dump(pruebacandidato)
-    
+        
 class VistaCandidateInterviewSearch(Resource):
 
     def get(self, companyId, projectId):
         #Insertar codigo para validar token... solo debería consultar un usuario previamente registrado.
         bandera = 0
         role = request.args.getlist('role')
-        status = request.args.getlist('status')
+        status = request.args.getlist('status')  
         fini = request.args.getlist('fini')
         print(fini)
         ffin = request.args.getlist('ffin')
@@ -127,6 +146,7 @@ class VistaCandidateInterviewSearch(Resource):
         my_filters.add(InterviewCandidate.projectId==projectId)
 
         if status:
+            status = status[0]
             my_filters.add(InterviewCandidate.status==status)
 
         if fini:
@@ -153,7 +173,7 @@ class VistaCandidateInterviewSearch(Resource):
 
         if candidateId:
             candidateId = candidateId[0]
-            my_filters.add(InterviewCandidate.candidateId==candidateId)
+            my_filters.add(InterviewCandidate.candidateId==candidateId) 
 
         result = InterviewCandidate.query.filter(*my_filters).paginate(page=int(page), per_page=int(per_page))
 
