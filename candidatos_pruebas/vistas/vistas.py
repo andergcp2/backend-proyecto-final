@@ -62,7 +62,7 @@ class VistaCandidateTest(Resource):
             return candidatetest_schema.dump(new_candidatetest), 201
         else:
             return customError(400, "CO05", f'La prueba seleccionada ya se encuentra asignada al candidato')
-      
+
 class VistaTestsAssignedToCandidates(Resource):
     
     def get(self,idcandidate):
@@ -75,4 +75,43 @@ class VistaTestsAssignedToCandidates(Resource):
             candidatet["test"]=json.loads(response.text)
         
         return candidatest, 200
+     
+class VistaCandidateTestTaker(Resource):
     
+    def get(self, idcandidate, idtest):
+        candidatetest = CandidateTest.query.filter(CandidateTest.idcandidate==idcandidate).filter(CandidateTest.idtest==idtest).first()
+        if candidatetest is None:
+            return "the test with the given id is not associated to candidate", 404
+
+        lista = ["FINALIZADA", "CANCELADA"]
+        candidatetest2 = CandidateTest.query.filter(CandidateTest.idcandidate==idcandidate).filter(CandidateTest.idtest==idtest).filter(CandidateTest.testestatus.not_in(lista)).all()
+        if len(candidatetest2)==0:
+            return "the test with the given id is associated to candidate, but is finished/cancelled", 412
+        
+        return candidatetest_schema.dump(candidatetest)
+
+    def put(self, idcandidate, idtest):
+        #Validar acceso con token
+        data = request.get_json()
+        required_fields = ["record"]
+        if not all(field in data for field in required_fields):
+            return customError(400, "CO01", f'Hay campos sin diligenciar. Campos requeridos: {required_fields}')
+
+        result = data['record']
+        if validarEntero(result)==False:
+            return "the test result is not a valid format", 412
+
+        pruebacandidato = CandidateTest.query.filter(CandidateTest.idcandidate==idcandidate).filter(CandidateTest.idtest==idtest).first()
+        if pruebacandidato is None:
+            return "the test with the given id is not associated to candidate", 404
+
+        lista = ["FINALIZADA", "CANCELADA"]
+        pruebacandidato2 = CandidateTest.query.filter(CandidateTest.idcandidate==idcandidate).filter(CandidateTest.idtest==idtest).filter(CandidateTest.testestatus.not_in(lista)).all()
+        if len(pruebacandidato2)==0:
+            return "the test with the given id is associated to candidate, but is finished/cancelled", 412
+
+        pruebacandidato.presentationdate = dt.datetime.now()
+        pruebacandidato.qualificationtest = round(result)
+        pruebacandidato.testestatus = "FINALIZADA"
+        db.session.commit()
+        return candidatetest_schema.dump(pruebacandidato)
