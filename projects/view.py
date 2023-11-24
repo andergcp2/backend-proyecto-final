@@ -185,3 +185,43 @@ class SetCandidateProject(Resource):
 
         created = ProjectCandidate.query.filter(ProjectCandidate.projectId == projectId).filter(ProjectCandidate.candidateId==candidatoId).order_by(ProjectCandidate.createdAt.desc()).first()
         return project_candidate_schema.dump(created), 201
+
+
+class GetCandidateProject(Resource):
+
+    def get(self, projectId):
+        headers = {"Content-Type":"application/json"} # , "Authorization": request.headers['Authorization']
+
+        if projectId is not None: 
+            try:
+                int(projectId)
+            except ValueError:
+                return "project id is not a number", 400
+
+        # 400 si alguno de los parametros no esta presente
+        if projectId is None: 
+            return "parameter(s) missing", 400
+
+        project = Project.query.filter(Project.id == projectId).first()
+        if project is None:
+            return "the project with the given id was not found", 404
+
+        candidates = []
+        query = ProjectCandidate.query.filter(ProjectCandidate.projectId == projectId).order_by(ProjectCandidate.createdAt.desc()).all()
+        #print(query)
+        for candidate in query:
+            endpoint = format(current_app.config['CANDIDATOS_QUERY']) +"/{}".format(candidate["candidateId"])
+            resp = getCandidato(endpoint, headers)
+            #print(resp)
+            if(resp['status_code'] == 200):
+                candidates.append(
+                    {
+                        "id": candidate["candidateId"], 
+                        "name": resp["msg"]["name"], 
+                        "lastName": resp["msg"]["lastName"], 
+                        "email": resp["msg"]["email"], 
+                        "phone": resp["msg"]["phone"]
+                    }
+                )
+
+        return json.dumps(candidates), 200
