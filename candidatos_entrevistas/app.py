@@ -12,7 +12,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 if 'USERS_PATH' in os.environ:
     app.config['USERS'] = os.environ.get("USERS_PATH")
     app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://"+ str(os.environ.get("DB_USER")) +":"+ str(os.environ.get("DB_PASSWORD")) +"@"+ str(os.environ.get("DB_HOST")) +":"+ str(os.environ.get("DB_PORT")) +"/"+ str(os.environ.get("DB_NAME"))
-    app.config['TEST_QRY_URL'] = str(os.environ.get("TEST_QRY_URL"))
+    app.config['TEST_QRY_URL'] = str(os.environ.get("PRUEBAS_QUERY"))
     print("prod: ", app.config['SQLALCHEMY_DATABASE_URI'], app.config['USERS'])
 else:
     app.config['USERS'] = 'https://tpy2fq7k1h.execute-api.us-east-1.amazonaws.com/test/signin'
@@ -30,9 +30,8 @@ db.create_all()
 cors = CORS(app)
 
 api = Api(app)
-api.add_resource(VistaCandidateInterview, '/candidateInterview')
-api.add_resource(VistaPing, '/candidateInterview/ping')
-api.add_resource(VistaCandidateInterviewSearch, '/candidateInterview/<companyId>/<projectId>')
-api.add_resource(VistaTestsAssignedToCandidates, '/candidateInterview/<candidateId>')
-api.add_resource(VistaUpdateInterviewCandidate, '/candidateInterview/<interviewId>')
-
+api.add_resource(VistaCandidateInterview, '/interviews')
+api.add_resource(VistaPing, '/interviews/ping')
+api.add_resource(VistaCandidateInterviewSearch, '/interviews/<companyId>/<projectId>')
+api.add_resource(VistaTestsAssignedToCandidates, '/interviews/candidate/<candidateId>')
+api.add_resource(VistaUpdateInterviewCandidate, '/interviews/<interviewId>')

@@ -11,6 +11,9 @@ from datetime import datetime
 
 interviewcandidate_schema = InterviewCandidateSchema()
 
+def getPrueba(endpoint, headers, timeout):
+    resp = requests.get(endpoint, headers=headers, timeout=timeout)
+
 def validarEntero(numero):
     try:
         temp = int(numero)
@@ -80,12 +83,9 @@ class VistaTestsAssignedToCandidates(Resource):
     
     def get(self,candidateId):
         candidatest = [interviewcandidate_schema.dump(candidatetest) for candidatetest in InterviewCandidate.query.filter(InterviewCandidate.candidateId==candidateId).all()]
-        
-        for candidatet in candidatest:
-            print(candidatet)
-            response = requests.get("{0}/{1}".format(current_app.config['TEST_QRY_URL'], candidatet["idtest"]), headers={"Content-Type":"application/json"}, timeout=60)
-            candidatet["test"]=json.loads(response.text)
-        
+        #print("candidatest: ", candidatest)
+        # if(len(candidatest)==0):
+        #     return customError(404, "CO09", f'La entrevista consultada no existe en el registro')
         return candidatest, 200
     
 class VistaUpdateInterviewCandidate(Resource):
