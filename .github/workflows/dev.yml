@@ -82,10 +82,3 @@ jobs:
        microservice: interviews
        microservice-path: ./candidatos_entrevistas
     secrets: inherit
-
-  # record-score:
-  #   uses: ./.github/workflows/test-build-deploy.yml
-  #   with:
-  #      microservice: record_score
-  #      microservice-path: ./record_score
-  #   secrets: inherit   
