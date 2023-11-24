@@ -69,9 +69,10 @@ class ProjectSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Project
         include_relationships = True
-        #include_fk = True
+        include_fk = True
         load_instance = True
     # profiles = fields.List(fields.Nested(ProfileSchema()))
+    profiles = fields.Nested("ProfileSchema", only=("id", "name"), many=True)
 
 class ProfileSchema(SQLAlchemyAutoSchema):
     class Meta:
@@ -79,6 +80,9 @@ class ProfileSchema(SQLAlchemyAutoSchema):
         include_relationships = True
         include_fk = True
         load_instance = True
+    softskills = fields.Nested("SkillProfileSchema", only=("skillId", "profileId"), many=True)
+    techskills = fields.Nested("SkillProfileSchema", only=("skillId", "profileId"), many=True)
+    tests = fields.Nested("TestProfileSchema", only=("testId", "profileId"), many=True) 
 
 class SkillProfileSchema(SQLAlchemyAutoSchema):
     class Meta:

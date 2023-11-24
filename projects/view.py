@@ -119,5 +119,15 @@ class GetCompanyProjects(Resource):
 
 class GetProject(Resource):
 
-    def get(self, projectId):
-        return project_schema.dump(Project.query.get_or_404(projectId))
+    def get(self, id):
+        if id is not None: 
+            try:
+                int(id)
+            except ValueError:
+                return "the project id is not a number", 412
+
+        project = Project.query.filter(Project.id == id).first()
+        if project is None:
+            return "the project with the given id was not found", 404
+
+        return project_schema.dump(project)

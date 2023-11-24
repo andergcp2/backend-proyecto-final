@@ -5,7 +5,7 @@ from faker import Faker
 from unittest import TestCase
 from unittest.mock import patch
 
-class TestProyectos(TestCase):
+class TestProjects(TestCase):
 
     def setUp(self):
         self.client = app.test_client()
@@ -14,9 +14,27 @@ class TestProyectos(TestCase):
         self.token = "mangocat"
         self.headers_token = {'Content-Type': 'application/json', "Authorization": "Bearer {}".format(self.token)}
         
-        #self.id = self.fake.random_number(digits=3, fix_len=True)
-        #self.username = self.fake.word()
-        #self.token_validation_resp = {'msg': {"id": self.id, "username": self.username}, 'status_code': 200}
+        techSkills = []
+        softSkills = []
+        tests = []
+        profiles = []
+
+        for x in range(3):
+            techSkills.append({"id": self.fake.random_int(100, 299), "skill": self.fake.sentence(2)})
+        for x in range(3):
+            softSkills.append({"id": self.fake.random_int(300, 599), "skill": self.fake.sentence(2)})
+        for x in range(3):
+            tests.append({"id": self.fake.random_int(600, 999), "skill": self.fake.sentence(2)})
+        for x in range(3):
+            profiles.append(
+                {
+                    "name": self.fake.job(), 
+                    "profession": self.fake.job(), 
+                    "softskills": softSkills, 
+                    "techskills": techSkills, 
+                    "tests": tests, 
+                }
+            )
 
         self.project = {
             "name": self.fake.bs(), 
@@ -26,59 +44,21 @@ class TestProyectos(TestCase):
             "phone": self.fake.phone_number(), 
             "email": self.fake.company_email(), 
             "country": self.fake.country_code(), 
-            "city": self.fake.random_int(1, 99999), 
+            "city": self.fake.random_int(10000, 99999), 
             "address": self.fake.street_address() +" "+ self.fake.street_name(), 
-            "company": self.fake.random_int(1, 999),
-            "profiles": [
-                {
-                    "name": self.fake.job(), 
-                    "profession": self.fake.job(), 
-                    "softskills": [
-                        {"id": self.fake.random_int(100, 999), "name": self.fake.job()}, 
-                        {"id": self.fake.random_int(100, 999), "name": self.fake.job()},                         
-                        {"id": self.fake.random_int(100, 999), "name": self.fake.job()}
-                    ], 
-                    "techskills": [
-                        {"id": self.fake.random_int(100, 999), "name": self.fake.job()}, 
-                        {"id": self.fake.random_int(100, 999), "name": self.fake.job()}, 
-                        {"id": self.fake.random_int(100, 999), "name": self.fake.job()}
-                    ], 
-                    "tests": [
-                        {"id": self.fake.random_int(10, 99), "name": "Test "+ self.fake.job()}, 
-                        {"id": self.fake.random_int(10, 99), "name": "Test "+ self.fake.job()},
-                        {"id": self.fake.random_int(10, 99), "name": "Test "+ self.fake.job()}
-                    ]
-                }, 
-                {
-                    "name": self.fake.job(), 
-                    "profession": self.fake.job(), 
-                    "softskills": [
-                        {"id": self.fake.random_int(100, 999), "name": self.fake.job()}, 
-                        {"id": self.fake.random_int(100, 999), "name": self.fake.job()}, 
-                        {"id": self.fake.random_int(100, 999), "name": self.fake.job()}
-                    ], 
-                    "techskills": [
-                        {"id": self.fake.random_int(100, 999), "name": self.fake.job()}, 
-                        {"id": self.fake.random_int(100, 999), "name": self.fake.job()}, 
-                        {"id": self.fake.random_int(100, 999), "name": self.fake.job()}
-                    ], 
-                    "tests": [
-                        {"id": self.fake.random_int(10, 99), "name": "Test "+ self.fake.job()}, 
-                        {"id": self.fake.random_int(10, 99), "name": "Test "+ self.fake.job()}, 
-                        {"id": self.fake.random_int(10, 99), "name": "Test "+ self.fake.job()}
-                    ]
-                }
-            ]
+            "company": self.fake.random_int(1000, 9999),
+            "profiles": profiles
         }
 
         self.endpoint_health = '/projects/ping'
         self.endpoint = '/projects'
-        self.endpoint_get_400 = '/projects/id'
-        self.endpoint_get_404 = '/projects/{}'.format(str(self.fake.random_int(10, 99) * 0))
-        self.endpoint_get_200 = '/projects/{}'.format(str(self.fake.random_int(10, 99)))
+        self.endpoint_get_412 = '/projects/id'
+        self.endpoint_get_404 = '/projects/{}'.format(self.fake.random_int(10, 99) * 0)
+        self.endpoint_get_200 = '/projects/{}'.format(self.fake.random_int(10, 99))
         self.endpoint_get_tests_400 = '/projects/id/tests'
-        self.endpoint_get_tests_404 = '/projects/{}/tests'.format(str(self.fake.random_int(10, 99) * 100))
-        self.endpoint_get_tests_200 = '/projects/{}/tests'.format(str(self.fake.random_int(10, 99)))
+        self.endpoint_get_tests_404 = '/projects/{}/tests'.format(str(self.fake.random_int(10, 99) * 10))
+        self.endpoint_get_projects_company_200 = '/projects/companies/{}'.format(self.project["company"])
+        self.endpoint_get_projects_company_200_empty = '/projects/companies/{}'.format(self.project["company"]*10)
 
     def test_health_check(self):
         req_health = self.client.get(self.endpoint_health, headers={'Content-Type': 'application/json'})
@@ -111,67 +91,55 @@ class TestProyectos(TestCase):
         data = json.loads(resp_create.get_data())
         self.assertEqual(resp_create.status_code, 201)
 
-        resp_get = self.client.get(self.endpoint, headers=self.headers_token, data=json.dumps(self.project))
+        resp_get = self.client.get(self.endpoint, headers=self.headers_token) #, data=json.dumps(self.project)
         data = json.loads(resp_get.get_data())
         self.assertEqual(resp_get.status_code, 200)
 
-    # def test_get_project_404(self):
-    #     resp_create = self.client.post(self.endpoint, headers=self.headers_token, data=json.dumps(self.project))
-    #     data = json.loads(resp_create.get_data())
-    #     self.assertEqual(resp_create.status_code, 201)
+    def test_get_project_412(self):
+        resp_get = self.client.get(self.endpoint_get_412, headers=self.headers_token)
+        data = json.loads(resp_get.get_data())
+        #print(self.endpoint_get_412, data)
+        self.assertEqual(resp_get.status_code, 412)
 
-    #     self.endpoint_get_404 = '/projects/{}'.format(data["id"]*10)
-    #     resp_get = self.client.get(self.endpoint_get_404, headers=self.headers_token, data=json.dumps(self.project))
-    #     data = json.loads(resp_get.get_data())
-    #     #print(self.endpoint_get_404, data)
-    #     self.assertEqual(resp_get.status_code, 404)
+    def test_get_project_404(self):
+        resp_create = self.client.post(self.endpoint, headers=self.headers_token, data=json.dumps(self.project))
+        data = json.loads(resp_create.get_data())
+        self.assertEqual(resp_create.status_code, 201)
+        
+        self.endpoint_get_404 = '/projects/{}'.format(data["id"]*10)
+        resp_get = self.client.get(self.endpoint_get_404, headers=self.headers_token)
+        data = json.loads(resp_get.get_data())
+        #print(self.endpoint_get_404, data)
+        self.assertEqual(resp_get.status_code, 404)
 
-    # def test_get_project_200(self):
-    #     resp_create = self.client.post(self.endpoint, headers=self.headers_token, data=json.dumps(self.project))
-    #     data = json.loads(resp_create.get_data())
-    #     self.assertEqual(resp_create.status_code, 201)
+    def test_get_project_200(self):
+        resp_create = self.client.post(self.endpoint, headers=self.headers_token, data=json.dumps(self.project))
+        data = json.loads(resp_create.get_data())
+        self.assertEqual(resp_create.status_code, 201)
+        
+        self.endpoint_get_200 = '/projects/{}'.format(data["id"])
+        resp_get = self.client.get(self.endpoint_get_200, headers=self.headers_token)
+        data = json.loads(resp_get.get_data())
+        # print()
+        # print(print(json.dumps(data, indent=4)))
+        self.assertEqual(resp_get.status_code, 200)
 
-    #     self.endpoint_get_200 = '/projects/{}'.format(data["id"])
-    #     resp_get = self.client.get(self.endpoint_get_200, headers=self.headers_token, data=json.dumps(self.project))
-    #     data = json.loads(resp_get.get_data())
-    #     #print(self.endpoint_get_200)
-    #     self.assertEqual(resp_get.status_code, 200)
+    def test_get_projects_company_200_empty(self):
+        resp_create = self.client.post(self.endpoint, headers=self.headers_token, data=json.dumps(self.project))
+        data = json.loads(resp_create.get_data())
+        self.assertEqual(resp_create.status_code, 201)
 
-    # def test_get_projects_404(self):
-    #     req_get = self.client.get(self.endpoint_get_404, headers=self.headers_token)
-    #     self.assertEqual(req_get.status_code, 404)
+        req_get = self.client.get(self.endpoint_get_projects_company_200_empty, headers=self.headers_token)
+        data = json.loads(req_get.get_data())
+        self.assertEqual(req_get.status_code, 200)
+        self.assertEqual(len(data), 0)
 
-    # def test_get_projects_200(self):
-    #     req_get = self.client.get(self.endpoint_get_200, headers=self.headers_token)
-    #     resp_get = json.loads(req_get.get_data())
-    #     #print(resp_get["id"], resp_get["firstname"], resp_get["lastname"], resp_get["createdAt"])
+    def test_get_projects_company_200(self):
+        resp_create = self.client.post(self.endpoint, headers=self.headers_token, data=json.dumps(self.project))
+        data = json.loads(resp_create.get_data())
+        self.assertEqual(resp_create.status_code, 201)
 
-    #     self.assertEqual(self.id_candidate, resp_get["id"])
-    #     self.assertEqual(req_get.status_code, 200)
-
-    # def test_get_tests_candidate_400(self):
-    #     req_get = self.client.get(self.endpoint_get_tests_400, headers=self.headers_token)
-    #     self.assertEqual(req_get.status_code, 400)
-
-    # def test_get_tests_candidate_404(self):
-    #     req_get = self.client.get(self.endpoint_get_tests_404, headers=self.headers_token)
-    #     self.assertEqual(req_get.status_code, 404)
-
-    # def test_get_tests_candidate_200(self):
-    #     db.session.add(TestCandidate(id_candidate=self.id_candidate, id_test=self.fake.random_number(digits=3, fix_len=True)))
-    #     db.session.add(TestCandidate(id_candidate=self.id_candidate, id_test=self.fake.random_number(digits=3, fix_len=True)))
-    #     db.session.add(TestCandidate(id_candidate=self.id_candidate, id_test=self.fake.random_number(digits=3, fix_len=True)))
-    #     db.session.commit()
-
-    #     req_get = self.client.get(self.endpoint_get_tests_200, headers=self.headers_token)
-    #     resp_get = json.loads(req_get.get_data())
-
-    #     self.assertEqual(self.id_candidate, resp_get[0]["id_candidate"])
-    #     self.assertEqual(self.id_candidate, resp_get[1]["id_candidate"])        
-    #     self.assertEqual(self.id_candidate, resp_get[2]["id_candidate"])
-    #     self.assertEqual(req_get.status_code, 200)
-
-    # def test_get_preguntas_200(self):
-    #     req_get = self.client.get(self.endpoint_get, headers=self.headers_token)
-    #     resp_get = json.loads(req_get.get_data())
-    #     self.assertEqual(req_get.status_code, 200)
+        req_get = self.client.get(self.endpoint_get_projects_company_200, headers=self.headers_token)
+        data = json.loads(req_get.get_data())
+        self.assertEqual(req_get.status_code, 200)
+        self.assertGreater(len(data), 0)
