@@ -120,7 +120,8 @@ class TestProjects(TestCase):
         self.endpoint_get_200 = '/projects/{}'.format(data["id"])
         resp_get = self.client.get(self.endpoint_get_200, headers=self.headers_token)
         data = json.loads(resp_get.get_data())
-        #print(self.endpoint_get_200, data)
+        # print()
+        # print(print(json.dumps(data, indent=4)))
         self.assertEqual(resp_get.status_code, 200)
 
     def test_get_projects_company_200_empty(self):

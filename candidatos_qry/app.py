@@ -31,4 +31,4 @@ api = Api(app)
 
 api.add_resource(VistaPing, '/candidates-qry/ping')
 api.add_resource(VistaSearch, '/candidates-qry')
-api.add_resource(VistaGetCandidate, '/candidates-qry/<string:id>')
+api.add_resource(VistaGetCandidate, '/candidates-qry/<id>')
