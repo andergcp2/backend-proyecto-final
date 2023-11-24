@@ -4,7 +4,7 @@ from flask_cors import CORS
 from flask_restful import Api
 
 from model import db
-from view import HealthCheck, Projects, GetCompanyProjects, GetProject, SetCandidateProject
+from view import HealthCheck, Projects, GetCompanyProjects, GetProject, SetCandidateProject, GetCandidateProject
 
 app = Flask(__name__)
 
@@ -36,4 +36,5 @@ api.add_resource(Projects, '/projects' )
 api.add_resource(GetProject, '/projects/<id>')
 api.add_resource(HealthCheck,'/projects/ping' )
 api.add_resource(GetCompanyProjects, '/projects/companies/<companyId>')
+api.add_resource(GetCandidateProject, '/projects/<projectId>/candidates')
 api.add_resource(SetCandidateProject, '/projects/<projectId>/candidates/<candidatoId>')
