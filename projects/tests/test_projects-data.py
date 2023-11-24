@@ -1,6 +1,6 @@
 import json
 from app import app
-from model import db, Project, Profile, SkillProfile, TestProfile
+from model import db, Project, Profile, SoftSkillProfile, TechSkillProfile, TestProfile
 from faker import Faker
 from unittest import TestCase
 from unittest.mock import patch
@@ -29,9 +29,9 @@ class TestProjectsData(TestCase):
             for x2 in range(numProfiles):
                 new_profile = Profile(name=self.fake.job(), profession=self.fake.job(), projectId=new_project.id)
                 for x3 in range(numSkills):
-                    new_profile.softskills.append(SkillProfile(skillId=self.fake.random_int(100, 999), profileId=new_profile.id)) 
+                    new_profile.softskills.append(SoftSkillProfile(skillId=self.fake.random_int(100, 999), profileId=new_profile.id)) 
                 for x4 in range(numSkills):
-                    new_profile.techskills.append(SkillProfile(skillId=self.fake.random_int(100, 999), profileId=new_profile.id)) 
+                    new_profile.techskills.append(TechSkillProfile(skillId=self.fake.random_int(100, 999), profileId=new_profile.id)) 
                 for x5 in range(numTests):
                     new_profile.tests.append(TestProfile(testId=self.fake.random_int(100, 999), profileId=new_profile.id)) 
                 new_project.profiles.append(new_profile)
