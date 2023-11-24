@@ -36,21 +36,30 @@ class Profile(db.Model):
     name = db.Column(db.String(50))
     profession = db.Column(db.String(50))
     projectId = db.Column(db.Integer, db.ForeignKey('project.id'))
-    softskills = db.relationship('SkillProfile', cascade='all, delete, delete-orphan')
-    techskills = db.relationship('SkillProfile', cascade='all, delete, delete-orphan')
+    softskills = db.relationship('SoftSkillProfile', cascade='all, delete, delete-orphan')
+    techskills = db.relationship('TechSkillProfile', cascade='all, delete, delete-orphan')
     tests = db.relationship('TestProfile', cascade='all, delete, delete-orphan')
 
     # def __repr__(self):
     #     return f'<Profile "{self.id}, {self.name}, {self.profession}, {self.projectId}">'
 
-class SkillProfile(db.Model):
-    __tablename__ = "skill_profile"
+class SoftSkillProfile(db.Model):
+    __tablename__ = "softskill_profile"
     id = db.Column(db.Integer, primary_key=True)
     skillId = db.Column(db.Integer) # id skill microservice 
     profileId = db.Column(db.Integer, db.ForeignKey('profile.id'))
 
     # def __repr__(self):
     #     return f'<SkillProfile "{self.id}, {self.skillId}, {self.profileId}">'
+
+class TechSkillProfile(db.Model):
+    __tablename__ = "techskill_profile"
+    id = db.Column(db.Integer, primary_key=True)
+    skillId = db.Column(db.Integer) # id skill microservice 
+    profileId = db.Column(db.Integer, db.ForeignKey('profile.id'))
+
+    # def __repr__(self):
+    #     return f'<SkillProfile "{self.id}, {self.skillId}, {self.profileId}">'    
 
 class TestProfile(db.Model):
     __tablename__ = "test_profile"
@@ -64,6 +73,14 @@ class TestProfile(db.Model):
 # queries: 
 # customer = session.query(Customer).get(1)
 # orders = customer.orders
+
+class ProjectCandidate(db.Model):
+    __tablename__ = "project_candidate"
+    id = db.Column(db.Integer, primary_key=True)
+    candidateId = db.Column(db.Integer)
+    projectId = db.Column(db.Integer, db.ForeignKey('project.id'))
+    createdAt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+   
 
 class ProjectSchema(SQLAlchemyAutoSchema):
     class Meta:
@@ -80,20 +97,34 @@ class ProfileSchema(SQLAlchemyAutoSchema):
         include_relationships = True
         include_fk = True
         load_instance = True
-    softskills = fields.Nested("SkillProfileSchema", only=("skillId", "profileId"), many=True)
-    techskills = fields.Nested("SkillProfileSchema", only=("skillId", "profileId"), many=True)
+    softskills = fields.Nested("SoftSkillProfileSchema", only=("skillId", "profileId"), many=True)
+    techskills = fields.Nested("TechSkillProfileSchema", only=("skillId", "profileId"), many=True)
     tests = fields.Nested("TestProfileSchema", only=("testId", "profileId"), many=True) 
 
-class SkillProfileSchema(SQLAlchemyAutoSchema):
+class SoftSkillProfileSchema(SQLAlchemyAutoSchema):
     class Meta:
-        model = SkillProfile
+        model = SoftSkillProfile
         include_relationships = True
         include_fk = True
         load_instance = True
+
+class TechSkillProfileSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = TechSkillProfile
+        include_relationships = True
+        include_fk = True
+        load_instance = True        
 
 class TestProfileSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = TestProfile
         include_relationships = True
+        include_fk = True
+        load_instance = True
+
+class ProjectCandidateSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = ProjectCandidate
+        #include_relationships = True
         include_fk = True
         load_instance = True

@@ -1,12 +1,29 @@
 import json, requests
 from flask import request, current_app
 from flask_restful import Resource
-from model import db, Project, Profile, SkillProfile, TestProfile, ProjectSchema, ProfileSchema, SkillProfileSchema, TestProfileSchema
+from model import db, Project, Profile, SoftSkillProfile, TechSkillProfile, TestProfile, ProjectCandidate
+from model import ProjectSchema, ProfileSchema, SoftSkillProfileSchema, TechSkillProfileSchema, TestProfileSchema, ProjectCandidateSchema
 # from datetime import datetime
 
 project_schema = ProjectSchema()
 profile_schema = ProfileSchema()
-skill_profile_schema = SkillProfileSchema()
+project_candidate_schema = ProjectCandidateSchema()
+
+def getCandidato(endpoint, headers):
+    return requestMicro("get", endpoint, headers, None)
+
+def requestMicro(method, endpoint, headers, data):
+    try:
+        # if(method == 'get'):
+        #     resp = requests.put(endpoint, headers = headers, data=json.dumps(data))
+        resp = requests.get(endpoint, headers = headers)
+
+        if (resp.status_code==200):
+            return {'msg': resp.json(), 'status_code': resp.status_code}
+        return {'msg': resp.text, 'status_code': resp.status_code} 
+    except Exception as ex:
+        return {'msg': 'connection endpoint failed {} -> {}'.format(endpoint, ex), 'status_code': 500}
+
 
 class HealthCheck(Resource):
     def get(self):
@@ -78,11 +95,11 @@ class Projects(Resource):
         for item in profiles:
             new_profile = Profile(name=item["name"], profession=item["profession"], projectId=new_project.id)
             for item_soft in item["softskills"]:
-                new_skill = SkillProfile(skillId=item_soft["id"], profileId=new_profile.id)
+                new_skill = SoftSkillProfile(skillId=item_soft["id"], profileId=new_profile.id)
                 new_profile.softskills.append(new_skill) 
                 #print("    softskill: ", new_skill)
             for item_tech in item["techskills"]:
-                new_skill = SkillProfile(skillId=item_tech["id"], profileId=new_profile.id)
+                new_skill = TechSkillProfile(skillId=item_tech["id"], profileId=new_profile.id)
                 new_profile.techskills.append(new_skill)
                 #print("    techskill: ", new_skill)
             for item_test in item["tests"]:
@@ -98,11 +115,6 @@ class Projects(Resource):
         db.session.add(new_project)
         db.session.commit()
         project_created = Project.query.filter(Project.companyId == company).filter(Project.name==name).filter(Project.leader==leader).order_by(Project.createdAt.desc()).first()
-        
-        #project_created = db.session.query(Project).filter(Project.companyId==company).filter(Project.name==name).filter(Project.leader==leader).order_by(Project.createdAt.desc()).first()
-        #Profile, SkillProfile, TestProfile
-        #.filter(Project.id==Profile.projectId)
-        #.filter(SkillProfile.profileId==Profile.id).filter(TestProfile.profileId==Profile.id)
         return project_schema.dump(project_created), 201
 
     def get(self):
@@ -131,3 +143,45 @@ class GetProject(Resource):
             return "the project with the given id was not found", 404
 
         return project_schema.dump(project)
+
+class SetCandidateProject(Resource):
+
+    def post(self, projectId, candidatoId):
+        headers = {"Content-Type":"application/json"} # , "Authorization": request.headers['Authorization']
+
+        if projectId is not None: 
+            try:
+                int(projectId)
+            except ValueError:
+                return "project id is not a number", 400
+
+        if candidatoId is not None: 
+            try:
+                int(candidatoId)
+            except ValueError:
+                return "candidato id is not a number", 400
+
+        # 400 si alguno de los parametros no esta presente
+        if projectId is None or candidatoId is None: 
+            return "parameter(s) missing", 400
+
+        project = Project.query.filter(Project.id == projectId).first()
+        if project is None:
+            return "the project with the given id was not found", 404
+
+        endpoint = format(current_app.config['CANDIDATOS_QUERY']) +"/{}".format(candidatoId)
+        #print ("candidato-url: ", endpoint)
+        resp = getCandidato(endpoint, headers)
+        if(resp['status_code'] != 200):
+            # 404 - El candidato no existe
+            return resp, resp['status_code'] # Response(resp['msg'], resp['status_code']) resp.headers.items()
+        candidato = resp['msg']
+
+        new_project_candidate = ProjectCandidate(projectId=projectId, candidateId=candidatoId) 
+        # print()
+        # print(new_project_candidate)
+        db.session.add(new_project_candidate)
+        db.session.commit()
+
+        created = ProjectCandidate.query.filter(ProjectCandidate.projectId == projectId).filter(ProjectCandidate.candidateId==candidatoId).order_by(ProjectCandidate.createdAt.desc()).first()
+        return project_candidate_schema.dump(created), 201
