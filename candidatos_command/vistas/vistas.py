@@ -57,19 +57,6 @@ class VistaCandidate(Resource):
 
         if data['password'] != data['passwordConfirmation']:
             return customError(400, "CO03", "El campo password y passwordConfirmation no conciden")
-        
-
-        request_auth = {
-            'username': data['username'],
-            'password': data['password'],
-            'email': data['email'],
-            'groupName': 'candidato'
-        }
-        response = requests.post(current_app.config['USERS'], headers={"Content-Type":"application/json"}, json=request_auth, timeout=60)
-        print(response)
-        data_resp = json.loads(response.text)
-        if data_resp.get('errorMessage') is not None:
-            return customError(400, "CO04", f"Error en el registro del usuario en cognito - {data_resp.get('errorMessage')}")
 
         name = data['name']
         lastName = data['lastName']
@@ -116,4 +103,20 @@ class VistaCandidate(Resource):
                                 )
         db.session.add(new_candidate)
         db.session.commit()
+
+        request_auth = {
+            'username': data['username'],
+            'password': data['password'],
+            'email': data['email'],
+            'groupName': 'candidato',
+            'idDb': str(new_candidate.id)
+        }
+        response = requests.post(current_app.config['USERS'], headers={"Content-Type":"application/json"}, json=request_auth, timeout=60)
+        print(response)
+        data_resp = json.loads(response.text)
+        if data_resp.get('errorMessage') is not None:
+            db.session.delete(new_candidate)
+            db.session.commit()
+            return customError(400, "CO04", f"Error en el registro del usuario en cognito - {data_resp.get('errorMessage')}")
+
         return candidate_schema.dump(new_candidate), 201
