@@ -63,7 +63,7 @@ class TestProjects(TestCase):
         }
 
         self.evaluation = {
-            "score": self.fake.random_int(0, 5),
+            "score": self.fake.random_int(1, 5),
             "comments": self.fake.sentence(), 
         }
 
@@ -230,7 +230,6 @@ class TestProjects(TestCase):
         mock_candidato.return_value = {'msg': self.candidato, 'status_code': 200}
         resp_create = self.client.post(self.endpoint_post_candidate_project_201, headers=self.headers_token)
         data = json.loads(resp_create.get_data())
-        # print()
         # print(data)
         self.assertEqual(resp_create.status_code, 201)
 
@@ -256,7 +255,7 @@ class TestProjects(TestCase):
 
     @patch('view.getCandidato')
     @patch('view.getCandidato')    
-    def candidate_project_412(self, mock_candidato2, mock_candidato):
+    def test_get_candidate_project_412(self, mock_candidato2, mock_candidato):
         resp_create = self.client.post(self.endpoint, headers=self.headers_token, data=json.dumps(self.project))
         data = json.loads(resp_create.get_data())
         self.assertEqual(resp_create.status_code, 201)
@@ -270,8 +269,7 @@ class TestProjects(TestCase):
         mock_candidato.return_value = {'msg': self.candidato, 'status_code': 200}
         resp_create = self.client.post(self.endpoint_post_candidate_project_201, headers=self.headers_token)
         data = json.loads(resp_create.get_data())
-        print()
-        print(data)
+        #print(data)
         self.assertEqual(resp_create.status_code, 201)
 
         mock_candidato2.return_value = {'msg': self.candidato, 'status_code': 200}
@@ -337,7 +335,7 @@ class TestProjects(TestCase):
 
     def test_post_evaluation_400_comments_required(self):
         #self.evaluation["comments"] = None
-        self.evaluation = {"score": self.fake.random_int(0, 5)}
+        self.evaluation = {"score": self.fake.random_int(1, 5)}
         self.endpoint_evaluation = self.endpoint_evaluation.format(0, 0)
         resp = self.client.post(self.endpoint_evaluation, headers=self.headers_token, data=json.dumps(self.evaluation))
         data = json.loads(resp.get_data())
@@ -372,12 +370,84 @@ class TestProjects(TestCase):
         self.endpoint_evaluation = self.endpoint_evaluation.format(self.fake.random_int(100000, 999999), 0)
         resp = self.client.post(self.endpoint_evaluation, headers=self.headers_token, data=json.dumps(self.evaluation))
         data = json.loads(resp.get_data())
-        print(data)
+        #print(data)
         self.assertEqual(resp.status_code, 404)
 
-    # def test_post_evaluation_412_project(self):
-    #     self.endpoint_evaluation = self.endpoint_evaluation.format(self.fake.random_int(100000, 999999), 0)
-    #     resp = self.client.post(self.endpoint_evaluation, headers=self.headers_token, data=json.dumps(self.evaluation))
-    #     data = json.loads(resp.get_data())
-    #     print(data)
-    #     self.assertEqual(resp.status_code, 404)
+    def test_post_evaluation_412_project(self):
+        resp_create = self.client.post(self.endpoint, headers=self.headers_token, data=json.dumps(self.project))
+        data = json.loads(resp_create.get_data())
+        # print("init: ", data['id'], data['name'])
+        projectId = data['id']
+        self.assertEqual(resp_create.status_code, 201)
+
+        self.endpoint_get_200 = '/projects/{}'.format(data["id"])
+        resp_get = self.client.get(self.endpoint_get_200, headers=self.headers_token)
+        data = json.loads(resp_get.get_data())
+        # print(" get: ", data['id'], data['name'])
+        self.assertEqual(resp_get.status_code, 200)
+
+        self.endpoint_evaluation = self.endpoint_evaluation.format(projectId, self.fake.random_int(100000, 999999))
+        resp = self.client.post(self.endpoint_evaluation, headers=self.headers_token, data=json.dumps(self.evaluation))
+        data = json.loads(resp.get_data())
+        # print("eval:", data)
+        self.assertEqual(resp.status_code, 412)
+
+    @patch('view.getCandidato')
+    def test_post_evaluation_412_evaluated(self, mock_candidato):
+        resp_create = self.client.post(self.endpoint, headers=self.headers_token, data=json.dumps(self.project))
+        data = json.loads(resp_create.get_data())
+        # print("init: ", data['id'], data['name'])
+        projectId = data['id']
+        self.assertEqual(resp_create.status_code, 201)
+
+        self.endpoint_get_200 = '/projects/{}'.format(data["id"])
+        resp_get = self.client.get(self.endpoint_get_200, headers=self.headers_token)
+        data = json.loads(resp_get.get_data())
+        # print(" get: ", data['id'], data['name'])
+        self.assertEqual(resp_get.status_code, 200)
+
+        self.endpoint_post_candidate_project_201 = '/projects/{}/candidates/{}'.format(data["id"], self.candidato["id"])
+        mock_candidato.return_value = {'msg': self.candidato, 'status_code': 200}
+        resp_create = self.client.post(self.endpoint_post_candidate_project_201, headers=self.headers_token)
+        data = json.loads(resp_create.get_data())
+        # print(" set:", data['projectId'], data['candidateId'])
+        self.assertEqual(resp_create.status_code, 201)
+
+        self.endpoint_evaluation = self.endpoint_evaluation.format(projectId, self.candidato["id"])
+        resp = self.client.post(self.endpoint_evaluation, headers=self.headers_token, data=json.dumps(self.evaluation))
+        data = json.loads(resp.get_data())
+        # print("eval:", data['projectId'], data['candidateId'], data['createdAt'])
+        self.assertEqual(resp.status_code, 201)
+
+        self.endpoint_evaluation = self.endpoint_evaluation.format(projectId, self.candidato["id"])
+        resp = self.client.post(self.endpoint_evaluation, headers=self.headers_token, data=json.dumps(self.evaluation))
+        data = json.loads(resp.get_data())
+        # print("eval:", data)
+        self.assertEqual(resp.status_code, 412)
+
+    @patch('view.getCandidato')
+    def test_post_evaluation_201(self, mock_candidato):
+        resp_create = self.client.post(self.endpoint, headers=self.headers_token, data=json.dumps(self.project))
+        data = json.loads(resp_create.get_data())
+        # print("init: ", data['id'], data['name'])
+        projectId = data['id']
+        self.assertEqual(resp_create.status_code, 201)
+
+        self.endpoint_get_200 = '/projects/{}'.format(data["id"])
+        resp_get = self.client.get(self.endpoint_get_200, headers=self.headers_token)
+        data = json.loads(resp_get.get_data())
+        # print(" get: ", data['id'], data['name'])
+        self.assertEqual(resp_get.status_code, 200)
+
+        self.endpoint_post_candidate_project_201 = '/projects/{}/candidates/{}'.format(data["id"], self.candidato["id"])
+        mock_candidato.return_value = {'msg': self.candidato, 'status_code': 200}
+        resp_create = self.client.post(self.endpoint_post_candidate_project_201, headers=self.headers_token)
+        data = json.loads(resp_create.get_data())
+        # print(" set:", data['projectId'], data['candidateId'])
+        self.assertEqual(resp_create.status_code, 201)
+
+        self.endpoint_evaluation = self.endpoint_evaluation.format(projectId, self.candidato["id"])
+        resp = self.client.post(self.endpoint_evaluation, headers=self.headers_token, data=json.dumps(self.evaluation))
+        data = json.loads(resp.get_data())
+        #print("eval:", data['projectId'], data['candidateId'], data['score'], data['createdAt'])
+        self.assertEqual(resp.status_code, 201)

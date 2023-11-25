@@ -283,7 +283,7 @@ class EvaluationCandidateProject(Resource):
 
         queryEval = CandidateEvaluation.query.filter(CandidateEvaluation.projectId == projectId).filter(CandidateEvaluation.candidateId==candidatoId).first() 
         if(queryEval is not None):
-            return "the candidate with the given id isalready evaluated in the project", 412
+            return "the candidate with the given id is already evaluated for the project", 412
 
         new_evaluation = CandidateEvaluation(projectId=projectId, candidateId=candidatoId, score=score, comments=comments) 
         db.session.add(new_evaluation)
