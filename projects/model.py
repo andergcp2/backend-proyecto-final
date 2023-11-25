@@ -80,7 +80,15 @@ class ProjectCandidate(db.Model):
     candidateId = db.Column(db.Integer)
     projectId = db.Column(db.Integer, db.ForeignKey('project.id'))
     createdAt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-   
+
+class CandidateEvaluation(db.Model):
+    __tablename__ = "project_candidate_evaluation"
+    id = db.Column(db.Integer, primary_key=True)
+    candidateId = db.Column(db.Integer)
+    projectId = db.Column(db.Integer, db.ForeignKey('project.id'))
+    score = db.Column(db.Integer)
+    comments = db.Column(db.String(250))
+    createdAt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 class ProjectSchema(SQLAlchemyAutoSchema):
     class Meta:
@@ -128,3 +136,11 @@ class ProjectCandidateSchema(SQLAlchemyAutoSchema):
         #include_relationships = True
         include_fk = True
         load_instance = True
+
+class CandidateEvaluationSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = CandidateEvaluation
+        #include_relationships = True
+        include_fk = True
+        load_instance = True
+
