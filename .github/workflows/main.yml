@@ -3,12 +3,9 @@
 name: Grupo-18 CI/CD Dev
 
 on:
-  push:
-    branches:
-      - develop
   pull_request:
     branches: 
-      - develop
+      - main
 
 # check for run job based on file changes in GitHub Actions
 # https://how.wtf/run-workflow-step-or-job-based-on-file-changes-github-actions.html
@@ -82,3 +79,4 @@ jobs:
        microservice: interviews
        microservice-path: ./candidatos_entrevistas
     secrets: inherit
+  

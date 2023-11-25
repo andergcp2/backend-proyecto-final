@@ -17,7 +17,6 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  #ECS_CLUSTER: cluster-abcjobs-qa
   ECS_CLUSTER: abcjobs-cluster
 
 jobs:
