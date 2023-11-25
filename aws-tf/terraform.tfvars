@@ -86,8 +86,8 @@ microservice_config = {
     alb_target_group = {
       port              = 80
       protocol          = "HTTP"
-      path_pattern      = ["/candidateInterview*"]
-      health_check_path = "/candidateInterview/ping"
+      path_pattern      = ["/interviews*"]
+      health_check_path = "/interviews/ping"
       priority          = 1
     }
     auto_scaling = {
