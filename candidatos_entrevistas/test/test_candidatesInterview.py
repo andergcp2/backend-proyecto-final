@@ -17,7 +17,8 @@ class TestCandidateInterview(TestCase):
                 "candidateId" : self.data_factory.random_int(100, 500),
                 "companyId" : self.data_factory.random_int(10, 20),
                 "projectId" : self.data_factory.random_int(20, 80),
-                "interviewDate" : "2023-12-19"
+                "interviewDate" : "2023-12-19",
+                "topic": ""
             }
 
     def test_health(self):
@@ -47,7 +48,8 @@ class TestCandidateInterview(TestCase):
                 "candidateId" : self.data_factory.random_int(50, 100),
                 "companyId" : self.data_factory.random_int(1, 50),
                 "projectId" : self.data_factory.random_int(1, 50),
-                "interviewDate" : "2023-12-19"
+                "interviewDate" : "2023-12-19",
+                "topic": ""
             }
         resp_create = self.client.post(self.endpoint_create, headers={'Content-Type': 'application/json'}, data=json.dumps(new_candidateinterview))
         print(resp_create.get_data())
@@ -63,7 +65,8 @@ class TestCandidateInterview(TestCase):
                 "candidateId" : self.data_factory.random_int(50, 100),
                 "companyId" : self.data_factory.random_int(1, 50),
                 "projectId" : self.data_factory.random_int(1, 50),
-                "interviewDate" : "2020"
+                "interviewDate" : "2020",
+                "topic": ""
             }
         resp_create = self.client.post(self.endpoint_create, headers={'Content-Type': 'application/json'}, data=json.dumps(new_candidateinterview))
         error_code = json.loads(resp_create.get_data()).get('errorCode')
@@ -75,7 +78,8 @@ class TestCandidateInterview(TestCase):
                 "candidateId" : self.data_factory.random_int(50, 100),
                 "companyId" : self.data_factory.random_int(1, 50),
                 "projectId" : self.data_factory.random_int(1, 50),
-                "interviewDate" : "2020-12-19"
+                "interviewDate" : "2020-12-19",
+                "topic": ""
             }
         resp_create = self.client.post(self.endpoint_create, headers={'Content-Type': 'application/json'}, data=json.dumps(new_candidateinterview))
         error_code = json.loads(resp_create.get_data()).get('errorCode')
@@ -93,7 +97,8 @@ class TestCandidateInterview(TestCase):
                 "candidateId" : candidateId,
                 "companyId" : self.data_factory.random_int(1, 50),
                 "projectId" : self.data_factory.random_int(1, 50),
-                "interviewDate" : "2023-12-19"
+                "interviewDate" : "2023-12-19",
+                "topic": ""
             }
         resp_create = self.client.post(self.endpoint_create, headers={'Content-Type': 'application/json'}, data=json.dumps(new_candidateinterview))
         respuesta_interview = json.loads(resp_create.get_data())
@@ -112,7 +117,8 @@ class TestCandidateInterview(TestCase):
                 "candidateId" : candidateId,
                 "companyId" : self.data_factory.random_int(1, 50),
                 "projectId" : self.data_factory.random_int(1, 50),
-                "interviewDate" : "2023-12-19"
+                "interviewDate" : "2023-12-19",
+                "topic": ""
             }
         resp_create = self.client.post(self.endpoint_create, headers={'Content-Type': 'application/json'}, data=json.dumps(new_candidateinterview))
         respuesta_interview = json.loads(resp_create.get_data())
@@ -131,7 +137,8 @@ class TestCandidateInterview(TestCase):
                 "candidateId" : candidateId,
                 "companyId" : self.data_factory.random_int(1, 50),
                 "projectId" : self.data_factory.random_int(1, 50),
-                "interviewDate" : "2023-12-19"
+                "interviewDate" : "2023-12-19",
+                "topic": ""
             }
         resp_create = self.client.post(self.endpoint_create, headers={'Content-Type': 'application/json'}, data=json.dumps(new_candidateinterview))
         respuesta_interview = json.loads(resp_create.get_data())
@@ -153,7 +160,8 @@ class TestCandidateInterview(TestCase):
                 "candidateId" : candidateId,
                 "companyId" : self.data_factory.random_int(1, 50),
                 "projectId" : self.data_factory.random_int(1, 50),
-                "interviewDate" : "2023-12-19"
+                "interviewDate" : "2023-12-19",
+                "topic": ""
             }
         resp_create = self.client.post(self.endpoint_create, headers={'Content-Type': 'application/json'}, data=json.dumps(new_candidateinterview))
         respuesta_interview = json.loads(resp_create.get_data())
@@ -184,7 +192,8 @@ class TestCandidateInterview(TestCase):
                 "candidateId" : candidateId,
                 "companyId" : self.data_factory.random_int(1, 50),
                 "projectId" : self.data_factory.random_int(1, 50),
-                "interviewDate" : "2023-12-19"
+                "interviewDate" : "2023-12-19",
+                "topic": ""
             }
         resp_create = self.client.post(self.endpoint_create, headers={'Content-Type': 'application/json'}, data=json.dumps(new_candidateinterview))
         respuesta_interview = json.loads(resp_create.get_data())
@@ -260,7 +269,8 @@ class TestCandidateInterview(TestCase):
             "candidateId" : candidateId,
             "companyId" : self.data_factory.random_int(1, 50),
             "projectId" : self.data_factory.random_int(1, 50),
-            "interviewDate" : "2023-12-19"
+            "interviewDate" : "2023-12-19",
+            "topic": ""
         }
         resp_create = self.client.post(self.endpoint_create, headers={'Content-Type': 'application/json'}, data=json.dumps(new_candidateinterview))
         #print(resp_create.get_data())

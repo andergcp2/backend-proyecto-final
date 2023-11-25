@@ -39,7 +39,7 @@ class VistaCandidateInterview(Resource):
 
     def post(self):
         data = request.get_json()
-        required_fields = ["candidateId", "companyId","projectId","interviewDate"]
+        required_fields = ["candidateId", "companyId","projectId","interviewDate","topic"]
         if not all(field in data for field in required_fields):
             return customError(400, "CO01", f'Hay campos sin diligenciar. Campos requeridos: {required_fields}')
         
@@ -56,12 +56,14 @@ class VistaCandidateInterview(Resource):
         candidateId = data['candidateId']
         companyId = data['companyId']
         projectId = data['projectId']
+        topic = data['topic']
         status = "CREADA"
 
         candidateQuery = InterviewCandidate.query.filter(InterviewCandidate.candidateId==candidateId,
                                                         InterviewCandidate.companyId==companyId,
                                                         InterviewCandidate.projectId==projectId,
-                                                        InterviewCandidate.status==status).first()
+                                                        InterviewCandidate.status==status,
+                                                        InterviewCandidate.interviewDate==interviewDate).first()
         db.session.commit()
         if candidateQuery is None:
             new_candidateinterview = InterviewCandidate(
@@ -69,7 +71,8 @@ class VistaCandidateInterview(Resource):
                                             companyId = companyId,
                                             projectId = projectId,
                                             interviewDate = interviewDate,
-                                            status = status
+                                            status = status,
+                                            topic = topic
                                         )
             db.session.add(new_candidateinterview)
             db.session.commit()
@@ -79,7 +82,7 @@ class VistaCandidateInterview(Resource):
     
 
       
-class VistaTestsAssignedToCandidates(Resource):
+class VistaInterviewsAssignedToCandidates(Resource):
     
     def get(self,candidateId):
         candidatest = [interviewcandidate_schema.dump(candidatetest) for candidatetest in InterviewCandidate.query.filter(InterviewCandidate.candidateId==candidateId).all()]
@@ -95,7 +98,7 @@ class VistaUpdateInterviewCandidate(Resource):
             return customError(400, "CO03", f'Error en el Id de entrevista, el dato ingresado no corresponde a un valor númerico')
 
         data = request.get_json()
-        required_fields = ["score"]
+        required_fields = ["score", "comment"]
         if not all(field in data for field in required_fields):
             return customError(400, "CO01", f'Hay campos sin diligenciar. Campos requeridos: {required_fields}')
         
@@ -123,7 +126,8 @@ class VistaUpdateInterviewCandidate(Resource):
         
 class VistaCandidateInterviewSearch(Resource):
 
-    def get(self, companyId, projectId):
+    #def get(self, companyId, projectId):
+    def get(self, companyId):
         #Insertar codigo para validar token... solo debería consultar un usuario previamente registrado.
         bandera = 0
         role = request.args.getlist('role')
@@ -143,7 +147,7 @@ class VistaCandidateInterviewSearch(Resource):
         my_filters = set()
         
         my_filters.add(InterviewCandidate.companyId==companyId)
-        my_filters.add(InterviewCandidate.projectId==projectId)
+        #my_filters.add(InterviewCandidate.projectId==projectId)
 
         if status:
             status = status[0]
@@ -173,7 +177,7 @@ class VistaCandidateInterviewSearch(Resource):
 
         if candidateId:
             candidateId = candidateId[0]
-            my_filters.add(InterviewCandidate.candidateId==candidateId) 
+            my_filters.add(InterviewCandidate.candidateId==candidateId)
 
         result = InterviewCandidate.query.filter(*my_filters).paginate(page=int(page), per_page=int(per_page))
 
