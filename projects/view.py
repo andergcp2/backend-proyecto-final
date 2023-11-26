@@ -231,6 +231,52 @@ class GetCandidatesProject(Resource):
         return candidates, 200
         # return [json.dumps(cand) for cand in candidates], 200
 
+class GetCandidatesCompany(Resource):
+
+    def get(self, companyId):
+        headers = {"Content-Type":"application/json"} # , "Authorization": request.headers['Authorization']
+
+        if companyId is not None: 
+            try:
+                int(companyId)
+            except ValueError:
+                return "company id is not a number", 400
+
+        # 400 si alguno de los parametros no esta presente
+        if companyId is None:
+            return "parameter(s) missing", 400
+
+        projects = Project.query.filter(Project.companyId == companyId).all()
+        if projects is None:
+            return "Projects with the given companyId was not found", 404
+        
+        #print(projects)
+        projectsIds = []
+
+        for project in projects:
+            projectsIds.append(project.id)
+
+        candidates = []
+        query = ProjectCandidate.query.filter(ProjectCandidate.projectId.in_(projectsIds)).all()
+        #print(query)
+        for candidate in query:
+            print(candidate.candidateId)
+            endpoint = current_app.config['CANDIDATOS_QUERY']+"/{}".format(candidate.candidateId)
+            resp = getCandidato(endpoint, headers)
+            #print(resp)
+            if(resp['status_code'] == 200):
+                candidates.append(
+                    {
+                        "id": candidate.candidateId, 
+                        "name": resp["msg"]["name"], 
+                        "lastName": resp["msg"]["lastName"], 
+                        "email": resp["msg"]["email"], 
+                        "phone": resp["msg"]["phone"]
+                    }
+                )
+
+        return candidates, 200
+
 class EvaluationCandidateProject(Resource):
 
     def post(self, projectId, candidatoId):
