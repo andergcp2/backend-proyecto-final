@@ -278,7 +278,7 @@ class GetCandidatesCompany(Resource):
             if(resp['status_code'] == 200):
                 candidates.append(
                     {
-                        "companyId": companyId,
+                        "companyId": int(companyId),
                         "id": candidate.candidateId,
                         "projectId": candidate.projectId,
                         "name": resp["msg"]["name"], 
