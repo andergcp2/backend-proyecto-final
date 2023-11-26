@@ -264,17 +264,29 @@ class GetCandidatesCompany(Resource):
         #print(query)
         for candidate in query:
             print(candidate.candidateId)
+
+            evaluation = CandidateEvaluation.query.filter(CandidateEvaluation.candidateId == candidate.candidateId)\
+                                                .filter(CandidateEvaluation.projectId == candidate.projectId).first()
+            comments = score = None
+            if evaluation:
+                score = evaluation.score
+                comments = evaluation.comments
+
             endpoint = current_app.config['CANDIDATOS_QUERY']+"/{}".format(candidate.candidateId)
             resp = getCandidato(endpoint, headers)
             #print(resp)
             if(resp['status_code'] == 200):
                 candidates.append(
                     {
-                        "id": candidate.candidateId, 
+                        "companyId": companyId,
+                        "id": candidate.candidateId,
+                        "projectId": candidate.projectId,
                         "name": resp["msg"]["name"], 
                         "lastName": resp["msg"]["lastName"], 
                         "email": resp["msg"]["email"], 
-                        "phone": resp["msg"]["phone"]
+                        "phone": resp["msg"]["phone"],
+                        "score": score,
+                        "comments": comments
                     }
                 )
 
