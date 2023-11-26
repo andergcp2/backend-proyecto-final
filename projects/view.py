@@ -228,11 +228,8 @@ class GetCandidatesProject(Resource):
                     }
                 )
 
-        # return [project_candidate_schema.dump(pc) for pc in query]
-        
-        # return candidates, 200
-        return [json.dumps(cand) for cand in candidates], 200
-        # return json.dumps(candidates), 200
+        return candidates, 200
+        # return [json.dumps(cand) for cand in candidates], 200
 
 class GetCandidatesCompany(Resource):
 

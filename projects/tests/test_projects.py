@@ -303,7 +303,7 @@ class TestProjects(TestCase):
         self.endpoint_get_candidate_project_200 = '/projects/{}/candidates'.format(data["projectId"])
         resp_create = self.client.get(self.endpoint_get_candidate_project_200, headers=self.headers_token)
         data = json.loads(resp_create.get_data())
-        cand = json.loads(data[0])
+        cand = data[0]
         # print("done: ", type(data), len(data), type(cand), cand)
         # print("done: ", self.candidato['id'], cand['id'], cand['name'])
         self.assertEqual(resp_create.status_code, 200)
