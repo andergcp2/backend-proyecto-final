@@ -446,8 +446,9 @@ class TestProjects(TestCase):
         # print(" set:", data['projectId'], data['candidateId'])
         self.assertEqual(resp_create.status_code, 201)
 
+        self.evaluation['score'] = str(self.fake.random_int(1, 5))
         self.endpoint_evaluation = self.endpoint_evaluation.format(projectId, self.candidato["id"])
         resp = self.client.post(self.endpoint_evaluation, headers=self.headers_token, data=json.dumps(self.evaluation))
         data = json.loads(resp.get_data())
-        #print("eval:", data['projectId'], data['candidateId'], data['score'], data['createdAt'])
+        print("eval:", data['projectId'], data['candidateId'], data['score'], data['createdAt'])
         self.assertEqual(resp.status_code, 201)
