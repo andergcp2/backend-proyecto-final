@@ -3,20 +3,22 @@ from flask import Flask
 from flask_cors import CORS
 from flask_restful import  Api
 from modelos import db
-from vistas import VistaPing, VistaSearch, VistaGetCandidate
+from vistas import VistaPing, VistaCandidateInterview, VistaCandidateInterviewSearch, VistaInterviewsAssignedToCandidates, VistaUpdateInterviewCandidate
 
 app = Flask(__name__)
 app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
 if 'USERS_PATH' in os.environ:
-    app.config['USERS'] = 'http://'+ str(os.environ.get("USERS_PATH")) +":"+ str(os.environ.get("USERS_PORT")) +'/users/me'
+    app.config['USERS'] = os.environ.get("USERS_PATH")
     app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://"+ str(os.environ.get("DB_USER")) +":"+ str(os.environ.get("DB_PASSWORD")) +"@"+ str(os.environ.get("DB_HOST")) +":"+ str(os.environ.get("DB_PORT")) +"/"+ str(os.environ.get("DB_NAME"))
+    app.config['TEST_QRY_URL'] = str(os.environ.get("PRUEBAS_QUERY"))
     print("prod: ", app.config['SQLALCHEMY_DATABASE_URI'], app.config['USERS'])
 else:
     app.config['USERS'] = 'https://tpy2fq7k1h.execute-api.us-east-1.amazonaws.com/test/signin'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///candidates.db'
     app.config['TESTING'] = True
+    app.config['TEST_QRY_URL'] = "http://abcjobs-public-alb-388103681.us-east-1.elb.amazonaws.com/tests-qry"
     print("test: ", app.config['SQLALCHEMY_DATABASE_URI'])
 
 app_context = app.app_context()
@@ -28,7 +30,8 @@ db.create_all()
 cors = CORS(app)
 
 api = Api(app)
-
-api.add_resource(VistaPing, '/candidates-qry/ping')
-api.add_resource(VistaSearch, '/candidates-qry')
-api.add_resource(VistaGetCandidate, '/candidates-qry/<id>')
+api.add_resource(VistaCandidateInterview, '/interviews')
+api.add_resource(VistaPing, '/interviews/ping')
+api.add_resource(VistaCandidateInterviewSearch, '/interviews/companies/<companyId>')
+api.add_resource(VistaInterviewsAssignedToCandidates, '/interviews/candidate/<candidateId>')
+api.add_resource(VistaUpdateInterviewCandidate, '/interviews/<interviewId>')
