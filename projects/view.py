@@ -309,7 +309,7 @@ class EvaluationCandidateProject(Resource):
         comments = request.json["comments"]
 
         try:
-            int(score)
+            score = int(score)
         except ValueError:
             return "evaluation score is not valid: {}".format(score), 412
 
