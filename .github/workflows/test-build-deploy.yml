@@ -36,8 +36,8 @@ jobs:
 
   unit-test:
     name: unit tests
-    needs: changes
-    if: ${{ needs.changes.outputs.src == 'true' }}
+    # needs: changes
+    # if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
