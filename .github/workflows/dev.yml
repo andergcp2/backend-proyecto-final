@@ -13,41 +13,6 @@ on:
 # check for run job based on file changes in GitHub Actions
 # https://how.wtf/run-workflow-step-or-job-based-on-file-changes-github-actions.html
 jobs:
-  projects:
-    uses: ./.github/workflows/test-build-deploy.yml
-    with:
-       microservice: projects
-       microservice-path: ./projects
-    secrets: inherit
-
-  companies:
-    uses: ./.github/workflows/test-build-deploy.yml
-    with:
-       microservice: companies
-       microservice-path: ./companies
-    secrets: inherit
-
-  collaborators:
-    uses: ./.github/workflows/test-build-deploy.yml
-    with:
-       microservice: collaborators
-       microservice-path: ./collaborators
-    secrets: inherit
-
-  candidatos-cmd:
-    uses: ./.github/workflows/test-build-deploy.yml
-    with:
-       microservice: candidatos-cmd
-       microservice-path: ./candidatos_command
-    secrets: inherit
-
-  candidatos-qry:
-    uses: ./.github/workflows/test-build-deploy.yml
-    with:
-       microservice: candidatos-qry
-       microservice-path: ./candidatos_qry
-    secrets: inherit
-
   pruebas-cmd:
     uses: ./.github/workflows/test-build-deploy.yml
     with:
@@ -62,23 +27,3 @@ jobs:
        microservice-path: ./pruebas_qry
     secrets: inherit
 
-  candidatos-pruebas:
-    uses: ./.github/workflows/test-build-deploy.yml
-    with:
-       microservice: candidatos-tests
-       microservice-path: ./candidatos_pruebas
-    secrets: inherit  
-
-  pruebas-taker:
-    uses: ./.github/workflows/test-build-deploy.yml
-    with:
-       microservice: pruebas-taker
-       microservice-path: ./pruebas_taker
-    secrets: inherit
-
-  interviews:
-    uses: ./.github/workflows/test-build-deploy.yml
-    with:
-       microservice: interviews
-       microservice-path: ./candidatos_entrevistas
-    secrets: inherit
